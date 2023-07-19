@@ -21,14 +21,10 @@ OBJS = $(SRC:%.cpp=%.o)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
-rel: $(NAME)
-
-debug: CFLAGS+= -DDEBUG -g
-debug: $(NAME)
 
 leaks: CFLAGS += -g3 -fsanitize=address
 leaks: $(OBJS)
-leaks: $(NAME) 
+leaks: $(NAME)
 	./$(NAME)
 
 $(NAME): $(OBJS)
