@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/19 19:44:16 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/22 18:49:52 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <math.h>
+#include <vector>
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
@@ -43,6 +45,7 @@ class render
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
 		~render();
 		void	draw_triangle(const GLfloat vertex_buffer[]);
+		std::vector<float>	rotate_on_x(float x, float y, float z, int angle);
 };
 
 #endif
