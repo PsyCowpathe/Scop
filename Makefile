@@ -1,34 +1,32 @@
 CC= clang++
 CFLAGS=  -std=c++17 -O2
-LDFLAGS=  -lGL -lGLU -lGLEW -lglfw
-MAKEFLAGS += --no-print-directory -j
+LDFLAGS= -lglfw -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -lGL -lGLEW
 
 NAME= scop
 
 HEADER= \
-	render.hpp \
-	loadShadersTmp.hpp
+		inc/shader.hpp
 
 SRC= \
-	main.cpp \
-	render.cpp \
-	loadShadersTmp.cpp
+	srcs/main.cpp \
+	shader/shader.cpp
+
 
 OBJS = $(SRC:%.cpp=%.o)
 
 
-%.o: %.cpp Makefile $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o:	%.cpp Makefile $(HEADER)
+		$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
+rel: $(NAME)
 
-leaks: CFLAGS += -g3 -fsanitize=address
-leaks: $(OBJS)
-leaks: $(NAME)
-	./$(NAME)
+debug: CFLAGS+= -DDEBUG -g
+debug: $(NAME)
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
+
+$(NAME):	$(OBJS)
+			$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
 
 clean:
 	@rm -f $(OBJS)
@@ -42,5 +40,4 @@ re: fclean
 run: $(NAME)
 	./$(NAME)
 
-
-.PHONY: clean fclean re run debug leaks
+.PHONY: clean fclean re run debug
