@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/22 18:52:43 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/23 16:21:02 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ int		main(void)
 		0.0f, 1.0f, 0.0f,
 	};
 	std::cout << sizeof(vertex_buffer) << std::endl;
-	//test.rotate_on_x(1, 1, 0, 179);
 	test.draw_triangle(vertex_buffer);
 	return (0);
 }

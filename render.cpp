@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/22 18:57:17 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/23 16:18:50 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,33 +32,54 @@ render::~render()
 	glfwTerminate();
 }
 
-std::vector<float>	render::rotate_on_x(float x, float y, float z, int angle)
+float	*render::create_rotate_matrice(char rotate, float angle)
 {
-	float				new_angle;
-	std::vector<float>	result;
-	int					i;
+	float	tmp_x[9] = {1, 0, 0, 0, cosf(angle), (sinf(angle) * -1), 0, sinf(angle), cosf(angle)};
+	float	tmp_y[9] = {cosf(angle), 0, sinf(angle), 0, 1, 0, sinf(angle) * -1, 0, cosf(angle)};
+	float	tmp_z[9] = {cosf(angle), sinf(angle) * -1, 0, sinf(angle), cosf(angle), 0, 0, 0, 1};
+	float	*matrice;
+	int		i;
 
-	new_angle = angle * (M_PI / 180);
-	std::cout << "cos = " << cosf(new_angle) << std::endl;
-	std::cout << "sin = " << sinf(new_angle) << std::endl;
-	float matrice[9] = {1, 0, 0, 0, cosf(new_angle), (sinf(new_angle) * -1), 0,
-							sinf(new_angle), cosf(new_angle)};
-	float vector[3] = {x, y, z};
 	i = 0;
-	while (i < 3)
+	matrice = new float[9];
+	while (i < 9)
 	{
-		result.push_back(matrice[3 * i] * vector[0] + matrice[3 * i + 1] * vector[1] + matrice[3 * i + 2] * vector[2]);
-		std::cout << result.back() << std::endl;
+		if (rotate == 'x')
+			matrice[i] = tmp_x[i];
+		else if (rotate == 'y')
+			matrice[i] = tmp_y[i];
+		else if (rotate == 'z')
+			matrice[i] = tmp_z[i];
 		i++;
 	}
+	return (matrice);
+}
+
+std::vector<float>	render::rotate(std::vector<float> vertex, float angle, char rotate)
+{
+	std::vector<float>	result;
+	int					i;
+	float				*matrice;
+
+	i = 0;
+	matrice = create_rotate_matrice(rotate, angle *= (M_PI / 180));
+	while (i < 3)
+	{
+		result.push_back(matrice[3 * i] * vertex[0] + matrice[3 * i + 1] * vertex[1] + matrice[3 * i + 2] * vertex[2]);
+		i++;
+	}
+	delete[] matrice;
 	return (result);
 }
 
 void	render::draw_triangle(const GLfloat vertex_buffer[])
 {
-	int		angle = 0;
-	std::vector<float> tmp;
-	GLfloat new_vertex[9];
+	int					angle = 0;
+	int		i;
+	std::vector<float>	tmp;
+	std::vector<float> 	vertex(3);
+	GLfloat 			new_vertex[9];
+
 	create_vertex_array();
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -66,7 +87,6 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
-	int		i;
 
 	while (!glfwWindowShouldClose(_window))
 	{
@@ -74,7 +94,10 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 		i = 0;
 		while (i < 3)
 		{
-			tmp = rotate_on_x(vertex_buffer[3 * i], vertex_buffer[3 * i + 1], vertex_buffer[3 * i + 2], angle);
+			vertex[0] = vertex_buffer[3 * i];
+			vertex[1] = vertex_buffer[3 * i + 1];
+			vertex[2] = vertex_buffer[3 * i + 2];
+			tmp = rotate(vertex, angle, _rotate_axis);
 			new_vertex[3 * i] = tmp[0];
 			new_vertex[3 * i + 1] = tmp[1];
 			new_vertex[3 * i + 2] = tmp[2];
@@ -102,6 +125,7 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 		glDisableVertexAttribArray(0);
 		glUseProgram(programID);
 		glfwSwapBuffers(_window);
+		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
 	}
 }
@@ -163,7 +187,7 @@ int		render::glfw_init()
 	return (1);
 }
 
-void	render::clear() //comment on sait dans le main qu'il y a eu un clear ??
+void	render::clear() //comment on sait dans le main qu'il y a eu un clear et stop le prgm ?
 {
 	glfwTerminate();
 }
@@ -174,10 +198,26 @@ void	render::error_callback(int error, const char *description)
 	std::cout << "Error : " << description << std::endl;
 }
 
+void	render::change_rotate_axis(int key)
+{
+	if (key == GLFW_KEY_RIGHT)
+		_rotate_axis = 'x';
+	else if (key == GLFW_KEY_UP)
+		_rotate_axis = 'y';
+	else if (key == GLFW_KEY_DOWN)
+		_rotate_axis = 'z';
+}
+
 void	render::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	(void)scancode;
 	(void)mods;
+	void *data = glfwGetWindowUserPointer(window);  
+    render *w = static_cast<render *>(data);
+
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	else
+		w->change_rotate_axis(key);
+
 }
