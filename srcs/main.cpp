@@ -24,24 +24,28 @@ void    initGlfw()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
-int    vao()
+int	initGlew()
 {
-    // init Glew :)
     glewExperimental=true; // Needed in core profile
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to initialize GLEW\n");
-        return -1;
+        return (-1);
     }
+	return(0);
+}
 
-    
+int    vao()
+{  
     GLuint VertexArrayID;
     glEnableVertexAttribArray(0);
     glGenVertexArrays(1, &VertexArrayID);
+
+	// Specifying that this is the Vertex array we're gonna use
     glBindVertexArray(VertexArrayID);
     return (1);
 }
 
-GLuint triangle(GLuint* vertexbuffer)
+GLuint	triangle(GLuint* vertexbuffer)
 {
     // An array of 3 vectors which represents 3 vertices
     static const GLfloat g_vertex_buffer_data[] = {
@@ -50,6 +54,10 @@ GLuint triangle(GLuint* vertexbuffer)
        0.0f,  1.0f, 0.0f,
     };
 
+    std::cout << g_vertex_buffer_data[0] << " " << g_vertex_buffer_data[4] << " " << g_vertex_buffer_data[8] << " " << g_vertex_buffer_data[12] << std::endl;
+    std::cout << g_vertex_buffer_data[1] << " " << g_vertex_buffer_data[5] << " " << g_vertex_buffer_data[9] << " " << g_vertex_buffer_data[13] << std::endl;
+    std::cout << g_vertex_buffer_data[2] << " " << g_vertex_buffer_data[6] << " " << g_vertex_buffer_data[10] << " " << g_vertex_buffer_data[14] << std::endl;
+    std::cout << g_vertex_buffer_data[3] << " " << g_vertex_buffer_data[7] << " " << g_vertex_buffer_data[11] << " " << g_vertex_buffer_data[15] << std::endl;
 
     // Generate 1 buffer, put the resulting identifier in vertexbuffer
     glGenBuffers(1, vertexbuffer);
@@ -74,12 +82,13 @@ void    drawTriangle(GLuint* vertexbuffer)
        0,                  // stride
        (void*)0            // array buffer offset
     );
+
     // Draw the triangle !
     glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
     glDisableVertexAttribArray(0);
 }
 
-int    openWindow()
+GLFWwindow*    openWindow()
 {
     //                                      width, height, name, fullscreen, ?
     GLFWwindow* window = glfwCreateWindow(640, 480, "TRUITE", NULL, NULL);
@@ -87,12 +96,46 @@ int    openWindow()
     {
         // Window or OpenGL context creation failed
         glfwTerminate();
-        return (-1);
+        return (window);
     }
 
-    glfwMakeContextCurrent(window);
-    vao();
-    
+    glfwMakeContextCurrent(window); 
+    return (window);
+}
+
+void transformTriangle(GLuint* vertexbuffer)
+{
+        // An array of 3 vectors which represents 3 vertices
+    static const GLfloat g_vertex_buffer_data[] = {
+       -1.0f, -1.0f, 0.0f,
+       1.0f, -1.0f, 0.0f,
+       0.0f,  1.0f, 0.0f,
+    };
+
+    std::cout << g_vertex_buffer_data[0] << " " << g_vertex_buffer_data[4] << " " << g_vertex_buffer_data[8] << " " << g_vertex_buffer_data[12] << std::endl;
+    std::cout << g_vertex_buffer_data[1] << " " << g_vertex_buffer_data[5] << " " << g_vertex_buffer_data[9] << " " << g_vertex_buffer_data[13] << std::endl;
+    std::cout << g_vertex_buffer_data[2] << " " << g_vertex_buffer_data[6] << " " << g_vertex_buffer_data[10] << " " << g_vertex_buffer_data[14] << std::endl;
+    std::cout << g_vertex_buffer_data[3] << " " << g_vertex_buffer_data[7] << " " << g_vertex_buffer_data[11] << " " << g_vertex_buffer_data[15] << std::endl;
+
+    // Generate 1 buffer, put the resulting identifier in vertexbuffer
+    glGenBuffers(1, vertexbuffer);
+    // The following commands will talk about our 'vertexbuffer' buffer
+    glBindBuffer(GL_ARRAY_BUFFER, *vertexbuffer);
+    // Give our vertices to OpenGL.
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+}
+
+int main()
+{
+	// Init 3rd party libs (window, driver, extensions support)
+    initGlfw();
+    GLFWwindow* window = openWindow();
+
+    initGlew();
+
+	// Init VAO/VBO with our vertex data
+	vao();
+
     // This will identify our vertex buffer
     GLuint vertexbuffer;
     triangle(&vertexbuffer);
@@ -100,37 +143,38 @@ int    openWindow()
     // Create and compile our GLSL program from the shader
     GLuint programID = loadShaders("./shader/vert.vert", "./shader/frag.frag");
 
-    // MAIN LOOP !
+
+
+    // MAIN RENDER LOOP !
     while (!glfwWindowShouldClose(window))
     {
-        // clear the screen first
+		// Spice up BG :)
+		static GLclampf c = 0.0f;
+		//Why not a colred bg ?
+		glClearColor(c,c,c,1);
+		c += 1.0f/256.0f;
+		if (c >= 1.0f)
+			c = 0.0f;
+        // clear the screen first (applying a color if glClearColor has been called/set before !)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // TEST : tring to rotate triangle placed in vertexbuffer here
+        //transformTriangle(&vertexbuffer);
 
         drawTriangle(&vertexbuffer);
 
 
-         // Swap buffers
-        glfwSwapBuffers(window);
-
-        // use our shader !
+        // use our shader to ACTUALLY draw the triangle we defined !
         glUseProgram(programID);
         
-        // Keep running
+        // Keep watching for inputs until a closing window input occurs :
         glfwPollEvents();
-    }
 
+        // Swap buffers to display the result of all the above code in the loop
+        glfwSwapBuffers(window);
+    }
 
     glfwDestroyWindow(window);
     glfwTerminate();
-    return (1);
-}
-
-
-int main()
-{
-    initGlfw();
-    openWindow();
-
-
     return (1);
 }
