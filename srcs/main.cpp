@@ -85,6 +85,9 @@ void    drawTriangle(GLuint* vertexbuffer)
 
     // Draw the triangle !
     glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
+    // glDrawArrays(GL_LINES, 0, 1);
+	// glDrawArrays(GL_LINES, 2, 3);
+	// glDrawArrays(GL_LINES, 0, 3);
     glDisableVertexAttribArray(0);
 }
 
@@ -164,7 +167,7 @@ int main()
         drawTriangle(&vertexbuffer);
 
 
-        // use our shader to ACTUALLY draw the triangle we defined !
+        // use our shader to ACTUALLY draw the triangle we defined ! But do we have to do it in each loop ?.. Not sure.
         glUseProgram(programID);
         
         // Keep watching for inputs until a closing window input occurs :
@@ -174,7 +177,8 @@ int main()
         glfwSwapBuffers(window);
     }
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    //glfwDestroyWindow(window);
+    //glfwTerminate();
+    std::cout << "HARICOT" << std::endl;
     return (1);
 }

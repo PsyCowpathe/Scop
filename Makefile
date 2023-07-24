@@ -1,6 +1,6 @@
 CC= clang++
 CFLAGS=  -std=c++17 -O2
-LDFLAGS= -lglfw -ldl -lpthread -lX11 -lXxf86vm -lXrandr -lXi -lGL -lGLEW
+LDFLAGS= -lglfw -ldl -lpthread -lX11 -lXrandr -lXi -lGL -lGLEW -g3 -fsanitize=address
 
 NAME= scop
 
