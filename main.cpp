@@ -23,5 +23,6 @@ int		main(void)
 	};
 	std::cout << sizeof(vertex_buffer) << std::endl;
 	test.draw_triangle(vertex_buffer);
+	
 	return (0);
 }
