@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   render.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/23 16:18:50 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/24 14:38:16 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "render.hpp"
+#include "../headers/render.hpp"
 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
 {

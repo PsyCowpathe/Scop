@@ -5,14 +5,11 @@ MAKEFLAGS += --no-print-directory -j
 
 NAME= scop
 
-HEADER= \
-	render.hpp \
-	loadShadersTmp.hpp
+HEADER_PATH := ./headers
+HEADER := $(wildcard $(HEADER_PATH)/*.hpp)
 
-SRC= \
-	main.cpp \
-	render.cpp \
-	loadShadersTmp.cpp
+SRC_PATH := ./src
+SRC := $(wildcard $(SRC_PATH)/*.cpp)
 
 OBJS = $(SRC:%.cpp=%.o)
 
