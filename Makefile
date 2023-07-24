@@ -7,12 +7,14 @@ NAME= scop
 
 HEADER= \
 	render.hpp \
-	loadShadersTmp.hpp
+	loadShadersTmp.hpp \
+	matrice.hpp
 
 SRC= \
 	main.cpp \
 	render.cpp \
-	loadShadersTmp.cpp
+	loadShadersTmp.cpp \
+	matrice.cpp
 
 OBJS = $(SRC:%.cpp=%.o)
 
