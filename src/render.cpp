@@ -72,6 +72,30 @@ std::vector<float>	render::rotate(std::vector<float> vertex, float angle, char r
 	return (result);
 }
 
+class	m4 {
+	public:
+		float	_m[16];
+		m4 (int angle) {
+			_m[0] = cosf(angle);
+			_m[1] = -sinf(angle);
+			_m[2] = 0.0f;
+			_m[3] = 0.0f;
+			_m[4] = sinf(angle);
+			_m[5] = cosf(angle);
+			_m[6] = 0.0f;
+			_m[7] = 0.0f;
+			_m[8] = 0.0f;
+			_m[9] = 0.0f;
+			_m[10] = 1.0f;
+			_m[11] = 0.0f;
+			_m[12] = 0.0f;
+			_m[13] = 0.0f;
+			_m[14] = 0.0f;
+			_m[15] = 1.0f;
+		}
+};
+
+GLuint	g_rotation_location;
 void	render::draw_triangle(const GLfloat vertex_buffer[])
 {
 	int					angle = 0;
@@ -91,24 +115,13 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 	while (!glfwWindowShouldClose(_window))
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		i = 0;
-		while (i < 3)
-		{
-			vertex[0] = vertex_buffer[3 * i];
-			vertex[1] = vertex_buffer[3 * i + 1];
-			vertex[2] = vertex_buffer[3 * i + 2];
-			tmp = rotate(vertex, angle, _rotate_axis);
-			new_vertex[3 * i] = tmp[0];
-			new_vertex[3 * i + 1] = tmp[1];
-			new_vertex[3 * i + 2] = tmp[2];
-			i++;
-		}
+		m4	matrix4(angle);
 		if (angle == 360)
 			angle = 0;
 		else
 			angle++;
-		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * 9, new_vertex, GL_STATIC_DRAW);
-
+		// glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * 9, new_vertex, GL_STATIC_DRAW);
+		glUniformMatrix4fv(g_rotation_location, 1, GL_TRUE, &matrix4._m[0]);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
