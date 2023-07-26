@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/26 13:11:00 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/26 13:13:23 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 		if (angle == 360)
 			angle = 0;
 		else
-			angle++;
+			angle += 0.01f;
 		// glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * 9, new_vertex, GL_STATIC_DRAW);
 		glUniformMatrix4fv(g_rotation_location, 1, GL_TRUE, &matrix4._m[0]);
 
