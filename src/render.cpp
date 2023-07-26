@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/24 14:38:16 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/26 13:11:00 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ std::vector<float>	render::rotate(std::vector<float> vertex, float angle, char r
 class	m4 {
 	public:
 		float	_m[16];
-		m4 (int angle) {
+		m4 (float angle) {
 			_m[0] = cosf(angle);
 			_m[1] = -sinf(angle);
 			_m[2] = 0.0f;
@@ -98,8 +98,10 @@ class	m4 {
 GLuint	g_rotation_location;
 void	render::draw_triangle(const GLfloat vertex_buffer[])
 {
-	int					angle = 0;
-	int		i;
+	float				angle = 0;
+	int					i;
+	int					frames = 0;
+	float				last_time = glfwGetTime();
 	std::vector<float>	tmp;
 	std::vector<float> 	vertex(3);
 	GLfloat 			new_vertex[9];
@@ -114,6 +116,14 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 
 	while (!glfwWindowShouldClose(_window))
 	{
+		float	current_time = glfwGetTime();
+		frames++;
+		if (current_time - last_time >= 1.0)
+		{
+			std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+			frames = 0;
+			last_time = glfwGetTime();
+		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		m4	matrix4(angle);
 		if (angle == 360)
