@@ -24,6 +24,11 @@ leaks: $(OBJS)
 leaks: $(NAME)
 	./$(NAME)
 
+debug: CFLAGS += -g3
+debug: $(OBJS)
+debug: $(NAME)
+	lldb ./scop
+
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
 
