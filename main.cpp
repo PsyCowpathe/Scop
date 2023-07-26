@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/24 15:44:58 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/26 18:02:24 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int		main(void)
 {
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !");
-	static const GLfloat vertex_buffer[] =
+	/*static const GLfloat vertex_buffer[] =
 	{
 		-1.0f, -1.0f, 0.0f,
 		1.0f, -1.0f, 0.0f,
@@ -26,7 +26,18 @@ int		main(void)
 		-1.0f, -1.0f, 0.0f,
 		0.0f, 1.0f, 0.0f,
 		0.0f, -1.0f, 1.0f,
+	};*/
+
+	static const GLfloat vertex_buffer[] =
+	{
+		-1.0f, 1.0f, 0.0f,
+		1.0f, 1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f, 1.0f, 0.0f,
+		1.0f, -1.0f, 0.0f,
+		-1.0f, -1.0f, 0.0f,
 	};
+
 
 	test.draw_triangle(vertex_buffer);
 	return (0);

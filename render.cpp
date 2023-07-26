@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/26 14:51:14 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/26 18:02:45 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,10 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 	//glGenBuffers(1, &_vertexBuffer);
 	//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
@@ -120,19 +124,19 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 			std::cout << tmp[2] << ", ";
 			std::cout << tmp[3] << std::endl;
 
-			tmp = matrice.translate(tmp, test);
+			/*tmp = matrice.translate(tmp, test);
 			std::cout << "translate res = " << std::endl;
 			std::cout << tmp[0] << ", ";
 			std::cout << tmp[1] << ", ";
 			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl;
+			std::cout << tmp[3] << std::endl;*/
 
-			tmp = matrice.scale(tmp, factor);
+			/*tmp = matrice.scale(tmp, factor);
 			std::cout << "scale res = " << std::endl;
 			std::cout << tmp[0] << ", ";
 			std::cout << tmp[1] << ", ";
 			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl;
+			std::cout << tmp[3] << std::endl;*/
 
 			new_vertex[3 * i] = tmp[0];
 			new_vertex[3 * i + 1] = tmp[1];
@@ -162,7 +166,7 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 		);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 9);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDisableVertexAttribArray(0);
 		//glDisableVertexAttribArray(1);
 		glUseProgram(programID);
