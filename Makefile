@@ -10,7 +10,6 @@ HEADER := $(wildcard $(HEADER_PATH)/*.hpp)
 
 SRC_PATH := ./src
 SRC := $(wildcard $(SRC_PATH)/*.cpp)
-
 OBJS = $(SRC:%.cpp=%.o)
 
 
