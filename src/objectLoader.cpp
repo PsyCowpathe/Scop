@@ -1,12 +1,12 @@
 #include "../headers/loadObject.hpp"
 #include <iomanip>
 
-void	getInfo(std::string line, std::vector<vec3> &buffer)
+void	getInfo(std::string line, std::vector<vec3> &buffer, int ignore)
 {
 	std::string xyz[3];
 	vec3		test(0, 0, 0);
 	size_t i = 0;
-	size_t last = 2; size_t next = 0;
+	size_t last = ignore; size_t next = 0;
 	while ((next = line.find(' ', last)) != std::string::npos)
 	{
 		xyz[i] =  line.substr(last, next-last);
@@ -22,13 +22,16 @@ void	getInfo(std::string line, std::vector<vec3> &buffer)
 
 void	getUvInfo(std::string line, std::vector<vec2> &buffer)
 {
+	std::cout << "getting uv info" << std::endl;
 	std::string xyz[2];
 	vec2		test(0, 0);
 	size_t i = 0;
-	size_t last = 2; size_t next = 0;
+	size_t last = 3; size_t next = 0;
 	while ((next = line.find(' ', last)) != std::string::npos)
 	{
+		std::cout << "i: " << i << std::endl;
 		xyz[i] =  line.substr(last, next-last);
+		std::cout << "xyz " << xyz[i] << std::endl;
 		test._v[i] = std::stof(xyz[i]);
 		std::cout << xyz[i] << std::endl;
 		last = next + 1;
@@ -64,11 +67,11 @@ int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> 
 		// if (line[0] != '#')
 		// 	std::cout << line << std::endl;
 		if (line[0] == 'v' && line[1] == ' ')
-			getInfo(line, vertices);
+			getInfo(line, vertices, 2);
 		else if (line[0] == 'v' && line[1] == 't' && line[2] == ' ')
 			getUvInfo(line, uv);
 		else if (line[0] == 'v' && line[1] == 'n' && line[2] == ' ')
-			getInfo(line, normals);
+			getInfo(line, normals, 3);
 	}
 	std::cout << vertices.size() << std::endl;
 	std::cout << uv.size() << std::endl;
