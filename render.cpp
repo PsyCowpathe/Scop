@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/24 20:50:52 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/26 14:51:14 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,16 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 	float					angle = 0;
 	int		i;
 	std::vector<float>	tmp;
-	std::vector<float> 	vertex(3);
+	std::vector<float> 	vertex(4);
 
 	GLfloat 			new_vertex[27];
 
 	_original_vertex = vertex_buffer;
 	//_current_vertex = static_cast<float *>(_original_vertex);
 	create_vertex_array();
-	glGenBuffers(1, &_vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
+	//glGenBuffers(1, &_vertexBuffer);
+	//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
@@ -84,6 +84,10 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 			(void*)0
 		);
 
+	glGenBuffers(1, &_vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+
+
 	while (!glfwWindowShouldClose(_window))
 	{
 		glClearColor(0, 255, 0, 1);
@@ -91,28 +95,57 @@ void	render::draw_triangle(const GLfloat vertex_buffer[])
 		i = 0;
 		while (i < 9)
 		{
-			std::vector<float>	test(3);
+			std::vector<float>	test(4, 0);
 			test[0] = 0 + (angle / 100);
 			test[1] = (0);
 			test[2] = (0);
+			test[3] = (0);
+
+			std::vector<float>	factor(4, 0);
+			factor[0] = 1;
+			factor[1] = 1;
+			factor[2] = 1 + (angle / 10);
+			factor[3] = 1;
+
 
 
 			vertex[0] = vertex_buffer[3 * i];
 			vertex[1] = vertex_buffer[3 * i + 1];
 			vertex[2] = vertex_buffer[3 * i + 2];
+			vertex[3] = 0;
 			tmp = matrice.rotate(vertex, angle, _rotate_axis);
+			std::cout << std::endl << "rotate res = " << std::endl;
+			std::cout << tmp[0] << ", ";
+			std::cout << tmp[1] << ", ";
+			std::cout << tmp[2] << ", ";
+			std::cout << tmp[3] << std::endl;
+
 			tmp = matrice.translate(tmp, test);
+			std::cout << "translate res = " << std::endl;
+			std::cout << tmp[0] << ", ";
+			std::cout << tmp[1] << ", ";
+			std::cout << tmp[2] << ", ";
+			std::cout << tmp[3] << std::endl;
+
+			tmp = matrice.scale(tmp, factor);
+			std::cout << "scale res = " << std::endl;
+			std::cout << tmp[0] << ", ";
+			std::cout << tmp[1] << ", ";
+			std::cout << tmp[2] << ", ";
+			std::cout << tmp[3] << std::endl;
+
 			new_vertex[3 * i] = tmp[0];
 			new_vertex[3 * i + 1] = tmp[1];
 			new_vertex[3 * i + 2] = tmp[2];
+			std::cout << "final res = " << std::endl;
 			std::cout << new_vertex[3 * i] << ", ";
-			std::cout << new_vertex[3 * i] << ", ";
-			std::cout << new_vertex[3 * i] << std::endl;
+			std::cout << new_vertex[3 * i + 1] << ", ";
+			std::cout << new_vertex[3 * i + 2] << std::endl;
 			i++;
 		}
 		if (angle == 360)
 			angle = 0;
-			else
+		else
 			angle++;
 		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * 27, new_vertex, GL_STATIC_DRAW);
 
