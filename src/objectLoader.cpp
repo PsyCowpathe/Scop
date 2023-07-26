@@ -100,12 +100,28 @@ int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> 
 		else if (line[0] == 'f' && line[1] == ' ')
 		{
 			unsigned int	vertex_index[3], uv_index[3], normal_index[3];
-			std::string	tmp = line.substr(2, line.length());
-			std::cout << tmp << std::endl;
-			int	pos = tmp.find(' ');
-			std::string	first = tmp.substr(0, pos);
-			std::cout << first << std::endl;
-			setArrays(first, vertex_index[0], uv_index[0], normal_index[0]);
+			int i = 0;
+			size_t last = 2; size_t next = 0;
+			while ((next = line.find(' ', last)) != std::string::npos)
+			{
+				std::string debug =  line.substr(last, next-last);
+				setArrays(debug, vertex_index[i], uv_index[i], normal_index[i]);
+				std::cout << "DEBUG" << debug << std::endl;
+				last = next + 1;
+				i++;
+			}
+			std::string	end = line.substr(last);
+			std::cout << "END" << end << std::endl;
+			setArrays(end, vertex_index[2], uv_index[2], normal_index[2]);
+			vertex_indices.push_back(vertex_index[0]);
+			vertex_indices.push_back(vertex_index[1]);
+			vertex_indices.push_back(vertex_index[2]);
+			uv_indices.push_back(uv_index[0]);
+			uv_indices.push_back(uv_index[1]);
+			uv_indices.push_back(uv_index[2]);
+			normal_indices.push_back(normal_index[0]);
+			normal_indices.push_back(normal_index[1]);
+			normal_indices.push_back(normal_index[2]);
 		}
 	}
 	std::cout << vertices.size() << std::endl;
