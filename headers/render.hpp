@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/24 20:19:04 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/26 19:01:20 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #include <math.h>
 #include <vector>
 #include "matrice.hpp"
+
+#include "pseudoVec3.hpp"
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
@@ -47,11 +49,14 @@ class render
 		int				glew_init();
 		void			create_vertex_array();
 
+		float			*make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces);
+
 	public :
 
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
 		~render();
-		void	draw_triangle(const GLfloat vertex_buffer[]);
+		//void	draw_triangle(const GLfloat vertex_buffer[]);
+		void	draw_triangle(std::vector<vec3>	vertices, std::vector<unsigned int>	faces);
 };
 
 #endif

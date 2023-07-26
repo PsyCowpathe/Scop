@@ -65,7 +65,7 @@ void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int 
 	return ;
 }
 
-int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> &uv, std::vector<vec3> &normals)
+int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> &uv, std::vector<vec3> &normals, std::vector<unsigned int> &faces)
 {
 	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
 	std::ifstream	file(path);
@@ -122,6 +122,9 @@ int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> 
 			normal_indices.push_back(normal_index[0]);
 			normal_indices.push_back(normal_index[1]);
 			normal_indices.push_back(normal_index[2]);
+			faces.push_back(vertex_index[0]);
+			faces.push_back(vertex_index[1]);
+			faces.push_back(vertex_index[2]);
 		}
 	}
 	std::cout << vertices.size() << std::endl;
