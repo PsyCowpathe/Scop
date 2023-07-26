@@ -1,19 +1,45 @@
 #include "../headers/loadObject.hpp"
+#include <iomanip>
 
-void	getInfo(std::string line)
+void	getInfo(std::string line, std::vector<vec3> &buffer)
 {
-	size_t last = 1; size_t next = 0;
+	std::string xyz[3];
+	vec3		test(0, 0, 0);
+	size_t i = 0;
+	size_t last = 2; size_t next = 0;
 	while ((next = line.find(' ', last)) != std::string::npos)
 	{
-
-		std::cout << line.substr(last, next-last) << std::endl;
+		xyz[i] =  line.substr(last, next-last);
+		test._v[i] = std::stof(xyz[i]);
+		std::cout << xyz[i] << std::endl;
 		last = next + 1;
+		i++;
 	}
-	std::cout << line.substr(last) << std::endl;
-	return ;
+	xyz[2] = line.substr(last);
+	test._v[2] = std::stof(xyz[2]);
+	buffer.push_back(test);
 }
 
-int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec3> &uv, std::vector<vec3> &normals)
+void	getUvInfo(std::string line, std::vector<vec2> &buffer)
+{
+	std::string xyz[2];
+	vec2		test(0, 0);
+	size_t i = 0;
+	size_t last = 2; size_t next = 0;
+	while ((next = line.find(' ', last)) != std::string::npos)
+	{
+		xyz[i] =  line.substr(last, next-last);
+		test._v[i] = std::stof(xyz[i]);
+		std::cout << xyz[i] << std::endl;
+		last = next + 1;
+		i++;
+	}
+	xyz[1] = line.substr(last);
+	test._v[1] = std::stof(xyz[1]);
+	buffer.push_back(test);
+}
+
+int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> &uv, std::vector<vec3> &normals)
 {
 	std::ifstream	file(path);
 
@@ -38,12 +64,15 @@ int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec3> 
 		// if (line[0] != '#')
 		// 	std::cout << line << std::endl;
 		if (line[0] == 'v' && line[1] == ' ')
-		{
-			getInfo(line);
-			// std::cout << getInfo(line) << std::endl;
-			// std::cout << line << std::endl;
-		}
+			getInfo(line, vertices);
+		else if (line[0] == 'v' && line[1] == 't' && line[2] == ' ')
+			getUvInfo(line, uv);
+		else if (line[0] == 'v' && line[1] == 'n' && line[2] == ' ')
+			getInfo(line, normals);
 	}
+	std::cout << vertices.size() << std::endl;
+	std::cout << uv.size() << std::endl;
+	std::cout << normals.size() << std::endl;
 	std::cout << "end" << std::endl;
 	return (0);
 }
