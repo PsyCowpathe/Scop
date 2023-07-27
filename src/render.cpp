@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 13:06:07 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 13:08:18 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,50 +160,50 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 
-			vertex[0] = mega_float[3 * i];
-			vertex[1] = mega_float[3 * i + 1];
-			vertex[2] = mega_float[3 * i + 2];
-			vertex[3] = 0;
-			std::cout << std::endl << "rotate before = " << std::endl;
-			std::cout << vertex[0] << ", ";
-			std::cout << vertex[1] << ", ";
-			std::cout << vertex[2] << std::endl;
+			// vertex[0] = mega_float[3 * i];
+			// vertex[1] = mega_float[3 * i + 1];
+			// vertex[2] = mega_float[3 * i + 2];
+			// vertex[3] = 0;
+			// std::cout << std::endl << "rotate before = " << std::endl;
+			// std::cout << vertex[0] << ", ";
+			// std::cout << vertex[1] << ", ";
+			// std::cout << vertex[2] << std::endl;
 
-			//tmp = matrice.rotate(vertex, angle, _rotate_axis);
-			/*std::cout << std::endl << "rotate res = " << std::endl;
-			std::cout << tmp[0] << ", ";
-			std::cout << tmp[1] << ", ";
-			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl;*/
+			// //tmp = matrice.rotate(vertex, angle, _rotate_axis);
+			// /*std::cout << std::endl << "rotate res = " << std::endl;
+			// std::cout << tmp[0] << ", ";
+			// std::cout << tmp[1] << ", ";
+			// std::cout << tmp[2] << ", ";
+			// std::cout << tmp[3] << std::endl;*/
 
-			/*tmp = matrice.translate(tmp, test);
-			  std::cout << "translate res = " << std::endl;
-			  std::cout << tmp[0] << ", ";
-			  std::cout << tmp[1] << ", ";
-			  std::cout << tmp[2] << ", ";
-			  std::cout << tmp[3] << std::endl;*/
+			// /*tmp = matrice.translate(tmp, test);
+			//   std::cout << "translate res = " << std::endl;
+			//   std::cout << tmp[0] << ", ";
+			//   std::cout << tmp[1] << ", ";
+			//   std::cout << tmp[2] << ", ";
+			//   std::cout << tmp[3] << std::endl;*/
 
-			/*tmp = matrice.scale(tmp, factor);
-			  std::cout << "scale res = " << std::endl;
-			  std::cout << tmp[0] << ", ";
-			  std::cout << tmp[1] << ", ";
-			  std::cout << tmp[2] << ", ";
-			  std::cout << tmp[3] << std::endl;*/
+			// /*tmp = matrice.scale(tmp, factor);
+			//   std::cout << "scale res = " << std::endl;
+			//   std::cout << tmp[0] << ", ";
+			//   std::cout << tmp[1] << ", ";
+			//   std::cout << tmp[2] << ", ";
+			//   std::cout << tmp[3] << std::endl;*/
 
-			/*new_vertex[3 * i] = tmp[0];
-			new_vertex[3 * i + 1] = tmp[1];
-			new_vertex[3 * i + 2] = tmp[2];*/
+			// /*new_vertex[3 * i] = tmp[0];
+			// new_vertex[3 * i + 1] = tmp[1];
+			// new_vertex[3 * i + 2] = tmp[2];*/
 
 
-			new_vertex[3 * i] = vertex[0];
-			new_vertex[3 * i + 1] = vertex[1];
-			new_vertex[3 * i + 2] = vertex[2];
+			// new_vertex[3 * i] = vertex[0];
+			// new_vertex[3 * i + 1] = vertex[1];
+			// new_vertex[3 * i + 2] = vertex[2];
 
-			std::cout << "final res = " << std::endl;
-			std::cout << new_vertex[3 * i] << ", ";
-			std::cout << new_vertex[3 * i + 1] << ", ";
-			std::cout << new_vertex[3 * i + 2] << std::endl;
-			i++;
+			// std::cout << "final res = " << std::endl;
+			// std::cout << new_vertex[3 * i] << ", ";
+			// std::cout << new_vertex[3 * i + 1] << ", ";
+			// std::cout << new_vertex[3 * i + 2] << std::endl;
+			// i++;
 		}
 		if (angle == 360)
 			angle = 0;

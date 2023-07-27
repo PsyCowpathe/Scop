@@ -59,7 +59,7 @@ void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int 
 {
 	try
 	{
-		int	next = 0, last = 0;
+		size_t	next = 0, last = 0;
 		bool	first = true;
 		while ((next = line.find('/', last)) != std::string::npos)
 		{
