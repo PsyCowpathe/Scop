@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 13:08:18 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 14:11:31 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,24 @@ render::~render()
 	glfwTerminate();
 }
 
+#include <iomanip>
 float	*render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
-	float	*result = new float[faces.size() * 3]; //dont forget delete[]
-	vec3	tmp(0, 0, 0);
-	int		i;
+	float	*result = new float[faces.size()]; //dont forget delete[]
+	size_t		i;
 
 	i = 0;
+	
 	while (i < faces.size())
 	{
 		// tmp = vertices[faces[i] - 1];
 		/*std::cout << "tessst" << std::endl;
 		std::cout << vertices[faces[i] - 1]._v[0];
 		std::cout << "==============" << std::endl;*/
-		result[3 * i] = tmp._v[0];
-		result[3 * i + 1] = tmp._v[1];
-		result[3 * i + 2] = tmp._v[2];
+		result[3 * i] = vertices[3 * (faces[i] - 1)];
+		result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
+		result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
+		std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
 
 		/*std::cout << std::endl << "mega float res = " << std::endl;
 		std::cout << result[3 * i] << ", ";
@@ -55,8 +57,17 @@ float	*render::make_mega_float(std::vector<float> vertices, std::vector<unsigned
 		std::cout << result[3 * i + 2] << std::endl;*/
 		i++;
 	}
-
-		exit(0);
+	i = 0;
+	std::cout << "[";
+	while(i < faces.size() * 3)
+	{
+		std::cout << std::fixed << std::setprecision(8) << result[i++];
+		if (i % 3 == 0)
+			std::cout << "]" << std::endl << "[";
+		else
+			std::cout << ", ";
+	}
+	std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
 	return (result);
 }
 
@@ -75,9 +86,9 @@ static void	getFps(int &frames, float &last_time)
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
 	float					angle = 0;
-	int		i;
+	size_t					i;
 	std::vector<float>		tmp;
-	std::vector<float>		ertex(4);
+	std::vector<float>		vertex(4);
 	float					*mega_float;
 	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
@@ -160,16 +171,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 
-			// vertex[0] = mega_float[3 * i];
-			// vertex[1] = mega_float[3 * i + 1];
-			// vertex[2] = mega_float[3 * i + 2];
-			// vertex[3] = 0;
+			vertex[0] = mega_float[3 * i];
+			vertex[1] = mega_float[3 * i + 1];
+			vertex[2] = mega_float[3 * i + 2];
+			vertex[3] = 0;
 			// std::cout << std::endl << "rotate before = " << std::endl;
 			// std::cout << vertex[0] << ", ";
 			// std::cout << vertex[1] << ", ";
 			// std::cout << vertex[2] << std::endl;
 
-			// //tmp = matrice.rotate(vertex, angle, _rotate_axis);
+			tmp = matrice.rotate(vertex, angle, _rotate_axis);
 			// /*std::cout << std::endl << "rotate res = " << std::endl;
 			// std::cout << tmp[0] << ", ";
 			// std::cout << tmp[1] << ", ";
@@ -209,7 +220,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			angle = 0;
 		else
 			angle++;
-		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 3), new_vertex, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size()), new_vertex, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -224,7 +235,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, faces.size());
 		glDisableVertexAttribArray(0);
 		//glDisableVertexAttribArray(1);
 		glUseProgram(programID);

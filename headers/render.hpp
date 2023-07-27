@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 12:23:06 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 13:26:40 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ class render
 		matrice			matrice;
 
 		//GLfloat			*_current_vertex;
-		const GLfloat	*_original_vertex;
+		// const GLfloat	*_original_vertex;
 
 		int				glfw_init();
 		void			set_hint(int aliasing, float openGL_min, float openGL_max);
