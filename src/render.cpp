@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 12:25:27 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 13:06:07 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,13 +60,28 @@ float	*render::make_mega_float(std::vector<float> vertices, std::vector<unsigned
 	return (result);
 }
 
+static void	getFps(int &frames, float &last_time)
+{
+	float	current_time = glfwGetTime();
+	frames++;
+	if (current_time - last_time >= 1.0)
+	{
+		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+		frames = 0;
+		last_time = glfwGetTime();
+	}
+}
+
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
 	float					angle = 0;
 	int		i;
-	std::vector<float>	tmp;
-	std::vector<float> 	vertex(4);
+	std::vector<float>		tmp;
+	std::vector<float>		ertex(4);
 	float					*mega_float;
+	int						frames = 0;
+	// TODO: disable fps before correc since using glfw function
+	float					last_time = glfwGetTime();
 
 	GLfloat 			new_vertex[faces.size() * 3];
 
@@ -125,6 +140,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	while (!glfwWindowShouldClose(_window))
 	{
+		getFps(frames, last_time);
 		glClearColor(0, 255, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		i = 0;
