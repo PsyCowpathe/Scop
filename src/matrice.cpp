@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/26 18:42:01 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 13:41:49 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,52 @@ matrice::~matrice()
 {
 
 }
+
+
+//=================================  PROJECTION  ==================================
+
+std::vector<float>		matrice::create_projection_matrice(float width, float height)
+{
+	float	ar = width / height;
+	float	znear = 1.0f;
+	float	zfar = 10.0f;
+	float	fov = 90;
+	float	zrange = znear - zfar;
+	float	proj[16] = {1 / (ar * tanf((fov / 2) * (M_PI / 180))), 0, 0, 0, 
+						0, 1 / (tanf((fov / 2) * M_PI / 180)), 0, 0,
+						0, 0, (-znear - zfar) / zrange, 2.0f * zfar * znear / zrange,
+						0, 0, 1, 0};
+	std::vector<float>	matrice(16, 0);
+	int					i;
+
+	i = 0;
+	while (i < 16)
+	{
+		matrice[i] = proj[i];
+		i++;
+	}
+	return (matrice);
+}
+
+std::vector<float>		matrice::project(std::vector<float> to_project, float width, float height)
+{
+	std::vector<float>	projected(4, 0);
+	std::vector<float>	matrice;
+	int					i;
+
+	if (to_project.size() != 4)
+		return (projected);
+	i = 0;
+	matrice = create_projection_matrice(width, height);
+	while (i < 4)
+	{
+		projected[i] = (matrice[4 * i] * to_project[0] + matrice[4 * i + 1] * to_project[1]
+				+ matrice[4 * i + 2] * to_project[2] + matrice[4 * i + 3] * to_project[3]);
+		i++;
+	}
+	return (projected);
+}
+
 
 //==================================  ROTATE  =====================================
 
