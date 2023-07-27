@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 14:14:16 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 14:21:21 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ render::~render()
 	glfwTerminate();
 }
 
+<<<<<<< HEAD
 float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
     float    *result = new float[faces.size()]; //dont forget delete[]
@@ -67,11 +68,11 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
 
 /*float	*render::make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces)
 {
-	float	*result = new float[faces.size() * 3]; //dont forget delete[]
-	vec3	tmp(0, 0, 0);
-	int		i;
+	float	*result = new float[faces.size()]; //dont forget delete[]
+	size_t		i;
 
 	i = 0;
+	
 	while (i < faces.size())
 	{
 		tmp = vertices[faces[i] - 1];
@@ -82,6 +83,32 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
 		std::cout << "x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
 		i++;
 	}
+		// tmp = vertices[faces[i] - 1];
+		std::cout << "tessst" << std::endl;
+		std::cout << vertices[faces[i] - 1]._v[0];
+		std::cout << "==============" << std::endl;
+		result[3 * i] = vertices[3 * (faces[i] - 1)];
+		result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
+		result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
+		std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
+
+		std::cout << std::endl << "mega float res = " << std::endl;
+		std::cout << result[3 * i] << ", ";
+		std::cout << result[3 * i + 1] << ", ";
+		std::cout << result[3 * i + 2] << std::endl;
+		i++;
+	}
+	i = 0;
+	std::cout << "[";
+	while(i < faces.size() * 3)
+	{
+		std::cout << std::fixed << std::setprecision(8) << result[i++];
+		if (i % 3 == 0)
+			std::cout << "]" << std::endl << "[";
+		else
+			std::cout << ", ";
+	}
+	std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
 	return (result);
 }*/
 
@@ -107,13 +134,28 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
 	return (mega_float);
 }*/
 
+static void	getFps(int &frames, float &last_time)
+{
+	float	current_time = glfwGetTime();
+	frames++;
+	if (current_time - last_time >= 1.0)
+	{
+		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+		frames = 0;
+		last_time = glfwGetTime();
+	}
+}
+
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
 	float					angle = 0;
-	int		i;
-	std::vector<float>	tmp;
-	std::vector<float> 	vertex(4);
+	size_t					i;
+	std::vector<float>		tmp;
+	std::vector<float>		vertex(4);
 	float					*mega_float;
+	int						frames = 0;
+	// TODO: disable fps before correc since using glfw function
+	float					last_time = glfwGetTime();
 
 	GLfloat 			new_vertex[faces.size() * 3];
 
@@ -199,6 +241,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	while (!glfwWindowShouldClose(_window))
 	{
+		getFps(frames, last_time);
 		glClearColor(0, 255, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		i = 0;
@@ -220,7 +263,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			vertex[1] = mega_float[3 * i + 1];
 			vertex[2] = mega_float[3 * i + 2];
 			vertex[3] = 0;
-
 
 			/*std::cout << std::endl << "rotate before = " << std::endl;
 			std::cout << vertex[0] << ", ";
@@ -272,7 +314,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			angle = 0;
 		else
 			angle++;
-		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 3), new_vertex, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size()), new_vertex, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
