@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 14:36:19 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 19:43:36 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -263,6 +263,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			tmp = matrice.rotate(vertex, angle, _rotate_axis);
 
 			//tmp = matrice.translate(vertex, test);
+
+			tmp = matrice.view(tmp, _pitch, _yaw); 
 
 			tmp = matrice.project(tmp, _width, _height); 
 

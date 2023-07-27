@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 14:43:37 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 15:05:16 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int		main(void)
 	std::vector<float>	uv;
 	std::vector<float>	normals;
 	std::vector<unsigned int>	faces;
-	loadObject("objects/teapot.obj", vertices, uv, normals, faces);
+	loadObject("objects/cube.obj", vertices, uv, normals, faces);
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !");
 	/*static const GLfloat vertex_buffer[] =
 	{

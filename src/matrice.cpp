@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 13:41:49 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 19:44:51 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,11 +31,13 @@ std::vector<float>		matrice::create_projection_matrice(float width, float height
 	float	znear = 1.0f;
 	float	zfar = 10.0f;
 	float	fov = 90;
+	float	alfFovRad = (90 / 2) * (M_PI / 180);
 	float	zrange = znear - zfar;
-	float	proj[16] = {1 / (ar * tanf((fov / 2) * (M_PI / 180))), 0, 0, 0, 
-						0, 1 / (tanf((fov / 2) * M_PI / 180)), 0, 0,
+	float	proj[16] = {1 / (ar * tanf(alfFovRad)), 0, 0, 0, 
+						0, 1 / tanf(alfFovRad), 0, 0,
 						0, 0, (-znear - zfar) / zrange, 2.0f * zfar * znear / zrange,
 						0, 0, 1, 0};
+	std::cout << "proj = " << proj[0] << std::endl;
 	std::vector<float>	matrice(16, 0);
 	int					i;
 
@@ -65,6 +67,77 @@ std::vector<float>		matrice::project(std::vector<float> to_project, float width,
 		i++;
 	}
 	return (projected);
+}
+
+
+//==================================  VIEW  ======================================
+
+std::vector<float>		matrice::normalize(std::vector<float> v)
+{
+	float	norm;
+
+	norm = sqrtf((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2]));
+	v[0] /= norm;
+	v[1] /= norm;
+	v[2] /= norm;
+	return (v);
+}
+
+std::vector<float>		matrice::create_view_matrice(int pitch, int yaw)
+{
+	std::vector<float> 	dir(3, 0);
+	std::vector<float> 	right(3, 0);
+	std::vector<float> 	up(3, 0);
+	
+	dir[0] = cosf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
+    dir[1] = sinf(pitch * (M_PI / 180));
+    dir[2] = sinf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
+	dir = normalize(dir);
+
+	right[0] = cosf(yaw * (M_PI / 180)) - (M_PI / 2.0);
+	right[1] = 0.0;
+	right[2] = sinf(yaw * (M_PI / 180)) - (M_PI / 2.0);
+	right = normalize(right);
+
+	up[0] = dir[1] * right[2] - dir[2] * right[1];
+	up[1] = dir[2] * right[0] - dir[0] * right[2];
+	up[2] = dir[0] * right[1] - dir[1] * right[0];
+	up = normalize(up);
+
+	float	view[16] = {right[0], right[1], right[2], 0,
+							up[0], up[1], up[2], 0,
+							dir[0], dir[1], dir[2], 0,
+							0, 0, 0, 1};
+	std::vector<float>	matrice(16, 0);
+	int					i;
+
+	i = 0;
+	while (i < 16)
+	{
+		matrice[i] = view[i];
+		i++;
+	}
+	return (matrice);
+}
+
+std::vector<float>		matrice::view(std::vector<float> to_view, int pitch, int yaw)
+{
+	std::vector<float>	viewed(4, 0);
+	std::vector<float>	matrice;
+	int					i;
+
+	if (to_view.size() != 4)
+		return (viewed);
+	i = 0;
+	matrice = create_view_matrice(pitch, yaw);
+	while (i < 4)
+	{
+		viewed[i] = (matrice[4 * i] * to_view[0] + matrice[4 * i + 1] * to_view[1]
+				+ matrice[4 * i + 2] * to_view[2] + matrice[4 * i + 3] * to_view[3]);
+		i++;
+	}
+	return (viewed);
+
 }
 
 
