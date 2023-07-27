@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/26 19:55:18 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 12:22:57 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ render::~render()
 	glfwTerminate();
 }
 
-float	*render::make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces)
+float	*render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
 	float	*result = new float[faces.size() * 3]; //dont forget delete[]
 	vec3	tmp(0, 0, 0);
@@ -60,7 +60,7 @@ float	*render::make_mega_float(std::vector<vec3> vertices, std::vector<unsigned 
 	return (result);
 }
 
-void	render::draw_triangle(std::vector<vec3> vertices, std::vector<unsigned int> faces)
+void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
 	float					angle = 0;
 	int		i;

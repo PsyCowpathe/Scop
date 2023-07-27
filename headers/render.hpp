@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   render.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/26 19:01:20 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 12:23:06 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,14 @@ class render
 		int				glew_init();
 		void			create_vertex_array();
 
-		float			*make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces);
+		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
 
 	public :
 
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
 		~render();
 		//void	draw_triangle(const GLfloat vertex_buffer[]);
-		void	draw_triangle(std::vector<vec3>	vertices, std::vector<unsigned int>	faces);
+		void	draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);
 };
 
 #endif

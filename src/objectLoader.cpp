@@ -1,43 +1,40 @@
 #include "../headers/loadObject.hpp"
 #include <iomanip>
 
-void	getInfo(std::string line, std::vector<vec3> &buffer, int ignore)
+// TODO: add error check
+static void	getInfo(std::string line, std::vector<float> &buffer, int ignore)
 {
 	std::string xyz[3];
-	vec3		test(0, 0, 0);
 	size_t i = 0;
 	size_t last = ignore; size_t next = 0;
 	while ((next = line.find(' ', last)) != std::string::npos)
 	{
 		xyz[i] =  line.substr(last, next-last);
-		test._v[i] = std::stof(xyz[i]);
+		buffer.push_back(std::stof(xyz[i]));
 		// std::cout << xyz[i] << std::endl;
 		last = next + 1;
 		i++;
 	}
 	xyz[2] = line.substr(last);
-	test._v[2] = std::stof(xyz[2]);
-	buffer.push_back(test);
+	buffer.push_back(std::stof(xyz[2]));
 }
 
-void	getUvInfo(std::string line, std::vector<vec2> &buffer)
+static void	getUvInfo(std::string line, std::vector<float> &buffer)
 {
 	std::cout << "getting uv info" << std::endl;
 	std::string xyz[2];
-	vec2		test(0, 0);
 	size_t i = 0;
 	size_t last = 3; size_t next = 0;
 	while ((next = line.find(' ', last)) != std::string::npos)
 	{
 		xyz[i] =  line.substr(last, next-last);
-		test._v[i] = std::stof(xyz[i]);
+		buffer.push_back(std::stof(xyz[i]));
 		// std::cout << xyz[i] << std::endl;
 		last = next + 1;
 		i++;
 	}
 	xyz[1] = line.substr(last);
-	test._v[1] = std::stof(xyz[1]);
-	buffer.push_back(test);
+	buffer.push_back(std::stof(xyz[1]));
 }
 
 void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n)
@@ -65,7 +62,7 @@ void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int 
 	return ;
 }
 
-int	loadObject(const char *path, std::vector<vec3> &vertices, std::vector<vec2> &uv, std::vector<vec3> &normals, std::vector<unsigned int> &faces)
+int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
 {
 	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
 	std::ifstream	file(path);
