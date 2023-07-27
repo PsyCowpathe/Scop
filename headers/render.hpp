@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/26 19:01:20 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 14:14:21 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,13 +33,15 @@ class render
 		GLuint			_vertexBuffer;
 		char			_rotate_axis = 'x';
 		matrice			matrice;
+		int				_width;
+		int				_height;
 
 		//GLfloat			*_current_vertex;
 		const GLfloat	*_original_vertex;
 
 		int				glfw_init();
 		void			set_hint(int aliasing, float openGL_min, float openGL_max);
-		int				create_window(int width, int height, std::string name);
+		int				create_window(std::string name);
 		void			clear();
 		void			set_callback();
 		void			set_context();
@@ -49,14 +51,15 @@ class render
 		int				glew_init();
 		void			create_vertex_array();
 
-		float			*make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces);
+		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
+		float			*make_perspective(float *mega_float, int size);
 
 	public :
 
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
 		~render();
 		//void	draw_triangle(const GLfloat vertex_buffer[]);
-		void	draw_triangle(std::vector<vec3>	vertices, std::vector<unsigned int>	faces);
+		void	draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);
 };
 
 #endif
