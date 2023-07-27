@@ -91,7 +91,65 @@ void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int 
 static void	parsingError(std::string line, size_t ln)
 {
 	std::cout << "wrong format at line " << ln << " : [" << line << "]" << std::endl;
-	exit(0);
+	exit(-1);
+}
+
+static void	handleSlash(std::string line, std::vector<unsigned int> &vertex_indices, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
+{
+	unsigned int	vertex_index[3], uv_index[3], normal_index[3];
+	int i = 0;
+	size_t last = 2; size_t next = 0;
+	std::cout << "contains slash" << std::endl;
+	while ((next = line.find(' ', last)) != std::string::npos)
+	{
+		std::string debug =  line.substr(last, next-last);
+		setArrays(debug, vertex_index[i], uv_index[i], normal_index[i]);
+		std::cout << "DEBUG" << debug << std::endl;
+		last = next + 1;
+		i++;
+	}
+	std::string	end = line.substr(last);
+	std::cout << "END" << end << std::endl;
+	setArrays(end, vertex_index[2], uv_index[2], normal_index[2]);
+	vertex_indices.push_back(vertex_index[0]);
+	vertex_indices.push_back(vertex_index[1]);
+	vertex_indices.push_back(vertex_index[2]);
+	uv_indices.push_back(uv_index[0]);
+	uv_indices.push_back(uv_index[1]);
+	uv_indices.push_back(uv_index[2]);
+	normal_indices.push_back(normal_index[0]);
+	normal_indices.push_back(normal_index[1]);
+	normal_indices.push_back(normal_index[2]);
+	faces.push_back(vertex_index[0]);
+	faces.push_back(vertex_index[1]);
+	faces.push_back(vertex_index[2]);
+}
+
+static void	handleSpaces(std::string line, std::vector<unsigned int> vertex_indices)
+{
+	size_t last = 2; size_t next = 0;
+	try
+	{
+		while((next = line.find(' ', last)) != std::string::npos)
+		{
+			std::string	debug = line.substr(last, next-last);
+			std::cout << "DEBUG" << debug << std::endl;
+			last = next + 1;
+			vertex_indices.push_back(std::stoi(debug));
+		}
+		std::string	debug = line.substr(last);
+		vertex_indices.push_back(std::stoi(debug));
+		size_t	t = 0;
+		while (t < vertex_indices.size())
+		{
+			std::cout << "Vector = " << vertex_indices[t] << std::endl;
+			t++;
+		}
+	}
+	catch(std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+	}
 }
 
 int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
@@ -103,23 +161,21 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 	if (!file.is_open())
 	{
 		std::cout << "couldn't read file at path: " << path << "are you sure the file exists?" << std::endl;
-
 		return (-1);
 	}
 	std::string	line;
-	std::string	header;
-	std::getline(file, header);
-	if (header[0] == '#')
-		std::cout << "[" << header << "]" << std::endl;
-	else
-	{
-		file.clear();
-		file.seekg(0);
-	}
+	// std::string	header;
+	// std::getline(file, header);
+	// if (header[0] == '#')
+	// 	std::cout << "[" << header << "]" << std::endl;
+	// else
+	// {
+	// 	file.clear();
+	// 	file.seekg(0);
+	// }
 	while (std::getline(file, line))
 	{
 		ln++;
-		std::cout << line << std::endl;
 		if (line[0] == 'v' && line[1] == ' ')
 			getInfo(line, vertices, 2);
 		else if (line[0] == 'v' && line[1] == 't')
@@ -141,34 +197,12 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 		{
 			if (line[1] != ' ')
 				parsingError(line, ln);
-			unsigned int	vertex_index[3], uv_index[3], normal_index[3];
-			int i = 0;
-			size_t last = 2; size_t next = 0;
-			while ((next = line.find(' ', last)) != std::string::npos)
-			{
-				std::string debug =  line.substr(last, next-last);
-				setArrays(debug, vertex_index[i], uv_index[i], normal_index[i]);
-				std::cout << "DEBUG" << debug << std::endl;
-				last = next + 1;
-				i++;
-			}
-			std::string	end = line.substr(last);
-			std::cout << "END" << end << std::endl;
-			setArrays(end, vertex_index[2], uv_index[2], normal_index[2]);
-			vertex_indices.push_back(vertex_index[0]);
-			vertex_indices.push_back(vertex_index[1]);
-			vertex_indices.push_back(vertex_index[2]);
-			uv_indices.push_back(uv_index[0]);
-			uv_indices.push_back(uv_index[1]);
-			uv_indices.push_back(uv_index[2]);
-			normal_indices.push_back(normal_index[0]);
-			normal_indices.push_back(normal_index[1]);
-			normal_indices.push_back(normal_index[2]);
-			faces.push_back(vertex_index[0]);
-			faces.push_back(vertex_index[1]);
-			faces.push_back(vertex_index[2]);
+			if (line.find('/') != std::string::npos)
+				handleSlash(line, vertex_indices, uv_indices, normal_indices, faces);
+			else if (line.find(' ', 3) != std::string::npos)
+				handleSpaces(line, vertex_indices);
 		}
-		else if (line[0] != '#')
+		else if (line[0] != '#' && line[0])
 			parsingError(line, ln);
 	}
 	std::cout << vertices.size() << std::endl;
