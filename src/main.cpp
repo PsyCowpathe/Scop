@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 12:22:08 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 12:27:24 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,6 @@ int		main(void)
 		1.0f, -1.0f, 0.0f,
 		-1.0f, -1.0f, 0.0f,
 	};*/
-	test.draw_triangle(vertices, faces);
+	// test.draw_triangle(vertices, faces);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 12:22:57 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/27 12:25:27 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ float	*render::make_mega_float(std::vector<float> vertices, std::vector<unsigned
 	i = 0;
 	while (i < faces.size())
 	{
-		tmp = vertices[faces[i] - 1];
+		// tmp = vertices[faces[i] - 1];
 		/*std::cout << "tessst" << std::endl;
 		std::cout << vertices[faces[i] - 1]._v[0];
 		std::cout << "==============" << std::endl;*/

@@ -1,6 +1,6 @@
 # Blender3D v249 OBJ File: untitled.blend
 # www.blender3d.org
-mtllib cube.mtl
+# mtllib cube.mtl
 v 0.500000 -0.500000 -0.500000
 v 0.5000000 -0.500000 0.500000
 v -0.5000000 -0.5000000 0.5000000
@@ -31,8 +31,8 @@ vn 1.000000 -0.000000 0.000000
 vn 1.000000 0.000000 0.000001
 vn 0.000000 1.000000 -0.000000
 vn -0.000000 -1.000000 0.000000
-usemtl Material_ray.png
-s off
+# usemtl Material_ray.png
+# s off
 f 5/1/1 1/2/1 4/3/1
 f 5/1/1 4/3/1 8/4/1
 f 3/5/2 7/6/2 8/7/2
