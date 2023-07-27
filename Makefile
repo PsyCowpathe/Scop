@@ -1,5 +1,5 @@
 CC= clang++
-CFLAGS=  -Wall -Wextra -Werror -std=c++17 -O2
+CFLAGS=  -Wall -Wextra -Werror -std=c++17
 LDFLAGS=  -lGL -lGLU -lGLEW -lglfw
 MAKEFLAGS += --no-print-directory -j
 

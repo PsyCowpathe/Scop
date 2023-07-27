@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 14:21:21 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 14:36:19 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,32 +36,20 @@ render::~render()
 	glfwTerminate();
 }
 
-<<<<<<< HEAD
 float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
-    float    *result = new float[faces.size()]; //dont forget delete[]
-    size_t        i;
+    float    *result = new float[faces.size() * 3]; //dont forget delete[]
+    size_t   i;
 
     i = 0;
-
     while (i < faces.size())
     {
-        // tmp = vertices[faces[i] - 1];
-        /*std::cout << "tessst" << std::endl;
-        std::cout << vertices[faces[i] - 1]._v[0];
-        std::cout << "==============" << std::endl;*/
         result[3 * i] = vertices[3 * (faces[i] - 1)];
         result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
         result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
         std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
-
-        /*std::cout << std::endl << "mega float res = " << std::endl;
-        std::cout << result[3 * i] << ", ";
-        std::cout << result[3 * i + 1] << ", ";
-        std::cout << result[3 * i + 2] << std::endl;*/
         i++;
     }
-    i = 0;
     std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
     return (result);
 }
@@ -237,6 +225,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 
 	mega_float = make_mega_float(vertices, faces);
+	std::cout << "tt" << std::endl;
 	//mega_float = make_perspective(mega_float, faces.size());
 
 	while (!glfwWindowShouldClose(_window))
@@ -247,7 +236,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		i = 0;
 		while (i < faces.size())
 		{
-			std::vector<float>	test(4, 0);
+			/*std::vector<float>	test(4, 0);
 			test[0] = 0 + (angle / 1000);
 			test[1] = (0);
 			test[2] = (0);
@@ -257,7 +246,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			factor[0] = 1;
 			factor[1] = 1;
 			factor[2] = 1 - (angle / 100);
-			factor[3] = 1;
+			factor[3] = 1;*/
 
 			vertex[0] = mega_float[3 * i];
 			vertex[1] = mega_float[3 * i + 1];
@@ -314,7 +303,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			angle = 0;
 		else
 			angle++;
-		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size()), new_vertex, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 3), new_vertex, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -329,7 +318,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, faces.size());
+		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3);
 		glDisableVertexAttribArray(0);
 		//glDisableVertexAttribArray(1);
 		glUseProgram(programID);
