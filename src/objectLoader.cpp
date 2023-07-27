@@ -88,9 +88,9 @@ void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int 
 	return ;
 }
 
-static void	parsingError(std::string line)
+static void	parsingError(std::string line, size_t ln)
 {
-	std::cout << "wrong format at: [" << line << "]" << std::endl;
+	std::cout << "wrong format at line " << ln << " : [" << line << "]" << std::endl;
 	exit(0);
 }
 
@@ -98,6 +98,7 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 {
 	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
 	std::ifstream	file(path);
+	size_t	ln = 0;
 
 	if (!file.is_open())
 	{
@@ -117,6 +118,7 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 	}
 	while (std::getline(file, line))
 	{
+		ln++;
 		std::cout << line << std::endl;
 		if (line[0] == 'v' && line[1] == ' ')
 			getInfo(line, vertices, 2);
@@ -126,19 +128,19 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 			if (line[2] == ' ')
 				getUvInfo(line, uv);
 			else
-				parsingError(line);
+				parsingError(line, ln);
 		}
 		else if (line[0] == 'v' && line[1] == 'n')
 		{
 			if (line[2] == ' ')
 				getInfo(line, normals, 3);
 			else
-				parsingError(line);
+				parsingError(line, ln);
 		}
 		else if (line[0] == 'f')
 		{
 			if (line[1] != ' ')
-				parsingError(line);
+				parsingError(line, ln);
 			unsigned int	vertex_index[3], uv_index[3], normal_index[3];
 			int i = 0;
 			size_t last = 2; size_t next = 0;
@@ -167,7 +169,7 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 			faces.push_back(vertex_index[2]);
 		}
 		else if (line[0] != '#')
-			parsingError(line);
+			parsingError(line, ln);
 	}
 	std::cout << vertices.size() << std::endl;
 	std::cout << uv.size() << std::endl;
