@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 14:21:55 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/27 18:49:27 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ class render
 		matrice			matrice;
 		int				_width;
 		int				_height;
+		int				_pitch = 0;
+		int				_yaw = -90;
 
 		//GLfloat			*_current_vertex;
 		// const GLfloat	*_original_vertex;
