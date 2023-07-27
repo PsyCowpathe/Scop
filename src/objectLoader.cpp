@@ -94,6 +94,8 @@ static void	parsingError(std::string line, size_t ln)
 	exit(-1);
 }
 
+// Parses faces info if there are only spaces
+
 static void	handleSlash(std::string line, std::vector<unsigned int> &vertex_indices, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
 {
 	unsigned int	vertex_index[3], uv_index[3], normal_index[3];
@@ -125,6 +127,9 @@ static void	handleSlash(std::string line, std::vector<unsigned int> &vertex_indi
 	faces.push_back(vertex_index[2]);
 }
 
+
+// Parses faces info if there are only spaces
+
 static void	handleSpaces(std::string line, std::vector<unsigned int> vertex_indices)
 {
 	size_t last = 2; size_t next = 0;
@@ -152,6 +157,11 @@ static void	handleSpaces(std::string line, std::vector<unsigned int> vertex_indi
 	}
 }
 
+// PARSING
+// Parses the obj file and store infos to vectors
+// Currently handles v, vt, vf, f
+// TODO: add support for texture, s(?) and mat(?)
+
 int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
 {
 	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
@@ -161,18 +171,9 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 	if (!file.is_open())
 	{
 		std::cout << "couldn't read file at path: " << path << "are you sure the file exists?" << std::endl;
-		return (-1);
+		exit(-1);
 	}
 	std::string	line;
-	// std::string	header;
-	// std::getline(file, header);
-	// if (header[0] == '#')
-	// 	std::cout << "[" << header << "]" << std::endl;
-	// else
-	// {
-	// 	file.clear();
-	// 	file.seekg(0);
-	// }
 	while (std::getline(file, line))
 	{
 		ln++;
