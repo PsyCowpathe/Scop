@@ -1,6 +1,7 @@
 #version 330 core
 
-// layout (location = index where vertex begin in the Vertex Attrib Pointer ?)
+// layout (location = index where vertex begin in the array sent by glVertexAttribPointer() )
+
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
 void    main()

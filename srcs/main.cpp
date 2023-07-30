@@ -17,10 +17,14 @@ void    initGlfw()
     if (!glfwInit())
     {
         // Initialization failed
+        // fprintf(stderr, "Failed to initialize Glfw\n");
+        std::cout << "Failed to initialize Glfw\n" << std::endl;
+        exit(-1);
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // following flags must fit shader's 1st line info 
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
@@ -28,24 +32,26 @@ int	initGlew()
 {
     glewExperimental=true; // Needed in core profile
     if (glewInit() != GLEW_OK) {
-        fprintf(stderr, "Failed to initialize GLEW\n");
-        return (-1);
+        std::cout << "Failed to initialize GLEW\n" << std::endl;
+        // fprintf(stderr, "Failed to initialize GLEW\n");
+        exit(-1);
+        // return (-1);
     }
 	return(0);
 }
 
-int    vao()
+int    createVao()
 {  
     GLuint VertexArrayID;
     glEnableVertexAttribArray(0);
     glGenVertexArrays(1, &VertexArrayID);
 
-	// Specifying that this is the Vertex array we're gonna use
+	// Specifying that this is the Vertex array we're gonna implicity use throughout the program from now on
     glBindVertexArray(VertexArrayID);
     return (1);
 }
 
-GLuint	triangle(GLuint* vertexbuffer)
+GLuint	triangleVertexCreate(GLuint* vertexbuffer)
 {
     // An array of 3 vectors which represents 3 vertices
     static const GLfloat g_vertex_buffer_data[] = {
@@ -69,7 +75,7 @@ GLuint	triangle(GLuint* vertexbuffer)
     return(*vertexbuffer);
 }
 
-void    drawTriangle(GLuint* vertexbuffer)
+void    sendVAO(GLuint* vertexbuffer)
 {
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
@@ -83,11 +89,14 @@ void    drawTriangle(GLuint* vertexbuffer)
        (void*)0            // array buffer offset
     );
 
-    // Draw the triangle !
+    // "Wireframe" mode :)
+    // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+
+    // Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
     glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-    // glDrawArrays(GL_LINES, 0, 1);
-	// glDrawArrays(GL_LINES, 2, 3);
-	// glDrawArrays(GL_LINES, 0, 3);
+    // same as : 
+    // glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
     glDisableVertexAttribArray(0);
 }
 
@@ -97,9 +106,10 @@ GLFWwindow*    openWindow()
     GLFWwindow* window = glfwCreateWindow(640, 480, "TRUITE", NULL, NULL);
     if (!window)
     {
-        // Window or OpenGL context creation failed
+        std::cout << "Window or OpenGL context creation failed" << std::endl;
         glfwTerminate();
-        return (window);
+        exit(-1);
+        // return (window);
     }
 
     glfwMakeContextCurrent(window); 
@@ -136,12 +146,12 @@ int main()
 
     initGlew();
 
-	// Init VAO/VBO with our vertex data
-	vao();
+	// creato VAO to store vertex data
+	createVao();
 
     // This will identify our vertex buffer
     GLuint vertexbuffer;
-    triangle(&vertexbuffer);
+    triangleVertexCreate(&vertexbuffer);
 
     // Create and compile our GLSL program from the shader
     GLuint programID = loadShaders("./shader/vert.vert", "./shader/frag.frag");
@@ -164,21 +174,20 @@ int main()
         // TEST : tring to rotate triangle placed in vertexbuffer here
         //transformTriangle(&vertexbuffer);
 
-        drawTriangle(&vertexbuffer);
+        sendVAO(&vertexbuffer);
 
 
-        // use our shader to ACTUALLY draw the triangle we defined ! But do we have to do it in each loop ?.. Not sure.
-        glUseProgram(programID);
+        // Indicate which shader to use later to draw the triangle we defined ! We don't have to do it in each loop though.
+        //glUseProgram(programID);
         
         // Keep watching for inputs until a closing window input occurs :
         glfwPollEvents();
-
+        glfwSetWindowUserPointer(window, NULL);
         // Swap buffers to display the result of all the above code in the loop
         glfwSwapBuffers(window);
     }
 
-    //glfwDestroyWindow(window);
-    //glfwTerminate();
-    std::cout << "HARICOT" << std::endl;
+    glfwDestroyWindow(window);
+    glfwTerminate();
     return (1);
 }

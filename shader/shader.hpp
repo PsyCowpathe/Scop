@@ -12,6 +12,8 @@
 #pragma once
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <X11/X.h>
+#include <X11/Xlib.h>
 
 class Shader
 {
