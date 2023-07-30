@@ -4,8 +4,8 @@ Scop : a C++ program which can open & visualize 3D .obj files.
 
 ## Description
 
-This version is still very basic, no matrices, thus no transfomations.
-No .obj support.
+This version is a merge attempt between master and my still very basic, no matrices, thus no transfomations. No .obj support. version !
+(No they don't really "work together" for now but at least conflicts are resolved)
 
 ## Getting Started
 
@@ -42,9 +42,18 @@ make
 ## Help for use on Windows/wsl
 Works on Win10, WSL2, GeForce GTX 950.
 
-### If program segfaults at exit
-* First, update your GPU drivers, (or check for compatibility with the Linux distro https://docs.nvidia.com/cuda/wsl-user-guide/index.html#nvidia-compute-software-support-on-wsl-2)
-* Maybe installing mesa helped ? (I also enabled systemd in WSL as suggested here : https://docs.nvidia.com/cuda/wsl-user-guide/index.html#nvidia-compute-software-support-on-wsl-2)
+### If program segfaults at exit and/or glxinfo -B segfaults or gives errors
+* First, update your GPU drivers
+* Follow this : https://gist.github.com/Mluckydwyer/8df7782b1a6a040e5d01305222149f3c
+  Installing mesa, etc.
+  ```
+  apt install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev
+  ```
+  and then setting up a window server if needed (win10)
+* I also enabled systemd in WSL https://devblogs.microsoft.com/commandline/systemd-support-is-now-available-in-wsl/
+
+If none of the above worked :
+* Reboot wsl (wsl --shutdown in a windows terminal) and/or your PC.
 * Try a good old :
 ```
 sudo apt upgrade
