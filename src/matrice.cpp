@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/31 17:51:45 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/31 18:05:31 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ std::vector<float>	matrice::cross(std::vector<float> v1, std::vector<float> v2)
 		v1[2] * v2[0] - v1[0] * v2[2],
 		v1[0] * v2[1] - v1[1] * v2[0]
 	};
+	return (res);
 }
 
 float	matrice::dot(std::vector<float> v1, std::vector<float> v2)
@@ -88,7 +89,7 @@ std::vector<float>		matrice::create_projection_matrice(float width, float height
 	float	ar = width / height;
 	float	znear = 1.0f;
 	float	zfar = 10.0f;
-	float	fov = 90;
+	// float	fov = 90;
 	float	alfFovRad = (90 / 2) * (M_PI / 180);
 	float	zrange = znear - zfar;
 	float	proj[16] = {1 / (ar * tanf(alfFovRad)), 0, 0, 0, 

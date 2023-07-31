@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/31 18:04:09 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/07/31 18:30:24 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,23 +138,21 @@ static void	getFps(int &frames, float &last_time)
 
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
-	float					angle = 0;
-	size_t					i;
+	(void)vertices;
+	// float					angle = 0;
+	// size_t					i;
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
-	float					*mega_float;
+	// float					*mega_float;
 	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
 	float					last_time = glfwGetTime();
 
-	GLfloat 			new_vertex[faces.size() * 3];
+	// GLfloat 			new_vertex[faces.size() * 3];
 
 	//_original_vertex = vertex_buffer;
 	//_current_vertex = static_cast<float *>(_original_vertex);
 	create_vertex_array();
-	//glGenBuffers(1, &_vertexBuffer);
-	//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -163,68 +161,68 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
 
-	static const GLfloat color_buffer[] =
-	{
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-	};
+	// static const GLfloat color_buffer[] =
+	// {
+	// 	0.0f, 0.0f, 0.0f,
+	// 	1.0f, 1.0f, 1.0f,
+	// 	1.0f, 0.0f, 0.0f,
+	// 	0.0f, 0.0f, 1.0f,
+	// 	0.5f, 0.0f, 0.5f,
+	// 	0.0f, 0.2f, 0.3f,
+	// 	0.2f, 0.3f, 0.0f,
+	// 	0.8f, 0.6f, 0.4f,
+	// 	0.9f, 0.1f, 0.5f,
+	// 	0.0f, 0.0f, 0.0f,
+	// 	1.0f, 1.0f, 1.0f,
+	// 	1.0f, 0.0f, 0.0f,
+	// 	0.0f, 0.0f, 1.0f,
+	// 	0.5f, 0.0f, 0.5f,
+	// 	0.0f, 0.2f, 0.3f,
+	// 	0.2f, 0.3f, 0.0f,
+	// 	0.8f, 0.6f, 0.4f,
+	// 	0.9f, 0.1f, 0.5f,
+	// 	0.0f, 0.0f, 0.0f,
+	// 	1.0f, 1.0f, 1.0f,
+	// 	1.0f, 0.0f, 0.0f,
+	// 	0.0f, 0.0f, 1.0f,
+	// 	0.5f, 0.0f, 0.5f,
+	// 	0.0f, 0.2f, 0.3f,
+	// 	0.2f, 0.3f, 0.0f,
+	// 	0.8f, 0.6f, 0.4f,
+	// 	0.9f, 0.1f, 0.5f,
+	// 	0.0f, 0.0f, 0.0f,
+	// 	1.0f, 1.0f, 1.0f,
+	// 	1.0f, 0.0f, 0.0f,
+	// 	0.0f, 0.0f, 1.0f,
+	// 	0.5f, 0.0f, 0.5f,
+	// 	0.0f, 0.2f, 0.3f,
+	// 	0.2f, 0.3f, 0.0f,
+	// 	0.8f, 0.6f, 0.4f,
+	// 	0.9f, 0.1f, 0.5f,
+	// };
 
 
-	GLuint	colorbuffer;
+	// GLuint	colorbuffer;
 
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
+	// glGenBuffers(1, &colorbuffer);
+	// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
 
 
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glVertexAttribPointer
-		(
-		 1,
-		 3,
-		 GL_FLOAT,
-		 GL_FALSE,
-		 0,
-		 (void*)0
-		);
+	// glEnableVertexAttribArray(1);
+	// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	// glVertexAttribPointer
+	// 	(
+	// 	 1,
+	// 	 3,
+	// 	 GL_FLOAT,
+	// 	 GL_FALSE,
+	// 	 0,
+	// 	 (void*)0
+	// 	);
 
-	glGenBuffers(1, &_vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	// glGenBuffers(1, &_vertexBuffer);
+	// glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 
 	std::vector<float>	proj = matrice.perspective(90, _width / _height, 1, 10);
 
@@ -239,7 +237,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f
 	};
-	mega_float = make_mega_float(vertices, faces);
+
+	static const GLfloat g_vertex_buffer_data[] = { 
+		-1.0f, -1.0f, 0.0f,
+		 1.0f, -1.0f, 0.0f,
+		 0.0f,  1.0f, 0.0f,
+	};
+	// mega_float = make_mega_float(vertices, faces);
+	glGenBuffers(1, &_vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
 	GLuint	model_id = glGetUniformLocation(programID, "model");
 	GLuint	view_id = glGetUniformLocation(programID, "view");
@@ -249,12 +256,13 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		getFps(frames, last_time);
 		glClearColor(0, 255, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(programID);
 
 		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model[0]);
 		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view[0]);
 		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj[0]);
 		
-		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 3), new_vertex, GL_STATIC_DRAW);
+		// glBufferData(GL_ARRAY_BUFFER, sizeof(*mega_float) * (faces.size() * 3), mega_float, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -268,16 +276,14 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			 (void*)0
 			);
 
-
 		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3);
 		glDisableVertexAttribArray(0);
-		//glDisableVertexAttribArray(1);
-		glUseProgram(programID);
+		// glDisableVertexAttribArray(1);
 		glfwSwapBuffers(_window);
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
 	}
-	delete[] mega_float;
+	// delete[] mega_float;
 }
 
 void	render::create_vertex_array()
