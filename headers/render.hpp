@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 20:24:31 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/31 16:58:01 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,10 @@
 #include <math.h>
 #include <vector>
 #include "matrice.hpp"
+
+#include "./glm/glm/glm.hpp"
+#include "./glm/glm/gtx/transform.hpp"
+#include "./glm/glm/gtx/string_cast.hpp"
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
@@ -33,8 +37,8 @@ class render
 		matrice			matrice;
 		int				_width;
 		int				_height;
-		int				_pitch = 0;
-		int				_yaw = -90;
+		float			_pitch = 0;
+		float			_yaw = -90;
 
 		//GLfloat			*_current_vertex;
 		// const GLfloat	*_original_vertex;

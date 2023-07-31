@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 19:44:51 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/31 18:06:56 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,15 +29,14 @@ std::vector<float>		matrice::create_projection_matrice(float width, float height
 {
 	float	ar = width / height;
 	float	znear = 1.0f;
-	float	zfar = 10.0f;
-	float	fov = 90;
-	float	alfFovRad = (90 / 2) * (M_PI / 180);
+	float	zfar = 100.0f;
+	//float	fov = 90;
+	float	alfFovRad = (135 / 2) * (M_PI / 180);
 	float	zrange = znear - zfar;
 	float	proj[16] = {1 / (ar * tanf(alfFovRad)), 0, 0, 0, 
 						0, 1 / tanf(alfFovRad), 0, 0,
 						0, 0, (-znear - zfar) / zrange, 2.0f * zfar * znear / zrange,
 						0, 0, 1, 0};
-	std::cout << "proj = " << proj[0] << std::endl;
 	std::vector<float>	matrice(16, 0);
 	int					i;
 
@@ -72,6 +71,7 @@ std::vector<float>		matrice::project(std::vector<float> to_project, float width,
 
 //==================================  VIEW  ======================================
 
+
 std::vector<float>		matrice::normalize(std::vector<float> v)
 {
 	float	norm;
@@ -83,30 +83,29 @@ std::vector<float>		matrice::normalize(std::vector<float> v)
 	return (v);
 }
 
-std::vector<float>		matrice::create_view_matrice(int pitch, int yaw)
+std::vector<float>		matrice::create_view_matrice(float pitch, float yaw)
 {
 	std::vector<float> 	dir(3, 0);
 	std::vector<float> 	right(3, 0);
-	std::vector<float> 	up(3, 0);
-	
+	std::vector<float> 	up(3, 0);	
+
 	dir[0] = cosf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
     dir[1] = sinf(pitch * (M_PI / 180));
     dir[2] = sinf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
 	dir = normalize(dir);
 
-	right[0] = cosf(yaw * (M_PI / 180)) - (M_PI / 2.0);
+	right[0] = cosf(yaw * (M_PI / 180) - (M_PI / 2.0));
 	right[1] = 0.0;
-	right[2] = sinf(yaw * (M_PI / 180)) - (M_PI / 2.0);
-	right = normalize(right);
+	right[2] = sinf(yaw * (M_PI / 180) - (M_PI / 2.0));
 
 	up[0] = dir[1] * right[2] - dir[2] * right[1];
 	up[1] = dir[2] * right[0] - dir[0] * right[2];
 	up[2] = dir[0] * right[1] - dir[1] * right[0];
 	up = normalize(up);
 
-	float	view[16] = {right[0], right[1], right[2], 0,
-							up[0], up[1], up[2], 0,
-							dir[0], dir[1], dir[2], 0,
+	float	view[16] = {right[0], right[1], right[2], -1,
+							up[0], up[1], up[2], -1,
+							dir[0], dir[1], dir[2], -1,
 							0, 0, 0, 1};
 	std::vector<float>	matrice(16, 0);
 	int					i;
@@ -120,7 +119,7 @@ std::vector<float>		matrice::create_view_matrice(int pitch, int yaw)
 	return (matrice);
 }
 
-std::vector<float>		matrice::view(std::vector<float> to_view, int pitch, int yaw)
+std::vector<float>		matrice::view(std::vector<float> to_view, float pitch, float yaw)
 {
 	std::vector<float>	viewed(4, 0);
 	std::vector<float>	matrice;
@@ -145,9 +144,9 @@ std::vector<float>		matrice::view(std::vector<float> to_view, int pitch, int yaw
 
 std::vector<float>		matrice::create_rotate_matrice(char rotate, float angle)
 {
-	float	rot_x[16] = {1, 0, 0, 0, 0, cosf(angle), (sinf(angle) * -1), 0, 0, sinf(angle), cosf(angle), 0, 0, 0, 0, 0};
-	float	rot_y[16] = {cosf(angle), 0, sinf(angle), 0, 0, 1, 0, 0, sinf(angle) * -1, 0, cosf(angle), 0, 0, 0, 0, 0};
-	float	rot_z[16] = {cosf(angle), sinf(angle) * -1, 0, 0, sinf(angle), cosf(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+	float	rot_x[16] = {1, 0, 0, 0, 0, cosf(angle), (sinf(angle) * -1), 0, 0, sinf(angle), cosf(angle), 0, 0, 0, 0, 1};
+	float	rot_y[16] = {cosf(angle), 0, sinf(angle), 0, 0, 1, 0, 0, sinf(angle) * -1, 0, cosf(angle), 0, 0, 0, 0, 1};
+	float	rot_z[16] = {cosf(angle), sinf(angle) * -1, 0, 0, sinf(angle), cosf(angle), 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 	std::vector<float>	matrice(16, 0);
 	int					i;
 
@@ -248,7 +247,6 @@ std::vector<float>		matrice::translate(std::vector<float> to_translate, std::vec
 
 	if (to_add.size() != 4 || to_translate.size() != 4)
 		return (translated);
-	std::cout << "tanslate" << std::endl;
 	matrice = create_translate_matrice(to_add);
 	translated[0] = matrice[3] + to_translate[0];
 	translated[1] = matrice[7] + to_translate[1];

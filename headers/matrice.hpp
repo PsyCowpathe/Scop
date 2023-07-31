@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:00:33 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 19:42:56 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/31 16:58:44 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ class matrice
 		matrice();
 		~matrice();
 
-		std::vector<float>	view(std::vector<float> to_view, int pitch, int yaw);
+		std::vector<float>	view(std::vector<float> to_view, float pitch, float yaw);
 		std::vector<float>	project(std::vector<float> to_project, float width, float height);
 		std::vector<float>	rotate(std::vector<float> to_rotate, float angle, char rotate);
 		std::vector<float>	translate(std::vector<float> to_translate, std::vector<float> to_add);
@@ -36,7 +36,7 @@ class matrice
 		std::vector<float>	create_rotate_matrice(char rotate, float angle);
 		std::vector<float>	create_scale_matrice(std::vector<float> factor);
 		std::vector<float>	create_translate_matrice(std::vector<float> to_add);
-		std::vector<float>	create_view_matrice(int pitch, int yaw);
+		std::vector<float>	create_view_matrice(float pitch, float yaw);
 		std::vector<float>	normalize(std::vector<float> v);
 };
 
