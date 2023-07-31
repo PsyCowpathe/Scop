@@ -1,8 +1,8 @@
-#include "../headers/loadObject.hpp"
+#include "../headers/load_object.hpp"
 #include <iomanip>
 
 // TODO: add error check
-static void	getInfo(std::string line, std::vector<float> &buffer, int ignore)
+static void	get_info(std::string line, std::vector<float> &buffer, int ignore)
 {
 	try
 	{
@@ -27,7 +27,7 @@ static void	getInfo(std::string line, std::vector<float> &buffer, int ignore)
 	}
 }
 
-static void	getUvInfo(std::string line, std::vector<float> &buffer)
+static void	get_uv_info(std::string line, std::vector<float> &buffer)
 {
 	try
 	{
@@ -55,7 +55,7 @@ static void	getUvInfo(std::string line, std::vector<float> &buffer)
 
 // stoi throws an exception when failing
 // it's ugly as hell sorry
-void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n)
+void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n)
 {
 	try
 	{
@@ -88,7 +88,7 @@ void	setArrays(std::string line, unsigned int &v, unsigned int &u, unsigned int 
 	return ;
 }
 
-static void	parsingError(std::string line, size_t ln)
+static void	parsing_error(std::string line, size_t ln)
 {
 	std::cout << "wrong format at line " << ln << " : [" << line << "]" << std::endl;
 	exit(-1);
@@ -96,7 +96,7 @@ static void	parsingError(std::string line, size_t ln)
 
 // Parses faces info if there are only spaces
 
-static void	handleSlash(std::string line, std::vector<unsigned int> &vertex_indices, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
+static void	handle_slash(std::string line, std::vector<unsigned int> &vertex_indices, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
 {
 	unsigned int	vertex_index[3], uv_index[3], normal_index[3];
 	int i = 0;
@@ -105,14 +105,14 @@ static void	handleSlash(std::string line, std::vector<unsigned int> &vertex_indi
 	while ((next = line.find(' ', last)) != std::string::npos)
 	{
 		std::string debug =  line.substr(last, next-last);
-		setArrays(debug, vertex_index[i], uv_index[i], normal_index[i]);
+		set_arrays(debug, vertex_index[i], uv_index[i], normal_index[i]);
 		std::cout << "DEBUG" << debug << std::endl;
 		last = next + 1;
 		i++;
 	}
 	std::string	end = line.substr(last);
 	std::cout << "END" << end << std::endl;
-	setArrays(end, vertex_index[2], uv_index[2], normal_index[2]);
+	set_arrays(end, vertex_index[2], uv_index[2], normal_index[2]);
 	vertex_indices.push_back(vertex_index[0]);
 	vertex_indices.push_back(vertex_index[1]);
 	vertex_indices.push_back(vertex_index[2]);
@@ -130,7 +130,7 @@ static void	handleSlash(std::string line, std::vector<unsigned int> &vertex_indi
 
 // Parses faces info if there are only spaces
 
-static void	handleSpaces(std::string line, std::vector<unsigned int> vertex_indices)
+static void	handle_spaces(std::string line, std::vector<unsigned int> vertex_indices)
 {
 	size_t last = 2; size_t next = 0;
 	try
@@ -162,7 +162,7 @@ static void	handleSpaces(std::string line, std::vector<unsigned int> vertex_indi
 // Currently handles v, vt, vf, f
 // TODO: add support for texture, s(?) and mat(?)
 
-int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
+int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
 {
 	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
 	std::ifstream	file(path);
@@ -178,33 +178,33 @@ int	loadObject(const char *path, std::vector<float> &vertices, std::vector<float
 	{
 		ln++;
 		if (line[0] == 'v' && line[1] == ' ')
-			getInfo(line, vertices, 2);
+			get_info(line, vertices, 2);
 		else if (line[0] == 'v' && line[1] == 't')
 		{
 			std::cout << "LINE VT" << std::endl;
 			if (line[2] == ' ')
-				getUvInfo(line, uv);
+				get_uv_info(line, uv);
 			else
-				parsingError(line, ln);
+				parsing_error(line, ln);
 		}
 		else if (line[0] == 'v' && line[1] == 'n')
 		{
 			if (line[2] == ' ')
-				getInfo(line, normals, 3);
+				get_info(line, normals, 3);
 			else
-				parsingError(line, ln);
+				parsing_error(line, ln);
 		}
 		else if (line[0] == 'f')
 		{
 			if (line[1] != ' ')
-				parsingError(line, ln);
+				parsing_error(line, ln);
 			if (line.find('/') != std::string::npos)
-				handleSlash(line, vertex_indices, uv_indices, normal_indices, faces);
+				handle_slash(line, vertex_indices, uv_indices, normal_indices, faces);
 			else if (line.find(' ', 3) != std::string::npos)
-				handleSpaces(line, vertex_indices);
+				handle_spaces(line, vertex_indices);
 		}
 		else if (line[0] != '#' && line[0])
-			parsingError(line, ln);
+			parsing_error(line, ln);
 	}
 	std::cout << vertices.size() << std::endl;
 	std::cout << uv.size() << std::endl;

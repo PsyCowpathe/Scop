@@ -2,7 +2,7 @@ CC= clang++
 CFLAGS=  -Wall -Wextra -Werror -std=c++17 -O2
 LDFLAGS=  -lGL -lGLEW -lglfw \
 -ldl  -lX11 -lXrandr -lXi \
-# -g3 -fsanitize=address # this can cause a stack overflow !
+-g3 -fsanitize=address # this can cause a stack overflow !
 MAKEFLAGS += --no-print-directory -j
 
 NAME= scop

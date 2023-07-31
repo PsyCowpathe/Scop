@@ -29,6 +29,7 @@ class render
 		GLFWwindow		*_window;
 		GLuint			_vertexArrayID;
 		GLuint			_vertexBuffer;
+		// add colorbuffer here ?
 		char			_rotate_axis = 'x';
 		matrice			matrice;
 		int				_width;

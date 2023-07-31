@@ -11,15 +11,17 @@
 /* ************************************************************************** */
 
 #include "../headers/render.hpp"
-#include "../headers/loadObject.hpp"
+#include "../headers/load_object.hpp"
 
 int		main(void)
 {
-	std::vector<float>	vertices;
-	std::vector<float>	uv;
-	std::vector<float>	normals;
+	std::vector<float>			vertices;
+	std::vector<float>			uv;
+	std::vector<float>			normals;
 	std::vector<unsigned int>	faces;
-	loadObject("objects/cube.obj", vertices, uv, normals, faces);
+
+	load_object("objects/cube.obj", vertices, uv, normals, faces);
+
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !");
 	/*static const GLfloat vertex_buffer[] =
 	{
@@ -43,6 +45,7 @@ int		main(void)
 		1.0f, -1.0f, 0.0f,
 		-1.0f, -1.0f, 0.0f,
 	};*/
+
 	test.draw_triangle(vertices, faces);
 	std::cout << "Program end" << std::endl;
 	return (0);

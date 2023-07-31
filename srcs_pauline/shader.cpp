@@ -17,6 +17,11 @@ Shader::~Shader(void)
 // check ogldev approach in his intro to shaders
 GLuint loadShaders(const char * vertex_file_path,const char * fragment_file_path){
 
+			// ******************************
+			// * Create and compile shaders *
+			// ******************************
+			
+			////Turn those into attributes ?
 			// Create the shaders
 			GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 			GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -58,7 +63,7 @@ GLuint loadShaders(const char * vertex_file_path,const char * fragment_file_path
 			glCompileShader(VertexShaderID);
 
 			// Check Vertex Shader compiling success
-			//check GL_COMPILE_STATUS in shader pointed by VertexShaderID, put result in our GLint Result
+			// check GL_COMPILE_STATUS in shader pointed by VertexShaderID, put result in our GLint Result
 			glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
 			glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
 			if ( InfoLogLength > 0 ){
@@ -82,7 +87,12 @@ GLuint loadShaders(const char * vertex_file_path,const char * fragment_file_path
 				printf("%s\n", &FragmentShaderErrorMessage[0]);
 			}
 
-			// Link Shaders to the program
+
+			// **********************************
+			// * Link shaders to program object *
+			// **********************************
+
+			// Create a "program object"
 			printf("Linking program\n");
 			GLuint ProgramID = glCreateProgram();
 			// wee need to check the ID returned !
@@ -92,6 +102,7 @@ GLuint loadShaders(const char * vertex_file_path,const char * fragment_file_path
 				exit(-1);
 			}
 
+			// Attach our shaders to program
 			glAttachShader(ProgramID, VertexShaderID);
 			glAttachShader(ProgramID, FragmentShaderID);
 
@@ -107,7 +118,7 @@ GLuint loadShaders(const char * vertex_file_path,const char * fragment_file_path
 				printf("%s\n", &ProgramErrorMessage[0]);
 			}
 
-			// Addiotionnal good practice : check if linked program is actually compatible !
+			// Additionnal good practice : check if linked program is actually compatible !
 			glValidateProgram(ProgramID);
 			glGetProgramiv(ProgramID, GL_VALIDATE_STATUS, &InfoLogLength);
 			if ( InfoLogLength > 0 ){
@@ -116,10 +127,10 @@ GLuint loadShaders(const char * vertex_file_path,const char * fragment_file_path
 				printf("%s\n", &ProgramErrorMessage[0]);
 			}
 
-			// make program and shaders active on GPU's side
+			// make program object active on GPU's side
 			glUseProgram(ProgramID);
 
-			// is this deprecated ?
+			// get rid of shaders we don't need anymore
 			glDetachShader(ProgramID, VertexShaderID);
 			glDetachShader(ProgramID, FragmentShaderID);
 

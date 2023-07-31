@@ -37,7 +37,8 @@ render::~render()
 {
 	std::cout << "destruction" << std::endl;
 	
-
+	glDeleteBuffers(1, &_vertexArrayID);
+	glDeleteBuffers(1, &_vertexBuffer);
 	glfwDestroyWindow(_window);
 	glfwTerminate();
 }
@@ -130,7 +131,7 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
 	return (mega_float);
 }*/
 
-static void	getFps(int &frames, float &last_time)
+static void	get_fps(int &frames, float &last_time)
 {
 	float	current_time = glfwGetTime();
 	frames++;
@@ -162,6 +163,10 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
 
+	// Define viewport dimensions
+	// glViewport(0, 0, _width, _height);
+
+	// Enable/init depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -223,12 +228,12 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// send colorbuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer
 		(
-		 1,
-		 3,
-		 GL_FLOAT,
-		 GL_FALSE,
-		 0,
-		 (void*)0
+		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 3,				// size (here we have 3 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
 		);
 
 	glGenBuffers(1, &_vertexBuffer);
@@ -238,11 +243,31 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	std::cout << "tt" << std::endl;
 	//mega_float = make_perspective(mega_float, faces.size());
 
+
+
+	// ***************
+	// * RENDER LOOP *
+	// ***************
+
 	while (!glfwWindowShouldClose(_window))
 	{
-		getFps(frames, last_time);
-		glClearColor(0, 255, 0, 1);
+		get_fps(frames, last_time);
+
+		// BACKGROUND clear & redraw
+		// glClearColor(0, 255, 0, 1); // Basic colored bg
+
+		// Spice up BG :)
+		static GLclampf c = 0.0f;
+		//Why not a colred bg ?
+		glClearColor(c,c,c,1);
+		c += 1.0f/256.0f;
+		if (c >= 1.0f)
+			c = 0.0f;
+
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Loop on every face's vertices  to transform/rotate/etc. them
 		i = 0;
 		while (i < faces.size())
 		{
@@ -331,27 +356,28 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			);
 
 
-		// "Wireframe" mode :)
-    // glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		// "Wireframe" render mode :)
+    	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 
-
-    // Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
+    	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
 		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3); // Starting from vertex 0; 3 vertices = 1 triangle per face
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+
 		glUseProgram(programID);
+		
 		glfwSwapBuffers(_window);
-		glfwSetWindowUserPointer(_window, this);
+		glfwSetWindowUserPointer(_window, NULL);
 		glfwPollEvents();
 	}
 	delete[] mega_float;
 
-	// I guess it's always a better practice to add :
-	glDeleteBuffers(1, &colorbuffer);
-	glDeleteBuffers(1, &_vertexArrayID);
-	glDeleteBuffers(1, &_vertexBuffer);
+	// I guess it's always a better practice to add those :
+	glDeleteBuffers(1, &colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
+	// glDeleteBuffers(1, &_vertexArrayID);
+	// glDeleteBuffers(1, &_vertexBuffer);
 }
 
 void	render::create_vertex_array()
