@@ -19,6 +19,9 @@
 #include <math.h>
 #include <vector>
 #include "matrice.hpp"
+#include "Matrix4x4.hpp"
+#include "Vector3.hpp"
+#include "Vector4.hpp"
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 

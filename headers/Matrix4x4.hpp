@@ -11,7 +11,7 @@ class Matrix4
 		Matrix4();
 		~Matrix4();
 		float	&operator[](size_t index);
-		float	operator[](size_t index);
+		void	print();
 };
 
 std::ostream	&operator<<(std::ostream &os, const Matrix4 &matrix);
