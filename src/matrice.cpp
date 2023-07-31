@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   matrice.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 19:44:51 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/31 17:51:45 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,64 @@ matrice::~matrice()
 
 }
 
+std::vector<float>		matrice::perspective(float fov, float aspect, float znear, float zfar)
+{
+	float	rad = fov * (M_PI / 180.0);
+	float	tan_half = tanf(rad / 2);
+	
+	float	perspective[16] = {
+		1 / (aspect * tan_half), 0.0f, 0.0f, 0.0f,
+		0.0f, 1 / tan_half, 0.0f, 0.0f,
+		0.0f, 0.0f, (zfar + znear) / (zfar - znear), 1.0f,
+		0.0f, 0.0f, 2 * (zfar * znear) / (zfar * znear), 0.0f
+	};
+	int	i = 0;
+	std::vector<float>	matrice(16,0);
+	while (i < 16)
+	{
+		matrice[i] = perspective[i];
+		i++;
+	}
+	return (matrice);
+}
+
+std::vector<float>		matrice::look_at(std::vector<float> eye, std::vector<float> center, std::vector<float> up)
+{
+	std::vector<float>	added = {
+		center[0] + eye[0],
+		center[1] + eye[1],
+		center[2] + eye[2],
+	};
+	std::vector<float>	f = normalize(added);
+	std::vector<float>	u = normalize(up);
+	std::vector<float>	s = normalize(cross(f, u));
+	u = cross(s, f);
+
+	std::vector<float>	res = {
+		s[0], u[0], f[0], 0.0f,
+		s[1], u[1], f[1], 0.0f,
+		s[2], u[2], f[2], 0.0f,
+		dot(s, eye), dot(u, eye), dot(f, eye), 1.0f
+	};
+	return (res);
+}
+
+std::vector<float>	matrice::cross(std::vector<float> v1, std::vector<float> v2)
+{
+	std::vector<float>	res = {
+		v1[1] * v2[2] - v1[2] * v2[1],
+		v1[2] * v2[0] - v1[0] * v2[2],
+		v1[0] * v2[1] - v1[1] * v2[0]
+	};
+}
+
+float	matrice::dot(std::vector<float> v1, std::vector<float> v2)
+{
+	float	prod = 0;
+	for (int i = 0; i < 3; i++)
+		prod = prod + v1[i] * v2[i];
+	return (prod);
+}
 
 //=================================  PROJECTION  ==================================
 

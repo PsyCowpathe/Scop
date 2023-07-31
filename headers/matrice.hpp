@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   matrice.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:00:33 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 19:42:56 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/31 17:46:30 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ class matrice
 		std::vector<float>	rotate(std::vector<float> to_rotate, float angle, char rotate);
 		std::vector<float>	translate(std::vector<float> to_translate, std::vector<float> to_add);
 		std::vector<float>	scale(std::vector<float> to_scale, std::vector<float> factor);
+		std::vector<float>	perspective(float fov, float aspect, float znear, float zfar);
+		std::vector<float>	look_at(std::vector<float> eye, std::vector<float> center, std::vector<float> up);
+		std::vector<float>	matrice::cross(std::vector<float> v1, std::vector<float> v2);
+		float				matrice::dot(std::vector<float> v1, std::vector<float> v2);
 
 	private :
 

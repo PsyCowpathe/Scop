@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 20:23:42 by agirona          ###   ########.fr       */
+/*   Updated: 2023/07/31 18:04:09 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,87 +226,34 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 
-	mega_float = make_mega_float(vertices, faces);
-	std::cout << "tt" << std::endl;
-	//mega_float = make_perspective(mega_float, faces.size());
+	std::vector<float>	proj = matrice.perspective(90, _width / _height, 1, 10);
 
+	std::vector<float>	pos = {4.0f, 3.0f, 3.0f};
+	std::vector<float>	dir = {0.0f, 0.0f, 0.0f};
+	std::vector<float>	head = {0.0f, 1.0f, 0.0f};
+	std::vector<float>	view = matrice.look_at(pos, dir, head);
+
+	std::vector<float>	model = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+	mega_float = make_mega_float(vertices, faces);
+
+	GLuint	model_id = glGetUniformLocation(programID, "model");
+	GLuint	view_id = glGetUniformLocation(programID, "view");
+	GLuint	proj_id = glGetUniformLocation(programID, "proj");
 	while (!glfwWindowShouldClose(_window))
 	{
 		getFps(frames, last_time);
 		glClearColor(0, 255, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		i = 0;
-		while (i < faces.size())
-		{
-			/*std::vector<float>	test(4, 0);
-			test[0] = 0 + (angle / 1000);
-			test[1] = (0);
-			test[2] = (0);
-			test[3] = (0);
 
-			std::vector<float>	factor(4, 0);
-			factor[0] = 1;
-			factor[1] = 1;
-			factor[2] = 1 - (angle / 100);
-			factor[3] = 1;*/
-
-			vertex[0] = mega_float[3 * i];
-			vertex[1] = mega_float[3 * i + 1];
-			vertex[2] = mega_float[3 * i + 2];
-			vertex[3] = 0;
-
-			/*std::cout << std::endl << "rotate before = " << std::endl;
-			std::cout << vertex[0] << ", ";
-			std::cout << vertex[1] << ", ";
-			std::cout << vertex[2] << std::endl;*/
-
-			//tmp = matrice.scale(vertex, factor);
-
-			tmp = matrice.rotate(vertex, angle, _rotate_axis);
-
-			//tmp = matrice.translate(vertex, test);
-
-			tmp = matrice.view(tmp, _pitch, _yaw); 
-
-			tmp = matrice.project(tmp, _width, _height); 
-
-			/*std::cout << std::endl << "rotate res = " << std::endl;
-			std::cout << tmp[0] << ", ";
-			std::cout << tmp[1] << ", ";
-			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl;*/
-
-			//tmp = matrice.translate(tmp, test);
-			 /* std::cout << "translate res = " << std::endl;
-			  std::cout << tmp[0] << ", ";
-			  std::cout << tmp[1] << ", ";
-			  std::cout << tmp[2] << ", ";
-			  std::cout << tmp[3] << std::endl;*/
-
-			//tmp = matrice.scale(tmp, factor);
-			  /*std::cout << "scale res = " << std::endl;
-			  std::cout << tmp[0] << ", ";
-			  std::cout << tmp[1] << ", ";
-			  std::cout << tmp[2] << ", ";
-			  std::cout << tmp[3] << std::endl;*/
-
-			new_vertex[3 * i] = tmp[0];
-			new_vertex[3 * i + 1] = tmp[1];
-			new_vertex[3 * i + 2] = tmp[2];
-
-
-
-			/*std::cout << "final res = " << std::endl;
-			std::cout << new_vertex[3 * i] << ", ";
-			std::cout << new_vertex[3 * i + 1] << ", ";
-			std::cout << new_vertex[3 * i + 2] << std::endl;*/
-			i++;
-		}
-
-		if (angle == 360)
-			angle = 0;
-		else
-			angle++;
+		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model[0]);
+		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view[0]);
+		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj[0]);
+		
 		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 3), new_vertex, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
