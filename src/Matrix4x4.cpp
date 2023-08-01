@@ -33,9 +33,9 @@ Matrix4::~Matrix4()
 
 Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
 {
-	double	y_scale = 1.0 / tanf(fov / 2.0f);
-	double	x_scale = y_scale / ratio;
-	double	near_far = z_near - z_far;
+	float	y_scale = 1.0 / tanf(fov / 2.0f);
+	float	x_scale = y_scale / ratio;
+	float	near_far = z_near - z_far;
 
 	float	buff[16] = {
 		x_scale, 0.0f, 0.0f, 0.0f,

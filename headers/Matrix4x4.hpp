@@ -19,7 +19,7 @@ class Matrix4
 		float	&operator[](size_t index);
 		Matrix4	operator*(const Matrix4 &other);
 		Vec4	operator*(const Vec4 &other);
-		Matrix4	Matrix4::operator=(const Matrix4 &other);
+		Matrix4	operator=(const Matrix4 &other);
 
 		void	print();
 };
