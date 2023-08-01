@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/01 17:24:36 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/01 17:40:52 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ int		main(void)
 	// m_test.print();
 	m_test =  mat * m_test;
 	mat.print();
-	// mat = mat * mat2;
-	// mat.print();
+	mat = mat * mat2;
+	mat.print();
 	// m_test.print();
-	exit(0);
+	// exit(0);
 	loadObject("objects/cube.obj", vertices, uv, normals, faces);
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !");
 	/*static const GLfloat vertex_buffer[] =

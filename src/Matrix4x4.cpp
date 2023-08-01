@@ -47,7 +47,7 @@ Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
 	return (res);
 }
 
-Matrix4	look_at(Vec4 eye, Vec4 center, Vec4 up)
+Matrix4	Matrix4::look_at(Vec4 eye, Vec4 center, Vec4 up)
 {
 	Vec4	vx, vy, vz;
 

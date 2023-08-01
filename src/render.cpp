@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/31 18:30:24 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/01 17:39:43 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,7 @@ static void	getFps(int &frames, float &last_time)
 
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
+	(void)faces;
 	(void)vertices;
 	// float					angle = 0;
 	// size_t					i;
@@ -159,84 +160,14 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
+	Matrix4		proj;
+	proj = proj.perspective(angle_to_rad(45.0f), 4.0f, 0.1f, 1000.f);
 
+	Matrix4		view;
+	view = view.look_at(Vec4(4, 3, 3, 0), Vec4(0, 0, 0, 0), Vec4(0, 1, 0, 0));
 
-	// static const GLfloat color_buffer[] =
-	// {
-	// 	0.0f, 0.0f, 0.0f,
-	// 	1.0f, 1.0f, 1.0f,
-	// 	1.0f, 0.0f, 0.0f,
-	// 	0.0f, 0.0f, 1.0f,
-	// 	0.5f, 0.0f, 0.5f,
-	// 	0.0f, 0.2f, 0.3f,
-	// 	0.2f, 0.3f, 0.0f,
-	// 	0.8f, 0.6f, 0.4f,
-	// 	0.9f, 0.1f, 0.5f,
-	// 	0.0f, 0.0f, 0.0f,
-	// 	1.0f, 1.0f, 1.0f,
-	// 	1.0f, 0.0f, 0.0f,
-	// 	0.0f, 0.0f, 1.0f,
-	// 	0.5f, 0.0f, 0.5f,
-	// 	0.0f, 0.2f, 0.3f,
-	// 	0.2f, 0.3f, 0.0f,
-	// 	0.8f, 0.6f, 0.4f,
-	// 	0.9f, 0.1f, 0.5f,
-	// 	0.0f, 0.0f, 0.0f,
-	// 	1.0f, 1.0f, 1.0f,
-	// 	1.0f, 0.0f, 0.0f,
-	// 	0.0f, 0.0f, 1.0f,
-	// 	0.5f, 0.0f, 0.5f,
-	// 	0.0f, 0.2f, 0.3f,
-	// 	0.2f, 0.3f, 0.0f,
-	// 	0.8f, 0.6f, 0.4f,
-	// 	0.9f, 0.1f, 0.5f,
-	// 	0.0f, 0.0f, 0.0f,
-	// 	1.0f, 1.0f, 1.0f,
-	// 	1.0f, 0.0f, 0.0f,
-	// 	0.0f, 0.0f, 1.0f,
-	// 	0.5f, 0.0f, 0.5f,
-	// 	0.0f, 0.2f, 0.3f,
-	// 	0.2f, 0.3f, 0.0f,
-	// 	0.8f, 0.6f, 0.4f,
-	// 	0.9f, 0.1f, 0.5f,
-	// };
-
-
-	// GLuint	colorbuffer;
-
-	// glGenBuffers(1, &colorbuffer);
-	// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
-
-
-	// glEnableVertexAttribArray(1);
-	// glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	// glVertexAttribPointer
-	// 	(
-	// 	 1,
-	// 	 3,
-	// 	 GL_FLOAT,
-	// 	 GL_FALSE,
-	// 	 0,
-	// 	 (void*)0
-	// 	);
-
-	// glGenBuffers(1, &_vertexBuffer);
-	// glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-
-	std::vector<float>	proj = matrice.perspective(90, _width / _height, 1, 10);
-
-	std::vector<float>	pos = {4.0f, 3.0f, 3.0f};
-	std::vector<float>	dir = {0.0f, 0.0f, 0.0f};
-	std::vector<float>	head = {0.0f, 1.0f, 0.0f};
-	std::vector<float>	view = matrice.look_at(pos, dir, head);
-
-	std::vector<float>	model = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 1.0f
-	};
+	Matrix4		model;
+	model = model.identity();
 
 	static const GLfloat g_vertex_buffer_data[] = { 
 		-1.0f, -1.0f, 0.0f,
@@ -258,9 +189,9 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(programID);
 
-		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model[0]);
-		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view[0]);
-		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj[0]);
+		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
+		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
+		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
 		
 		// glBufferData(GL_ARRAY_BUFFER, sizeof(*mega_float) * (faces.size() * 3), mega_float, GL_STATIC_DRAW);
 
@@ -276,7 +207,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			 (void*)0
 			);
 
-		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glDisableVertexAttribArray(0);
 		// glDisableVertexAttribArray(1);
 		glfwSwapBuffers(_window);

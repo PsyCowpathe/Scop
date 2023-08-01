@@ -7,8 +7,8 @@
 class Matrix4
 {
 	private:
-		float _m[16];
 	public:
+		float _m[16];
 		Matrix4();
 		Matrix4(float list[16]);
 		~Matrix4();
