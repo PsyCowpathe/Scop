@@ -15,6 +15,11 @@ Matrix4::Matrix4()
 	_m[15] = 1.0f;
 }
 
+Matrix4::Matrix4(float list[16])
+{
+	memcpy(_m, list, 16 * sizeof(float));
+}
+
 Matrix4::~Matrix4()
 {
 
@@ -44,4 +49,21 @@ float	&Matrix4::operator[](size_t index)
 		exit(-1);
 	}
 	return(_m[index]);
+}
+
+Vec4	Matrix4::operator*(const Vec4 &other)
+{
+	float	x = other.getX();
+	float	y = other.getY();
+	float	z = other.getZ();
+	float	w = other.getW();
+
+	// TODO: check for perf impact
+	Vec4	res(
+		(_m[0] * x + _m[1] * y + _m[2] * z + _m[3] * w),
+		(_m[4] * x + _m[5] * y + _m[6] * z + _m[7] * w),
+		(_m[8] * x + _m[9] * y + _m[10] * z + _m[11] * w),
+		(_m[12] * x + _m[13] * y + _m[14] * z + _m[15] * w)
+	);
+	return (res);
 }

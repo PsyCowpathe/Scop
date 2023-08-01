@@ -92,9 +92,14 @@ Vec4	Vec4::operator*(const Vec4 &other)
 	res._v[2] = _v[2] * other._v[2];
 	// Not sure about that?
 	// TODO: check source
-	res._v[3] = _v[3];
-	// res._v[0] = _v[0] - other._v[0];
+	res._v[3] = _v[3] * other._v[3];
 	return (res);
+}
+
+Vec4	Vec4::operator=(const Vec4 &other)
+{
+	memcpy(_v, other._v, 4 * sizeof(float));
+	return (*this);
 }
 
 float	Vec4::dot(Vec4 v)
