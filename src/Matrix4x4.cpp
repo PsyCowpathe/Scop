@@ -67,3 +67,23 @@ Vec4	Matrix4::operator*(const Vec4 &other)
 	);
 	return (res);
 }
+
+Matrix4	Matrix4::operator*(const Matrix4 &other)
+{
+	Matrix4	res;
+	for (int row = 0; row < 4; row++)
+	{
+		for (int col = 0; col < 4; col++)
+		{
+			for (int k = 0; k < 4; k++)
+			{
+				res[row * 4 + col] += (_m[row * 4 + k] * other._m[k * 4 + col]);
+				std::cout << "m: " << _m[row * 4 + k] << "other: " << other._m[k * 4 + col] << std::endl;
+				std::cout << "calc: " << _m[row * 4 + k] * other._m[k * 4 + col] << std::endl;
+				std::cout << "res: " << res[row * 4 + col] << std::endl;
+			}
+			exit(0);
+		}
+	}
+	return (res);
+}
