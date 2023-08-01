@@ -236,8 +236,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
 
+
+
+
+	// VERTEX BUFFER
 	glGenBuffers(1, &_vertexBuffer);
+
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(_vertexBuffer), &_vertexBuffer, GL_STATIC_DRAW); 
+	// static draw flag : "The data store contents will be modified once and used many times 
+	//as the source for GL drawing commands. "
 
 	mega_float = make_mega_float(vertices, faces);
 	std::cout << "tt" << std::endl;
