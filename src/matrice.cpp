@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/31 18:06:56 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/01 14:39:06 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,26 @@ matrice::~matrice()
 
 std::vector<float>		matrice::create_projection_matrice(float width, float height)
 {
-	float	ar = width / height;
-	float	znear = 1.0f;
-	float	zfar = 100.0f;
-	//float	fov = 90;
-	float	alfFovRad = (135 / 2) * (M_PI / 180);
-	float	zrange = znear - zfar;
-	float	proj[16] = {1 / (ar * tanf(alfFovRad)), 0, 0, 0, 
-						0, 1 / tanf(alfFovRad), 0, 0,
-						0, 0, (-znear - zfar) / zrange, 2.0f * zfar * znear / zrange,
+
+ /*let fov = degree / 360. * PI;
+
+	 arr[0][0] = aspect * (1. / f32::tan(fov / 2.));
+    arr[1][1] = 1. / f32::tan(fov / 2.);
+    arr[2][2] = zfar / (zfar - znear);
+    arr[2][3] = (-zfar * znear) / (zfar - znear);
+    arr[3][2] = 1.;*/
+
+	float	ar = height / width;
+	float	fov = 135 * (M_PI / 180);
+	float	znear = 0.1f;
+	float	zfar = 1000.0f;
+
+	//float	alfFovRad = (135 / 2) * (M_PI / 180);
+	//float	zrange = znear - zfar;
+	
+	float	proj[16] = {ar * (1 / tanf(fov / 2)), 0, 0, 0, 
+						0, 1 / tanf(fov / 2), 0, 0,
+						0, 0, zfar / (zfar - znear), (-zfar * znear) / (zfar - znear),
 						0, 0, 1, 0};
 	std::vector<float>	matrice(16, 0);
 	int					i;
@@ -64,6 +75,12 @@ std::vector<float>		matrice::project(std::vector<float> to_project, float width,
 		projected[i] = (matrice[4 * i] * to_project[0] + matrice[4 * i + 1] * to_project[1]
 				+ matrice[4 * i + 2] * to_project[2] + matrice[4 * i + 3] * to_project[3]);
 		i++;
+	}
+	if (projected[3] != 0)
+	{
+		projected[0] /= projected[3];
+		projected[1] /= projected[3];
+		projected[2] /= projected[3];
 	}
 	return (projected);
 }
