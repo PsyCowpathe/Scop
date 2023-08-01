@@ -21,6 +21,16 @@ Matrix4	Matrix4::identity()
 	return (*this);
 }
 
+Matrix4::Matrix4(float list[16])
+{
+	memcpy(_m, list, 16 * sizeof(float));
+}
+
+Matrix4::~Matrix4()
+{
+
+}
+
 Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
 {
 	double	y_scale = 1.0 / tanf(fov / 2.0f);
@@ -37,14 +47,26 @@ Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
 	return (res);
 }
 
-Matrix4::Matrix4(float list[16])
+Matrix4	look_at(Vec4 eye, Vec4 center, Vec4 up)
 {
-	memcpy(_m, list, 16 * sizeof(float));
-}
+	Vec4	vx, vy, vz;
 
-Matrix4::~Matrix4()
-{
+	vz = eye - center;
+	vz.normalize();
+	vy = up;
+	vx = vy.cross(vz);
+	vy = vz.cross(vx);
+	vx.normalize();
+	vy.normalize();
 
+	float	buff[16] = {
+		vx.getX(), vy.getX(), vz.getX(), 0.0f,
+		vx.getY(), vy.getY(), vz.getY(), 0.0f,
+		vx.getZ(), vy.getZ(), vz.getZ(), 0.0f,
+		-vx.dot(eye), -vy.dot(eye), -vz.dot(eye), 1.0f
+	};
+	Matrix4	res(buff);
+	return (res);
 }
 
 /*	MATRIX
