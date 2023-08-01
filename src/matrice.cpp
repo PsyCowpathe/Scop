@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/31 18:05:31 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/01 18:28:30 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ float	matrice::dot(std::vector<float> v1, std::vector<float> v2)
 std::vector<float>		matrice::create_projection_matrice(float width, float height)
 {
 	float	ar = width / height;
-	float	znear = 1.0f;
+	float	znear = .1f;
 	float	zfar = 10.0f;
 	// float	fov = 90;
 	float	alfFovRad = (90 / 2) * (M_PI / 180);

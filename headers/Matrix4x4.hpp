@@ -13,6 +13,7 @@ class Matrix4
 		Matrix4(float list[16]);
 		~Matrix4();
 		Matrix4	identity();
+		// Matrix4	perspective(float width, float height);
 		Matrix4	perspective(float radians, float ratio, float z_near, float z_far);
 		Matrix4	look_at(Vec4 eye, Vec4 center, Vec4 up);
 
