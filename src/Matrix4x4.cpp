@@ -9,10 +9,32 @@ Matrix4::Matrix4()
 	// Note: this should be faster than anything else
 	// but I don't know how it behaves with static arrays
 	memset(_m, 0, 16 * sizeof(float));
+}
+
+Matrix4	Matrix4::identity()
+{
+	memset(_m, 0, 16 * sizeof(float));
 	_m[0] = 1.0f;
 	_m[5] = 1.0f;
 	_m[10] = 1.0f;
 	_m[15] = 1.0f;
+	return (*this);
+}
+
+Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
+{
+	double	y_scale = 1.0 / tanf(fov / 2.0f);
+	double	x_scale = y_scale / ratio;
+	double	near_far = z_near - z_far;
+
+	float	buff[16] = {
+		x_scale, 0.0f, 0.0f, 0.0f,
+		0.0f, y_scale, 0.0f, 0.0f,
+		0.0f, 0.0f, (z_far + z_near) / near_far, -1,
+		0.0f, 0.0f, 2 * z_far * z_near / near_far, 0.0f
+	};
+	Matrix4	res(buff);
+	return (res);
 }
 
 Matrix4::Matrix4(float list[16])
@@ -70,6 +92,7 @@ Vec4	Matrix4::operator*(const Vec4 &other)
 
 Matrix4	Matrix4::operator*(const Matrix4 &other)
 {
+	// TODO: improve and measure perf on this
 	Matrix4	res;
 	for (int row = 0; row < 4; row++)
 	{
@@ -78,12 +101,19 @@ Matrix4	Matrix4::operator*(const Matrix4 &other)
 			for (int k = 0; k < 4; k++)
 			{
 				res[row * 4 + col] += (_m[row * 4 + k] * other._m[k * 4 + col]);
-				std::cout << "m: " << _m[row * 4 + k] << "other: " << other._m[k * 4 + col] << std::endl;
-				std::cout << "calc: " << _m[row * 4 + k] * other._m[k * 4 + col] << std::endl;
-				std::cout << "res: " << res[row * 4 + col] << std::endl;
 			}
-			exit(0);
 		}
 	}
 	return (res);
+}
+
+Matrix4	Matrix4::operator=(const Matrix4 &other)
+{
+	memcpy(_m, other._m, 16 * sizeof(float));
+	return (*this);
+}
+
+float	angle_to_rad(float angle)
+{
+	return (angle * (M_PI / 180));
 }
