@@ -1,8 +1,7 @@
 CC= clang++
-CFLAGS=  -Wall -Wextra -Werror -std=c++17 -O2
-LDFLAGS=  -lGL -lGLEW -lglfw \
--ldl  -lX11 -lXrandr -lXi \
--g3 -fsanitize=address # this can cause a stack overflow !
+CFLAGS=  -Wall -Wextra -Werror -std=c++17
+LDFLAGS=  -lGL -lGLU -lGLEW -lglfw -O2 \
+# -ldl  -lX11 -lXrandr -lXi 
 MAKEFLAGS += --no-print-directory -j
 
 NAME= scop
@@ -19,9 +18,13 @@ OBJS = $(SRC:%.cpp=%.o)
 		$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
-rel: $(NAME)
 
-debug: CFLAGS += -DDEBUG -g3
+leaks: CFLAGS += -g3 -fsanitize=address
+leaks: $(OBJS)
+leaks: $(NAME)
+	./$(NAME)
+
+debug: CFLAGS += -g3
 debug: $(OBJS)
 debug: $(NAME)
 	lldb ./scop

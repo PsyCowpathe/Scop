@@ -36,7 +36,12 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 render::~render()
 {
 	std::cout << "destruction" << std::endl;
+
+	// not necessary
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 	
+	// not necessary ?
 	glDeleteBuffers(1, &_vertexArrayID);
 	glDeleteBuffers(1, &_vertexBuffer);
 	glfwDestroyWindow(_window);
@@ -163,13 +168,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
 
-	// Define viewport dimensions
+	// Define viewport dimensions ??
 	// glViewport(0, 0, _width, _height);
 
 	// Enable/init depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
+	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
@@ -275,7 +283,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Loop on every face's vertices  to transform/rotate/etc. them
+		// Loop on every face's vertices to transform/rotate/etc. them
 		i = 0;
 		while (i < faces.size())
 		{
@@ -351,7 +359,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 3), new_vertex, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
+		// glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 		glVertexAttribPointer
 			(
@@ -371,13 +379,12 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
     	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
 		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3); // Starting from vertex 0; 3 vertices = 1 triangle per face
 
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-
+		// glDisableVertexAttribArray(0); // not necessary
+		
 		glUseProgram(programID);
 		
 		glfwSwapBuffers(_window);
-		glfwSetWindowUserPointer(_window, NULL);
+		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
 	}
 	delete[] mega_float;
