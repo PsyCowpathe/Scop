@@ -30,14 +30,14 @@ std::vector<float>		matrice::create_projection_matrice(float width, float height
 	float	ar = width / height;
 	float	znear = 1.0f;
 	float	zfar = 10.0f;
-	// float	fov = 90;
-	float	alfFovRad = (90 / 2) * (M_PI / 180);
+	float	fov = 90;
+	float	alfFovRad = (fov / 2) * (M_PI / 180);
 	float	zrange = znear - zfar;
 	float	proj[16] = {1 / (ar * tanf(alfFovRad)), 0, 0, 0, 
 						0, 1 / tanf(alfFovRad), 0, 0,
 						0, 0, (-znear - zfar) / zrange, 2.0f * zfar * znear / zrange,
 						0, 0, 1, 0};
-	// std::cout << "proj = " << proj[0] << std::endl;
+	std::cout << "proj = " << proj[0] << std::endl;
 	std::vector<float>	matrice(16, 0);
 	int					i;
 
