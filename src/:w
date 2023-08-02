@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/02 17:20:17 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/02 13:51:35 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,14 +125,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// TODO: disable fps before correc since using glfw function
 	float					last_time = glfwGetTime();
 
-	std::vector<float>		rotation;
-	std::vector<float>		scale;
-	std::vector<float>		translate;
-	std::vector<float>		projection;
-	std::vector<float>		camera;
-	std::vector<float>	world;
-	std::vector<float>	wvp;
-
 	GLfloat 			new_vertex[faces.size() * 4];
 
 	//_original_vertex = vertex_buffer;
@@ -216,89 +208,137 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	mega_float = make_mega_float(vertices, faces);
 	
+	/*vertex[0] = mega_float[3 * 0];
+	vertex[1] = mega_float[3 * 0 + 1];
+	vertex[2] = mega_float[3 * 0 + 2];
+	vertex[3] = 1;*/
+
+	//std::cout << "vertex = " << vertex[0] << ", " << vertex[1] << ", " << vertex[2] << std::endl;
+
+	/*tmp = matrice.rotate(vertex, 92, 'x');
+
+	glm::mat4 to_conv = glm::mat4(	vertex[0], 0.0, 0.0, 0.0,
+                  					0.0, vertex[1], 0.0, 0.0,
+                  					0.0, 0.0, vertex[2], 0.0,
+                  					0.0, 0.0, 0.0, 1.0);
+
+	glm::mat4 neww = glm::rotate<float>(to_conv, 92, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	std::cout << "---MOI---------OFF---" << std::endl;
+	std::cout << "x: " << tmp[0] << "---------" << neww[0][0] << std::endl;
+	std::cout << "y: " << tmp[1] << "---------" << neww[1][1] << std::endl;
+	std::cout << "z: " << tmp[2] << "---------" << neww[2][2] << std::endl;
+	std::cout << "w: " << tmp[3] << "---------" << neww[3][3] << std::endl;
+
+	//exit(1);*/
+
 	while (!glfwWindowShouldClose(_window))
 	{
 		getFps(frames, last_time);
+		//if (frames > 40)
+		//	exit(1);
 		glClearColor(0, 255, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		i = 0;
 
 		while (i < faces.size())
 		{
+			std::vector<float>	test(4, 0);
+			test[0] = 0;
+			test[1] = 0;
+			test[2] = (0 + (angle / 100));
+			test[3] = (0);
+
+			/*std::vector<float>	factor(4, 0);
+			factor[0] = 1;
+			factor[1] = 1;
+			factor[2] = 1 - (angle / 100);
+			factor[3] = 1;*/
+
 			vertex[0] = mega_float[3 * i];
 			vertex[1] = mega_float[3 * i + 1];
 			vertex[2] = mega_float[3 * i + 2];
-			vertex[3] = 1;
+			vertex[3] = 1; //remetre a 1
+
+			/*std::cout << std::endl << "rotate before = " << std::endl;
+			std::cout << vertex[0] << ", ";
+			std::cout << vertex[1] << ", ";
+			std::cout << vertex[2] << std::endl;*/
+
+			//tmp = matrice.scale(vertex, factor);
+
+			//tmp = matrice.rotate(vertex, angle, _rotate_axis);
+
+
+			tmp = matrice.translate(vertex, test);
+
+
+			
+
+
+			std::cout << "AVANT" << std::endl;
+			std::cout << tmp[0] << ", ";
+			std::cout << tmp[1] << ", ";
+			std::cout << tmp[2] << ", ";
+			std::cout << tmp[3] << std::endl;
+
+
+			//tmp = matrice.view(tmp, _pitch, _yaw); 
 
 			std::vector<float>	eye(4, 0);
 			std::vector<float>	center(4, 0);
 			std::vector<float>	up(4, 0);
 
-			eye[0] = 10;
-			eye[1] = 10;
-			eye[2] = 0;
+			eye[0] = 0;
+			eye[1] = 1;
+			eye[2] = -20;
 
 			center[0] = 0;
-			center[1] = 0;
+			center[1] = 1.1;
 			center[2] = 0;
 
 			up[0] = 0;
 			up[1] = 1;
 			up[2] = 0;
 
-			std::vector<float>	test(4, 0);
-			test[0] = 0;// + (angle );
-			test[1] = 0 + (angle / 10);
-			test[2] = 0 ;//+ (angle / 10);
-			test[3] = 0;
-
-			std::vector<float> CameraPos(3, 0);
-			CameraPos[0] = 0.0f;
-			CameraPos[1] = 1.0f;
-			CameraPos[2] = 0.0f; //si pas a 0 = casse
-
-			std::vector<float> U(3, 0);
-			U[0] = 1.0f;
-			U[1] = 0.0f;
-			U[2] = 0.0f;
-
-			std::vector<float> V(3, 0);
-			V[0] = 0.0f;
-			V[1] = 1.0f;
-			V[2] = 0.0f;
-
-			std::vector<float> N(3, 0);
-			N[0] = 0.0f;
-			N[1] = 0.0f;
-			N[2] = 1.0f;
-
-			rotation = matrice.create_rotate_matrice(_rotate_axis, angle);
-			//scale = create_scale_matrice();
-			translate = matrice.create_translate_matrice(test);
-			projection = matrice.create_projection_matrice(_width, _height);
-			camera = matrice.create_view_matrice(eye, center, up);
 
 
-			//BON ORDRE
-			wvp = matrice.multiply_mm(translate, rotation);
-			wvp = matrice.multiply_mm(camera, wvp);
-			wvp = matrice.multiply_mm(projection, wvp);
-			tmp = matrice.multiply_mv(wvp, vertex);
-			
 
-			/*std::cout << "AVANT"<< std::endl;
-			std::cout << tmp[0] << ", ";
-			std::cout << tmp[1] << ", ";
-			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl << std::endl;
+
+			tmp = matrice.view(tmp, eye, center, up); 
+
+			tmp = matrice.project(tmp, _width, _height); 
+
 
 			std::cout << "APRES"<< std::endl;
 			std::cout << tmp[0] << ", ";
 			std::cout << tmp[1] << ", ";
 			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl << std::endl;*/
+			std::cout << tmp[3] << std::endl << std::endl;
 
 
+			//direct tout multiplier ???
+
+
+			/*std::cout << std::endl << "rotate res = " << std::endl;
+			std::cout << tmp[0] << ", ";
+			std::cout << tmp[1] << ", ";
+			std::cout << tmp[2] << ", ";
+			std::cout << tmp[3] << std::endl;*/
+
+			//tmp = matrice.translate(tmp, test);
+			 /* std::cout << "translate res = " << std::endl;
+			  std::cout << tmp[0] << ", ";
+			  std::cout << tmp[1] << ", ";
+			  std::cout << tmp[2] << ", ";
+			  std::cout << tmp[3] << std::endl;*/
+
+			//tmp = matrice.scale(tmp, factor);
+			  /*std::cout << "scale res = " << std::endl;
+			  std::cout << tmp[0] << ", ";
+			  std::cout << tmp[1] << ", ";
+			  std::cout << tmp[2] << ", ";
+			  std::cout << tmp[3] << std::endl;*/
 
 			new_vertex[3 * i] = tmp[0];
 			new_vertex[3 * i + 1] = tmp[1];
@@ -306,13 +346,18 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			new_vertex[3 * i + 3] = tmp[3];
 
 
+
+			/*std::cout << "final res = " << std::endl;
+			std::cout << new_vertex[3 * i] << ", ";
+			std::cout << new_vertex[3 * i + 1] << ", ";
+			std::cout << new_vertex[3 * i + 2] << std::endl;*/
 			i++;
 		}
 
 		if (angle == 360)
 			angle = 0;
 		else
-			angle += 0.01;
+			angle++;
 		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 4), new_vertex, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);

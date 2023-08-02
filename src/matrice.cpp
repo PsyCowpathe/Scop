@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/24 18:02:09 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/01 14:39:06 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/02 17:13:01 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,32 +22,74 @@ matrice::~matrice()
 
 }
 
+std::vector<float>		matrice::multiply_mm(std::vector<float> m1, std::vector<float> m2)
+{
+	std::vector<float>	result(16, 0);
+	int					i;
+	int					j;
+
+	i = 0;
+	j = 0;
+	while (i * j < 16)
+	{
+		j = 0;
+		while (j < 4)
+		{
+			result[(4 * i) + j] = m1[4 * i] * m2[0 + j] + m1[4 * i + 1] * m2[4 + j]
+				+ m1[4 * i + 2] * m2[8 + j] + m1[4 * i + 3] * m2[12 + j];
+			j++;
+		}
+		i++;
+	}
+	return (result);
+}
+
+std::vector<float>		matrice::multiply_mv(std::vector<float> matrice, std::vector<float> vector)
+{
+	std::vector<float>	result(4, 0);
+	int					i;
+
+	i = 0;
+	while (i < 4)
+	{
+		result[i] = (matrice[4 * i] * vector[0] + matrice[4 * i + 1] * vector[1]
+				+ matrice[4 * i + 2] * vector[2] + matrice[4 * i + 3] * vector[3]);
+		i++;
+	}
+	/*if (result[3] != 0)
+	{
+		result[0] /= result[3];
+		result[1] /= result[3];
+		result[2] /= result[3];
+	}*/
+	return (result);
+}
+
+
 
 //=================================  PROJECTION  ==================================
 
-std::vector<float>		matrice::create_projection_matrice(float width, float height)
+
+/*std::vector<float>		matrice::create_projection_matrice(float width, float height)
 {
+	float VFOV = 45.0f;
+	float tanHalfVFOV = tanf((VFOV / 2.0f) * (M_PI / 180));
+	float d = 1/tanHalfVFOV;
+	float ar = (float)width / (float)height;
 
- /*let fov = degree / 360. * PI;
+	float NearZ = 1.0f;
+	float FarZ = 10.0f;
 
-	 arr[0][0] = aspect * (1. / f32::tan(fov / 2.));
-    arr[1][1] = 1. / f32::tan(fov / 2.);
-    arr[2][2] = zfar / (zfar - znear);
-    arr[2][3] = (-zfar * znear) / (zfar - znear);
-    arr[3][2] = 1.;*/
+	float zRange = NearZ - FarZ;
 
-	float	ar = height / width;
-	float	fov = 135 * (M_PI / 180);
-	float	znear = 0.1f;
-	float	zfar = 1000.0f;
+	float A = (-FarZ - NearZ) / zRange;
+	float B = 2.0f * FarZ * NearZ / zRange;
 
-	//float	alfFovRad = (135 / 2) * (M_PI / 180);
-	//float	zrange = znear - zfar;
-	
-	float	proj[16] = {ar * (1 / tanf(fov / 2)), 0, 0, 0, 
-						0, 1 / tanf(fov / 2), 0, 0,
-						0, 0, zfar / (zfar - znear), (-zfar * znear) / (zfar - znear),
-						0, 0, 1, 0};
+	float proj[16] = {d/ar, 0.0f, 0.0f, 0.0f,
+		0.0f, d,    0.0f, 0.0f,
+		0.0f, 0.0f, A,    B,
+		0.0f, 0.0f, 1.0f, 0.0f};
+
 	std::vector<float>	matrice(16, 0);
 	int					i;
 
@@ -83,47 +125,65 @@ std::vector<float>		matrice::project(std::vector<float> to_project, float width,
 		projected[2] /= projected[3];
 	}
 	return (projected);
-}
+}*/
+
+std::vector<float>		matrice::create_projection_matrice(float width, float height)
+  {
+  float	ar = height / width;
+  float	fov = 60 * (M_PI / 180);
+  float	znear = 0.00001f;
+  float	zfar = 1000.0f;
+  float	proj[16] = {ar * (1 / tanf(fov / 2)), 0, 0, 0, 
+  0, 1 / tanf(fov / 2), 0, 0,
+  0, 0, zfar / (zfar - znear), (-zfar * znear) / (zfar - znear),
+  0, 0, 1, 0};
+  std::vector<float>	matrice(16, 0);
+  int					i;
+
+  i = 0;
+  while (i < 16)
+  {
+  matrice[i] = proj[i];
+  i++;
+  }
+  return (matrice);
+  }
+
+  std::vector<float>		matrice::project(std::vector<float> to_project, float width, float height)
+  {
+  std::vector<float>	projected(4, 0);
+  std::vector<float>	matrice;
+  int					i;
+
+  if (to_project.size() != 4)
+  return (projected);
+  i = 0;
+  matrice = create_projection_matrice(width, height);
+  while (i < 4)
+  {
+  projected[i] = (matrice[4 * i] * to_project[0] + matrice[4 * i + 1] * to_project[1]
+  + matrice[4 * i + 2] * to_project[2] + matrice[4 * i + 3] * to_project[3]);
+  i++;
+  }
+  if (projected[3] != 0)
+  {
+  projected[0] /= projected[3];
+  projected[1] /= projected[3];
+  projected[2] /= projected[3];
+  }
+  return (projected);
+  }
 
 
 //==================================  VIEW  ======================================
 
 
-std::vector<float>		matrice::normalize(std::vector<float> v)
+/*std::vector<float>			matrice::create_camera_matrice(std::vector<float> U, std::vector<float> V, std::vector<float> N, std::vector<float> CameraPos)
 {
-	float	norm;
-
-	norm = sqrtf((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2]));
-	v[0] /= norm;
-	v[1] /= norm;
-	v[2] /= norm;
-	return (v);
-}
-
-std::vector<float>		matrice::create_view_matrice(float pitch, float yaw)
-{
-	std::vector<float> 	dir(3, 0);
-	std::vector<float> 	right(3, 0);
-	std::vector<float> 	up(3, 0);	
-
-	dir[0] = cosf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
-    dir[1] = sinf(pitch * (M_PI / 180));
-    dir[2] = sinf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
-	dir = normalize(dir);
-
-	right[0] = cosf(yaw * (M_PI / 180) - (M_PI / 2.0));
-	right[1] = 0.0;
-	right[2] = sinf(yaw * (M_PI / 180) - (M_PI / 2.0));
-
-	up[0] = dir[1] * right[2] - dir[2] * right[1];
-	up[1] = dir[2] * right[0] - dir[0] * right[2];
-	up[2] = dir[0] * right[1] - dir[1] * right[0];
-	up = normalize(up);
-
-	float	view[16] = {right[0], right[1], right[2], -1,
-							up[0], up[1], up[2], -1,
-							dir[0], dir[1], dir[2], -1,
-							0, 0, 0, 1};
+	float	view[16] = {U[0], U[1], U[2], -CameraPos[0],
+		V[0], V[1], V[2], -CameraPos[1],
+		N[0], N[1], N[2], -CameraPos[2],
+		0.0f, 0.0f, 0.0f, 1.0f};
 	std::vector<float>	matrice(16, 0);
 	int					i;
 
@@ -136,7 +196,7 @@ std::vector<float>		matrice::create_view_matrice(float pitch, float yaw)
 	return (matrice);
 }
 
-std::vector<float>		matrice::view(std::vector<float> to_view, float pitch, float yaw)
+std::vector<float>			matrice::camera(std::vector<float> U, std::vector<float> V, std::vector<float> N, std::vector<float> CameraPos, std::vector<float> to_view)
 {
 	std::vector<float>	viewed(4, 0);
 	std::vector<float>	matrice;
@@ -145,7 +205,7 @@ std::vector<float>		matrice::view(std::vector<float> to_view, float pitch, float
 	if (to_view.size() != 4)
 		return (viewed);
 	i = 0;
-	matrice = create_view_matrice(pitch, yaw);
+	matrice = create_camera_matrice(U, V, N, CameraPos);
 	while (i < 4)
 	{
 		viewed[i] = (matrice[4 * i] * to_view[0] + matrice[4 * i + 1] * to_view[1]
@@ -153,8 +213,151 @@ std::vector<float>		matrice::view(std::vector<float> to_view, float pitch, float
 		i++;
 	}
 	return (viewed);
+}*/
 
+
+
+std::vector<float>		matrice::normalize(std::vector<float> v)
+  {
+  float	norm;
+
+  norm = sqrtf((v[0] * v[0]) + (v[1] * v[1]) + (v[2] * v[2]));
+  v[0] /= norm;
+  v[1] /= norm;
+  v[2] /= norm;
+  return (v);
+  }
+
+  std::vector<float>		matrice::cross(std::vector<float> v1, std::vector<float> v2)
+  {
+  std::vector<float>	product(3, 0);
+
+  product[0] = v1[1] * v2[2] - v1[2] * v2[1];
+  product[1] = v1[2] * v2[0] - v1[0] * v2[2];
+  product[2] = v1[0] * v2[1] - v1[1] * v2[0];
+
+  return (product);
+  }
+
+  float		matrice::dot(std::vector<float> v1, std::vector<float> v2)
+  {
+  float	res;
+
+  res = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+  return (res);
+  }
+
+  std::vector<float>		matrice::create_view_matrice(std::vector<float> eye, std::vector<float> center, std::vector<float> up)
+  {
+  std::vector<float>	vx(4, 0);
+  std::vector<float>	vy(4, 0);
+  std::vector<float>	vz(4, 0);
+  std::vector<float>	matrice(16, 0);
+  int					i;
+
+  vz[0] = eye[0] - center[0];
+  vz[1] = eye[1] - center[1];
+  vz[2] = eye[2] - center[2];
+  vz = normalize(vz);
+  vy[0] = up[0];
+  vy[1] = up[1];
+  vy[2] = up[2];
+  vx = cross(vy, vz);
+  vy = cross(vz, vx);
+  vx = normalize(vx);
+  vy = normalize(vy);
+
+  float    buff[16] =
+  {
+  vx[0], vy[0], vz[0], 0.0f,
+  vx[1], vy[1], vz[1], 0.0f,
+  vx[2], vy[2], vz[2], 0.0f,
+  -(dot(vx, eye)), -(dot(vy, eye)), -(dot(vz,eye)), 1.0f
+  };
+  i = 0;
+  while (i < 16)
+  {
+  matrice[i] = buff[i];
+  i++;
+  }
+  return (matrice);
+  }
+
+
+  std::vector<float>			matrice::view(std::vector<float> to_view, std::vector<float> eye, std::vector<float> center, std::vector<float> up)
+  {
+  std::vector<float>	viewed(4, 0);
+  std::vector<float>	matrice;
+int					i;
+
+if (to_view.size() != 4)
+	return (viewed);
+	i = 0;
+	matrice = create_view_matrice(eye, center, up);
+while (i < 4)
+{
+	viewed[i] = (matrice[4 * i] * to_view[0] + matrice[4 * i + 1] * to_view[1]
+			+ matrice[4 * i + 2] * to_view[2] + matrice[4 * i + 3] * to_view[3]);
+	i++;
 }
+return (viewed);
+}
+
+/*std::vector<float>		matrice::create_view_matrice(float pitch, float yaw)
+  {
+  std::vector<float> 	dir(3, 0);
+  std::vector<float> 	right(3, 0);
+  std::vector<float> 	up(3, 0);	
+
+  dir[0] = cosf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
+  dir[1] = sinf(pitch * (M_PI / 180));
+  dir[2] = sinf(yaw * (M_PI / 180)) * cosf(pitch * (M_PI / 180));
+  dir = normalize(dir);
+
+  right[0] = cosf(yaw * (M_PI / 180) - (M_PI / 2.0));
+  right[1] = 0.0;
+  right[2] = sinf(yaw * (M_PI / 180) - (M_PI / 2.0));
+
+  up[0] = dir[1] * right[2] - dir[2] * right[1];
+  up[1] = dir[2] * right[0] - dir[0] * right[2];
+  up[2] = dir[0] * right[1] - dir[1] * right[0];
+  up = normalize(up);
+
+  float	view[16] = {right[0], right[1], right[2], -1,
+  up[0], up[1], up[2], -1,
+  dir[0], dir[1], dir[2], -1,
+  0, 0, 0, 1};
+  std::vector<float>	matrice(16, 0);
+  int					i;
+
+  i = 0;
+  while (i < 16)
+  {
+  matrice[i] = view[i];
+  i++;
+  }
+  return (matrice);
+  }
+
+  std::vector<float>		matrice::view(std::vector<float> to_view, float pitch, float yaw)
+  {
+  std::vector<float>	viewed(4, 0);
+  std::vector<float>	matrice;
+  int					i;
+
+  if (to_view.size() != 4)
+  return (viewed);
+  i = 0;
+  matrice = create_view_matrice(pitch, yaw);
+  while (i < 4)
+  {
+  viewed[i] = (matrice[4 * i] * to_view[0] + matrice[4 * i + 1] * to_view[1]
+  + matrice[4 * i + 2] * to_view[2] + matrice[4 * i + 3] * to_view[3]);
+  i++;
+  }
+  return (viewed);
+
+  }*/
 
 
 //==================================  ROTATE  =====================================
@@ -232,7 +435,7 @@ std::vector<float>		matrice::scale(std::vector<float> to_scale, std::vector<floa
 	while (i < 4)
 	{
 		scaled[i] = matrice[4 * i] * to_scale[0] + matrice[4 * i + 1] * to_scale[1]
-				+ matrice[4 * i + 2] * to_scale[2] + matrice[4 * i + 3] * to_scale[3];
+			+ matrice[4 * i + 2] * to_scale[2] + matrice[4 * i + 3] * to_scale[3];
 		i++;
 	}
 	return (scaled);
