@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 18:28:09 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 20:27:29 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ class render
 		GLuint			_vertexBuffer;
 		GLuint			_colorBuffer;
 		
-		char			_rotate_axis = 'x';
-		int				_moov_x = 0;
-		int				_moov_y = 0;
-		int				_moov_z = 0;
+		char			_rotate_axis = 'y';
+		float			_moov_x = 0;
+		float			_moov_y = 0;
+		float			_moov_z = 0;
 		matrice			matrice;
 		int				_width;
 		int				_height;
@@ -67,13 +67,14 @@ class render
 		static void		error_callback(int error, const char *description);
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		void			change_rotate_axis(int key);
-		void			moov_object(int key);
+		void			moov_object(int key, int action);
 
 		//Utils
 		void			create_vertex_array();
 
 		void			clear();
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
+		Vec4			check_moov(Vec4 factor);
 
 	public :
 

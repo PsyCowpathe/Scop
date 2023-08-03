@@ -117,7 +117,6 @@ Matrix4		Matrix4::translate(Vec4 to_add)
 						0, 1, 0, to_add[1],
 						0, 0, 1, to_add[2],
 						0, 0, 0, 1};
-	std::vector<float>	matrice(16, 0);
 	res = trans;
 	return (res);
 }

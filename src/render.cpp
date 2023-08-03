@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 18:31:00 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 20:31:09 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,23 +80,32 @@ static void	get_fps(int &frames, float &last_time)
 	}
 }
 
+Vec4	render::check_moov(Vec4 old)
+{
+	float	x = old[0];
+	float	y = old[1];
+	float	z = old[2];
+
+	if (_moov_x != 0)
+		x = (_moov_x / 20) + old[0];
+	if (_moov_y != 0)
+		y = (_moov_y / 20) + old[1];
+	if (_moov_z != 0)
+		z = (_moov_z / 20) + old[2];
+	Vec4	factor(x, y, z, 1);
+	return (factor);
+}
+
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
 	(void)faces;
 	(void)vertices;
-	// float					angle = 0;
-	// size_t					i;
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
-	// float					*mega_float;
 	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
 	float					last_time = glfwGetTime();
 
-	// GLfloat 			new_vertex[faces.size() * 3];
-
-	//_original_vertex = vertex_buffer;
-	//_current_vertex = static_cast<float *>(_original_vertex);
 	create_vertex_array();
 
 	// Define viewport dimensions ??
@@ -113,16 +122,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glCullFace(GL_BACK);
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
-	// Matrix4		proj;
-	// proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
-
-	// Matrix4		view;
-	// float		pos = 0.0f;
-	// view = view.look_at(Vec4(pos, 3, -3, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
-
-	// Matrix4		model;
-	// model = model.identity();
-
 
 	// CREATING VERTICES
 	static const GLfloat g_vertex_buffer_data[] = { 
@@ -244,6 +243,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// ***************
 
 	float	angle = 0;
+	Vec4 factor(0, 0, 0, 0);
 
 	while (!glfwWindowShouldClose(_window))
 	{
@@ -251,13 +251,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
 		Matrix4		view;
-		view = view.look_at(Vec4(0, 3, -3, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+		view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
 
 		Matrix4		model;
 		model = model.identity();
 
 		Matrix4		rot;
 		rot = model.rotation(_rotate_axis, angle_to_rad(angle));
+
+		factor = check_moov(factor);
+
 		if (angle >= 360)
 			angle = 0;
 		else
@@ -293,7 +296,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
 		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
 		glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
-		glUniformMatrix4fv(trans_id, 1, GL_FALSE, &trans._m[0]);
+		glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
 		
 		// glBufferData(GL_ARRAY_BUFFER, sizeof(*mega_float) * (faces.size() * 3), mega_float, GL_STATIC_DRAW);
 
@@ -328,8 +331,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		pos += .1f;
 	}
 	// END OF RENDER LOOP
-
-	// delete[] mega_float;
 
 	// I guess it's always a better practice to add those :
 	// glDeleteBuffers(1, &_colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
@@ -418,25 +419,37 @@ void	render::change_rotate_axis(int key)
 		_rotate_axis = 'z';
 }
 
-void	render::moov_object(int key)
+void	render::moov_object(int key, int action)
 {
-	if (key == GLFW_KEY_W)
-		_moov_z = -1;
-	else if (key == GLFW_KEY_A)
-		_moov_x = -1;
-	else if (key == GLFW_KEY_S)
-		_moov_z = 1;
-	else if (key == GLFW_KEY_D)
-		_moov_x = 1;
-	else if (key == GLFW_KEY_SHIFT)
-		_moov_y = -1;
-	else if (key == GLFW_KEY_SPACE)
-		_moov_y = 1;
+	if (action != GLFW_RELEASE)
+	{
+		if (key == GLFW_KEY_W)
+			_moov_z = -1;
+		if (key == GLFW_KEY_S)
+			_moov_z = 1;
+		if (key == GLFW_KEY_A)
+			_moov_x = -1;
+		if (key == GLFW_KEY_D)
+			_moov_x = 1;
+		if (key == GLFW_KEY_SPACE)
+			_moov_y = -1;
+		if (key == GLFW_KEY_LEFT_SHIFT)
+			_moov_y = 1;
+	}
 	else
 	{
-		_moov_x = 0;
-		_moov_y = 0;
-		_moov_z = 0;
+		if (key == GLFW_KEY_W)
+			_moov_z = 0;
+		if (key == GLFW_KEY_S)
+			_moov_z = 0;
+		if (key == GLFW_KEY_A)
+			_moov_x = 0;
+		if (key == GLFW_KEY_D)
+			_moov_x = 0;
+		if (key == GLFW_KEY_SPACE)
+			_moov_y = 0;
+		if (key == GLFW_KEY_LEFT_SHIFT)
+			_moov_y = 0;
 	}
 }
 
@@ -446,13 +459,14 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 	(void)mods;
 	void *data = glfwGetWindowUserPointer(window);  
 	render *w = static_cast<render *>(data);
-
+	std::cout << "key = " << key << std::endl; 
+	std::cout << "action = " << action << std::endl; 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	else if (key == GLFW_KEY_W || key == GLFW_KEY_A
-				|| key == GLFW_KEY_S || key == GLFW_KEY_D || key == GLFW_KEY_SHIFT
+				|| key == GLFW_KEY_S || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT
 				|| key == GLFW_KEY_SPACE)
-		w->moov_object(key);
+		w->moov_object(key, action);
 	else
 		w->change_rotate_axis(key);
 
