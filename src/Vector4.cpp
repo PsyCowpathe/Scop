@@ -96,6 +96,16 @@ Vec4	Vec4::operator*(const Vec4 &other)
 	return (res);
 }
 
+float	&Vec4::operator[](size_t index)
+{
+	if (index > 3 || index < 0)
+	{
+		std::cout << "Vec4 out of bound access!" << std::endl;
+		exit(-1);
+	}
+	return (_v[index]);
+}
+
 Vec4	Vec4::operator=(const Vec4 &other)
 {
 	memcpy(_v, other._v, 4 * sizeof(float));

@@ -31,6 +31,7 @@ class Vec4
 		Vec4		operator*(const Vec4 &other);
 		Vec4		operator*(const float &x);
 		Vec4		operator=(const Vec4 &other);
+		float		&operator[](size_t index);
 
 		void		print();
 
