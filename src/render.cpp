@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 16:22:15 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 16:29:53 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,55 +64,8 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
         std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
         i++;
     }
-    std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
     return (result);
 }
-
-/*float	*render::make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces)
-{
-	float	*result = new float[faces.size()]; //dont forget delete[]
-	size_t		i;
-
-	i = 0;
-	
-	while (i < faces.size())
-	{
-		tmp = vertices[faces[i] - 1];
-		std::cout << "vert = " << faces[i] << " : ";
-		result[3 * i] = tmp._v[0];
-		result[3 * i + 1] = tmp._v[1];
-		result[3 * i + 2] = tmp._v[2];
-		std::cout << "x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
-		i++;
-	}
-		// tmp = vertices[faces[i] - 1];
-		std::cout << "tessst" << std::endl;
-		std::cout << vertices[faces[i] - 1]._v[0];
-		std::cout << "==============" << std::endl;
-		result[3 * i] = vertices[3 * (faces[i] - 1)];
-		result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
-		result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
-		std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
-
-		std::cout << std::endl << "mega float res = " << std::endl;
-		std::cout << result[3 * i] << ", ";
-		std::cout << result[3 * i + 1] << ", ";
-		std::cout << result[3 * i + 2] << std::endl;
-		i++;
-	}
-	i = 0;
-	std::cout << "[";
-	while(i < faces.size() * 3)
-	{
-		std::cout << std::fixed << std::setprecision(8) << result[i++];
-		if (i % 3 == 0)
-			std::cout << "]" << std::endl << "[";
-		else
-			std::cout << ", ";
-	}
-	std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
-	return (result);
-}*/
 
 static void	get_fps(int &frames, float &last_time)
 {
