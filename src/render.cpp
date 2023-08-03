@@ -237,6 +237,24 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	float		pos = 0.0f;
 
 
+	// Trying to set some uniforms 
+	GLuint my_uniform = 3;
+	glUniform1f(my_uniform, 2);
+	// glVertexAttribPointer
+	// 	(
+	// 	 3,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+	// 	 3,				// size (here we have 3 values per vertex)
+	// 	 GL_FLOAT,		// type
+	// 	 GL_FALSE,		// normalized?
+	// 	 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+	// 	 (void*)0		// array buffer offset (at beginning of array)
+	// 	);
+
+	
+	// glGenBuffers(1, &data);
+	// glBindBufferBase(GL UNIFORM BUFFER, buff idx, ubo handle);
+	// glBufferData(GL UNIFORM BUFFER, size, nullptr, usage);
+
 	// ***************
 	// * RENDER LOOP *
 	// ***************
