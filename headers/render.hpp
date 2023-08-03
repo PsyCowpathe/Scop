@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/27 20:24:31 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 16:08:50 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include <math.h>
 #include <vector>
 #include "matrice.hpp"
+#include "Matrix4x4.hpp"
+#include "Vector3.hpp"
+#include "Vector4.hpp"
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
