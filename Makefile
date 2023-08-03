@@ -13,8 +13,8 @@ SRC := $(wildcard $(SRC_PATH)/*.cpp)
 OBJS = $(SRC:%.cpp=%.o)
 
 
-%.o: %.cpp Makefile $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
+%.o:	%.cpp Makefile $(HEADER)
+		$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
 

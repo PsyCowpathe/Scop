@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/07/31 16:58:01 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 16:23:45 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include <math.h>
 #include <vector>
 #include "matrice.hpp"
+#include "Matrix4x4.hpp"
+#include "Vector3.hpp"
+#include "Vector4.hpp"
 
 #include "./glm/glm/glm.hpp"
 #include "./glm/glm/gtx/transform.hpp"
@@ -33,6 +36,7 @@ class render
 		GLFWwindow		*_window;
 		GLuint			_vertexArrayID;
 		GLuint			_vertexBuffer;
+		// add colorbuffer here ?
 		char			_rotate_axis = 'x';
 		matrice			matrice;
 		int				_width;

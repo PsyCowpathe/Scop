@@ -1,3 +1,9 @@
 *.o
 scop
+.vscode/*
+.vscode/
+.gitignore
+*.dump
+*.txt
+*.deb
 a.out

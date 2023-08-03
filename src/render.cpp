@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/02 17:20:17 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 16:22:15 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,13 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 	if (glfw_init() == -1)
 		clear();
 	set_hint(aliasing, openGL_min, openGL_max);
+	
 	if (create_window(name) == -1)
 		clear();
+
 	set_callback();
 	set_context();
+
 	if (glew_init() == -1)
 		clear();
 }
@@ -33,6 +36,15 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 render::~render()
 {
 	std::cout << "destruction" << std::endl;
+
+	// not necessary
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	
+	// not necessary ?
+	glDeleteBuffers(1, &_vertexArrayID);
+	glDeleteBuffers(1, &_vertexBuffer);
+	glfwDestroyWindow(_window);
 	glfwTerminate();
 }
 
@@ -102,7 +114,7 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
 	return (result);
 }*/
 
-static void	getFps(int &frames, float &last_time)
+static void	get_fps(int &frames, float &last_time)
 {
 	float	current_time = glfwGetTime();
 	frames++;
@@ -116,82 +128,124 @@ static void	getFps(int &frames, float &last_time)
 
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
-	float					angle = 0;
-	size_t					i;
-	std::vector<float>		tmp(4);
+	(void)faces;
+	(void)vertices;
+	// float					angle = 0;
+	// size_t					i;
+	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
-	float					*mega_float;
+	// float					*mega_float;
 	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
 	float					last_time = glfwGetTime();
 
-	std::vector<float>		rotation;
-	std::vector<float>		scale;
-	std::vector<float>		translate;
-	std::vector<float>		projection;
-	std::vector<float>		camera;
-	std::vector<float>	world;
-	std::vector<float>	wvp;
-
-	GLfloat 			new_vertex[faces.size() * 4];
+	// GLfloat 			new_vertex[faces.size() * 3];
 
 	//_original_vertex = vertex_buffer;
 	//_current_vertex = static_cast<float *>(_original_vertex);
 	create_vertex_array();
-	//glGenBuffers(1, &_vertexBuffer);
-	//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(*vertex_buffer) * 27, vertex_buffer, GL_STATIC_DRAW);
 
+	// Define viewport dimensions ??
+	// glViewport(0, 0, _width, _height);
+
+	// Enable/init depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
+	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
+	// Matrix4		proj;
+	// proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
+	// Matrix4		view;
+	// float		pos = 0.0f;
+	// view = view.look_at(Vec4(pos, 3, -3, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
 
-	static const GLfloat color_buffer[] =
-	{
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
-		0.0f, 0.0f, 0.0f,
-		1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f,
-		0.5f, 0.0f, 0.5f,
-		0.0f, 0.2f, 0.3f,
-		0.2f, 0.3f, 0.0f,
-		0.8f, 0.6f, 0.4f,
-		0.9f, 0.1f, 0.5f,
+	// Matrix4		model;
+	// model = model.identity();
+
+	static const GLfloat g_vertex_buffer_data[] = { 
+		-1.0f,-1.0f,-1.0f,
+		-1.0f,-1.0f, 1.0f,
+		-1.0f, 1.0f, 1.0f,
+		 1.0f, 1.0f,-1.0f,
+		-1.0f,-1.0f,-1.0f,
+		-1.0f, 1.0f,-1.0f,
+		 1.0f,-1.0f, 1.0f,
+		-1.0f,-1.0f,-1.0f,
+		 1.0f,-1.0f,-1.0f,
+		 1.0f, 1.0f,-1.0f,
+		 1.0f,-1.0f,-1.0f,
+		-1.0f,-1.0f,-1.0f,
+		-1.0f,-1.0f,-1.0f,
+		-1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f,-1.0f,
+		 1.0f,-1.0f, 1.0f,
+		-1.0f,-1.0f, 1.0f,
+		-1.0f,-1.0f,-1.0f,
+		-1.0f, 1.0f, 1.0f,
+		-1.0f,-1.0f, 1.0f,
+		 1.0f,-1.0f, 1.0f,
+		 1.0f, 1.0f, 1.0f,
+		 1.0f,-1.0f,-1.0f,
+		 1.0f, 1.0f,-1.0f,
+		 1.0f,-1.0f,-1.0f,
+		 1.0f, 1.0f, 1.0f,
+		 1.0f,-1.0f, 1.0f,
+		 1.0f, 1.0f, 1.0f,
+		 1.0f, 1.0f,-1.0f,
+		-1.0f, 1.0f,-1.0f,
+		 1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f,-1.0f,
+		-1.0f, 1.0f, 1.0f,
+		 1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f, 1.0f,
+		 1.0f,-1.0f, 1.0f
 	};
 
-
+	static const GLfloat color_buffer[] = { 
+		0.583f,  0.771f,  0.014f,
+		0.609f,  0.115f,  0.436f,
+		0.327f,  0.483f,  0.844f,
+		0.822f,  0.569f,  0.201f,
+		0.435f,  0.602f,  0.223f,
+		0.310f,  0.747f,  0.185f,
+		0.597f,  0.770f,  0.761f,
+		0.559f,  0.436f,  0.730f,
+		0.359f,  0.583f,  0.152f,
+		0.483f,  0.596f,  0.789f,
+		0.559f,  0.861f,  0.639f,
+		0.195f,  0.548f,  0.859f,
+		0.014f,  0.184f,  0.576f,
+		0.771f,  0.328f,  0.970f,
+		0.406f,  0.615f,  0.116f,
+		0.676f,  0.977f,  0.133f,
+		0.971f,  0.572f,  0.833f,
+		0.140f,  0.616f,  0.489f,
+		0.997f,  0.513f,  0.064f,
+		0.945f,  0.719f,  0.592f,
+		0.543f,  0.021f,  0.978f,
+		0.279f,  0.317f,  0.505f,
+		0.167f,  0.620f,  0.077f,
+		0.347f,  0.857f,  0.137f,
+		0.055f,  0.953f,  0.042f,
+		0.714f,  0.505f,  0.345f,
+		0.783f,  0.290f,  0.734f,
+		0.722f,  0.645f,  0.174f,
+		0.302f,  0.455f,  0.848f,
+		0.225f,  0.587f,  0.040f,
+		0.517f,  0.713f,  0.338f,
+		0.053f,  0.959f,  0.120f,
+		0.393f,  0.621f,  0.362f,
+		0.673f,  0.211f,  0.457f,
+		0.820f,  0.883f,  0.371f,
+		0.982f,  0.099f,  0.879f
+	};
 	GLuint	colorbuffer;
 
 	glGenBuffers(1, &colorbuffer);
@@ -201,142 +255,116 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+
+	// send colorbuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer
 		(
-		 1,
-		 3,
-		 GL_FLOAT,
-		 GL_FALSE,
-		 0,
-		 (void*)0
+		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 3,				// size (here we have 3 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
 		);
 
-	glGenBuffers(1, &_vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 
-	mega_float = make_mega_float(vertices, faces);
-	
+	// VERTEX BUFFER
+	glGenBuffers(1, &_vertexBuffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), &g_vertex_buffer_data, GL_STATIC_DRAW); 
+	// static draw flag : "The data store contents will be modified once and used many times 
+	//as the source for GL drawing commands. "
+
+	GLuint	model_id = glGetUniformLocation(programID, "model");
+	GLuint	view_id = glGetUniformLocation(programID, "view");
+	GLuint	proj_id = glGetUniformLocation(programID, "proj");
+	float		pos = 0.0f;
+
+
+	// ***************
+	// * RENDER LOOP *
+	// ***************
+
 	while (!glfwWindowShouldClose(_window))
 	{
-		getFps(frames, last_time);
-		glClearColor(0, 255, 0, 1);
+		Matrix4		proj;
+		proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+
+		Matrix4		view;
+		view = view.look_at(Vec4(pos, 3, -3, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+
+		Matrix4		model;
+		model = model.identity();
+		get_fps(frames, last_time);
+
+		// BACKGROUND clear & redraw
+		// glClearColor(0, 255, 0, 1); // Basic colored bg
+
+		// Spice up BG :)
+		static GLclampf c = 0.0f;
+		//Why not a colred bg ?
+		glClearColor(c,c,c,1);
+		c += 1.0f/256.0f;
+		if (c >= 1.0f)
+			c = 0.0f;
+
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		i = 0;
 
-		while (i < faces.size())
-		{
-			vertex[0] = mega_float[3 * i];
-			vertex[1] = mega_float[3 * i + 1];
-			vertex[2] = mega_float[3 * i + 2];
-			vertex[3] = 1;
+		// Loop on every face's vertices to transform/rotate/etc. them
 
-			std::vector<float>	eye(4, 0);
-			std::vector<float>	center(4, 0);
-			std::vector<float>	up(4, 0);
+		// while (i < faces.size())
+		// {
+			/*std::vector<float>	test(4, 0);
+			test[0] = 0 + (angle / 1000);
+			test[1] = (0);
+			test[2] = (0);
+			test[3] = (0);*/
 
-			eye[0] = 10;
-			eye[1] = 10;
-			eye[2] = 0;
-
-			center[0] = 0;
-			center[1] = 0;
-			center[2] = 0;
-
-			up[0] = 0;
-			up[1] = 1;
-			up[2] = 0;
-
-			std::vector<float>	test(4, 0);
-			test[0] = 0;// + (angle );
-			test[1] = 0 + (angle / 10);
-			test[2] = 0 ;//+ (angle / 10);
-			test[3] = 0;
-
-			std::vector<float> CameraPos(3, 0);
-			CameraPos[0] = 0.0f;
-			CameraPos[1] = 1.0f;
-			CameraPos[2] = 0.0f; //si pas a 0 = casse
-
-			std::vector<float> U(3, 0);
-			U[0] = 1.0f;
-			U[1] = 0.0f;
-			U[2] = 0.0f;
-
-			std::vector<float> V(3, 0);
-			V[0] = 0.0f;
-			V[1] = 1.0f;
-			V[2] = 0.0f;
-
-			std::vector<float> N(3, 0);
-			N[0] = 0.0f;
-			N[1] = 0.0f;
-			N[2] = 1.0f;
-
-			rotation = matrice.create_rotate_matrice(_rotate_axis, angle);
-			//scale = create_scale_matrice();
-			translate = matrice.create_translate_matrice(test);
-			projection = matrice.create_projection_matrice(_width, _height);
-			camera = matrice.create_view_matrice(eye, center, up);
-
-
-			//BON ORDRE
-			wvp = matrice.multiply_mm(translate, rotation);
-			wvp = matrice.multiply_mm(camera, wvp);
-			wvp = matrice.multiply_mm(projection, wvp);
-			tmp = matrice.multiply_mv(wvp, vertex);
-			
-
-			/*std::cout << "AVANT"<< std::endl;
-			std::cout << tmp[0] << ", ";
-			std::cout << tmp[1] << ", ";
-			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl << std::endl;
-
-			std::cout << "APRES"<< std::endl;
-			std::cout << tmp[0] << ", ";
-			std::cout << tmp[1] << ", ";
-			std::cout << tmp[2] << ", ";
-			std::cout << tmp[3] << std::endl << std::endl;*/
-
-
-
-			new_vertex[3 * i] = tmp[0];
-			new_vertex[3 * i + 1] = tmp[1];
-			new_vertex[3 * i + 2] = tmp[2];
-			new_vertex[3 * i + 3] = tmp[3];
-
-
-			i++;
-		}
-
-		if (angle == 360)
-			angle = 0;
-		else
-			angle += 0.01;
-		glBufferData(GL_ARRAY_BUFFER, sizeof(*new_vertex) * (faces.size() * 4), new_vertex, GL_STATIC_DRAW);
+		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
+		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
+		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
+		
+		// glBufferData(GL_ARRAY_BUFFER, sizeof(*mega_float) * (faces.size() * 3), mega_float, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
+		// glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 		glVertexAttribPointer
 			(
-			 0,
-			 3,
-			 GL_FLOAT,
-			 GL_FALSE,
-			 0,
-			 (void*)0
+			 0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
+			 3,			// size
+			 GL_FLOAT,	// type
+			 GL_FALSE,	// normalized?
+			 0,			// stride
+			 (void*)0	// array buffer offset
 			);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, (faces.size() * 4)); //- (4 * 30));
-		glDisableVertexAttribArray(0);
-		//glDisableVertexAttribArray(1);
+		// "Wireframe" render mode :)
+    	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+
+    	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
+		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3); // Starting from vertex 0; 3 vertices = 1 triangle per face
+
+		// glDisableVertexAttribArray(0); // not necessary
+		
 		glUseProgram(programID);
+		
 		glfwSwapBuffers(_window);
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
+		pos += .1f;
+		// }
+	// delete[] mega_float;
+
+	// I guess it's always a better practice to add those :
+	glDeleteBuffers(1, &colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
+	// glDeleteBuffers(1, &_vertexArrayID);
+	// glDeleteBuffers(1, &_vertexBuffer);
 	}
-	delete[] mega_float;
 }
 
 void	render::create_vertex_array()
@@ -398,6 +426,7 @@ int		render::glfw_init()
 
 void	render::clear() //comment on sait dans le main qu'il y a eu un clear et stop le prgm ?
 {
+	std::cout << "CLEAR" << std::endl;
 	glfwTerminate();
 }
 
