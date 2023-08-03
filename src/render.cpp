@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 16:13:37 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/03 16:29:53 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ render::~render()
 	
 	// not necessary ?
 	glDeleteBuffers(1, &_vertexArrayID);
+	glDeleteBuffers(1, &_colorBuffer);
 	glDeleteBuffers(1, &_vertexBuffer);
 	glfwDestroyWindow(_window);
 	glfwTerminate();
@@ -64,77 +65,8 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
         std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
         i++;
     }
-    std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
     return (result);
 }
-
-/*float	*render::make_mega_float(std::vector<vec3> vertices, std::vector<unsigned int> faces)
-{
-	float	*result = new float[faces.size()]; //dont forget delete[]
-	size_t		i;
-
-	i = 0;
-	
-	while (i < faces.size())
-	{
-		tmp = vertices[faces[i] - 1];
-		std::cout << "vert = " << faces[i] << " : ";
-		result[3 * i] = tmp._v[0];
-		result[3 * i + 1] = tmp._v[1];
-		result[3 * i + 2] = tmp._v[2];
-		std::cout << "x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
-		i++;
-	}
-		// tmp = vertices[faces[i] - 1];
-		std::cout << "tessst" << std::endl;
-		std::cout << vertices[faces[i] - 1]._v[0];
-		std::cout << "==============" << std::endl;
-		result[3 * i] = vertices[3 * (faces[i] - 1)];
-		result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
-		result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
-		std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
-
-		std::cout << std::endl << "mega float res = " << std::endl;
-		std::cout << result[3 * i] << ", ";
-		std::cout << result[3 * i + 1] << ", ";
-		std::cout << result[3 * i + 2] << std::endl;
-		i++;
-	}
-	i = 0;
-	std::cout << "[";
-	while(i < faces.size() * 3)
-	{
-		std::cout << std::fixed << std::setprecision(8) << result[i++];
-		if (i % 3 == 0)
-			std::cout << "]" << std::endl << "[";
-		else
-			std::cout << ", ";
-	}
-	std::cout << "blaaaaaaaaaaaaaaaaaa" << std::endl;
-	return (result);
-}*/
-
-/*float	*render::make_perspective(float *mega_float, int size)
-{
-	int		i;
-	float	x;
-	float	y;
-	float	z;
-	float	ar;
-
-	ar = _width / _height;
-	i = 0;
-	while (i < size)
-	{
-		x = mega_float[3 * i];
-		y = mega_float[3 * i + 1];
-		z = mega_float[3 * i + 2];
-		mega_float[3 * i] = x / (ar * z * tanf((90 / 2) * (M_PI / 180)));
-		mega_float[3 * i + 1] = x / (z * tanf((90 / 2) * (M_PI / 180)));
-		i++;
-	}
-	return (mega_float);
-}*/
 
 static void	get_fps(int &frames, float &last_time)
 {
@@ -173,6 +105,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// Enable/init depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 
 	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
 	glEnable(GL_CULL_FACE);
@@ -189,6 +123,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// Matrix4		model;
 	// model = model.identity();
 
+
+	// CREATING VERTICES
 	static const GLfloat g_vertex_buffer_data[] = { 
 		-1.0f,-1.0f,-1.0f,
 		-1.0f,-1.0f, 1.0f,
@@ -266,17 +202,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		0.820f,  0.883f,  0.371f,
 		0.982f,  0.099f,  0.879f
 	};
-	GLuint	colorbuffer;
-
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	
+	glGenBuffers(1, &_colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
 
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
 
-	// send colorbuffer to shader pipeline, at layout = 1
+	// send _colorBuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer
 		(
 		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -288,13 +223,11 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		);
 
 
-
-
 	// VERTEX BUFFER
 	glGenBuffers(1, &_vertexBuffer);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), &g_vertex_buffer_data, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW); 
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
@@ -364,13 +297,12 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			);
 
 
-
 		// "Wireframe" render mode :)
     	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 
     	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
-		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3); // Starting from vertex 0; 3 vertices = 1 triangle per face
+		glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices = 1 triangle per face
 
 		// glDisableVertexAttribArray(0); // not necessary
 		
@@ -380,16 +312,19 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
 		pos += .1f;
-		// }
+	}
+	// END OF RENDER LOOP
+
 	// delete[] mega_float;
 
 	// I guess it's always a better practice to add those :
-	glDeleteBuffers(1, &colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
+	// glDeleteBuffers(1, &_colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
 	// glDeleteBuffers(1, &_vertexArrayID);
 	// glDeleteBuffers(1, &_vertexBuffer);
-	}
+
 }
 
+// This is our VAO ?
 void	render::create_vertex_array()
 {
 	glGenVertexArrays(1, &_vertexArrayID);
