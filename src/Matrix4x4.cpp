@@ -85,6 +85,44 @@ Matrix4	Matrix4::look_at(Vec4 eye, Vec4 center, Vec4 up)
 	return (res);
 }
 
+Matrix4		Matrix4::rotation(char rotate, float angle)
+{
+	Matrix4 res;
+	float	rot_x[16] = {1, 0, 0, 0,
+						0, cosf(angle), (sinf(angle) * -1), 0,
+						0, sinf(angle), cosf(angle), 0,
+						0, 0, 0, 1};
+	float	rot_y[16] = {cosf(angle), 0, sinf(angle), 0,
+						0, 1, 0, 0,
+						sinf(angle) * -1, 0, cosf(angle), 0,
+						0, 0, 0, 1};
+	float	rot_z[16] = {cosf(angle), sinf(angle) * -1, 0, 0,
+						sinf(angle), cosf(angle), 0, 0,
+						0, 0, 1, 0,
+						0, 0, 0, 1};
+
+	if (rotate == 'x')
+		res = rot_x;
+	else if (rotate == 'y')
+		res = rot_y;
+	else if (rotate == 'z')
+		res = rot_z;
+	return (res);
+}
+
+Matrix4		Matrix4::translate(Vec4 to_add)
+{
+	Matrix4 res;
+	float	trans[16] = {1, 0, 0, to_add[0],
+						0, 1, 0, to_add[1],
+						0, 0, 1, to_add[2],
+						0, 0, 0, 1};
+	std::vector<float>	matrice(16, 0);
+	res = trans;
+	return (res);
+}
+
+
 /*	MATRIX
 //	Utils
 */
@@ -148,6 +186,12 @@ Matrix4	Matrix4::operator*(const Matrix4 &other)
 Matrix4	Matrix4::operator=(const Matrix4 &other)
 {
 	memcpy(_m, other._m, 16 * sizeof(float));
+	return (*this);
+}
+
+Matrix4	Matrix4::operator=(const float *other)
+{
+	memcpy(_m, other, 16 * sizeof(float));
 	return (*this);
 }
 

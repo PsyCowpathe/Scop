@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 16:31:13 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 18:28:09 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,9 @@ class render
 		GLuint			_colorBuffer;
 		
 		char			_rotate_axis = 'x';
+		int				_moov_x = 0;
+		int				_moov_y = 0;
+		int				_moov_z = 0;
 		matrice			matrice;
 		int				_width;
 		int				_height;
@@ -64,6 +67,7 @@ class render
 		static void		error_callback(int error, const char *description);
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		void			change_rotate_axis(int key);
+		void			moov_object(int key);
 
 		//Utils
 		void			create_vertex_array();

@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 16:29:53 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/03 18:31:00 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,6 +234,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	GLuint	model_id = glGetUniformLocation(programID, "model");
 	GLuint	view_id = glGetUniformLocation(programID, "view");
 	GLuint	proj_id = glGetUniformLocation(programID, "proj");
+	GLuint	rot_id = glGetUniformLocation(programID, "rot");
+	GLuint	trans_id = glGetUniformLocation(programID, "trans");
 	float		pos = 0.0f;
 
 
@@ -241,16 +243,26 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// * RENDER LOOP *
 	// ***************
 
+	float	angle = 0;
+
 	while (!glfwWindowShouldClose(_window))
 	{
 		Matrix4		proj;
 		proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
 		Matrix4		view;
-		view = view.look_at(Vec4(pos, 3, -3, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+		view = view.look_at(Vec4(0, 3, -3, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
 
 		Matrix4		model;
 		model = model.identity();
+
+		Matrix4		rot;
+		rot = model.rotation(_rotate_axis, angle_to_rad(angle));
+		if (angle >= 360)
+			angle = 0;
+		else
+			angle += 1.0f;
+
 		get_fps(frames, last_time);
 
 		// BACKGROUND clear & redraw
@@ -280,6 +292,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
 		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
 		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
+		glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
+		glUniformMatrix4fv(trans_id, 1, GL_FALSE, &trans._m[0]);
 		
 		// glBufferData(GL_ARRAY_BUFFER, sizeof(*mega_float) * (faces.size() * 3), mega_float, GL_STATIC_DRAW);
 
@@ -298,7 +312,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 		// "Wireframe" render mode :)
-    	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 
     	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
@@ -404,6 +418,28 @@ void	render::change_rotate_axis(int key)
 		_rotate_axis = 'z';
 }
 
+void	render::moov_object(int key)
+{
+	if (key == GLFW_KEY_W)
+		_moov_z = -1;
+	else if (key == GLFW_KEY_A)
+		_moov_x = -1;
+	else if (key == GLFW_KEY_S)
+		_moov_z = 1;
+	else if (key == GLFW_KEY_D)
+		_moov_x = 1;
+	else if (key == GLFW_KEY_SHIFT)
+		_moov_y = -1;
+	else if (key == GLFW_KEY_SPACE)
+		_moov_y = 1;
+	else
+	{
+		_moov_x = 0;
+		_moov_y = 0;
+		_moov_z = 0;
+	}
+}
+
 void	render::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	(void)scancode;
@@ -413,6 +449,10 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	else if (key == GLFW_KEY_W || key == GLFW_KEY_A
+				|| key == GLFW_KEY_S || key == GLFW_KEY_D || key == GLFW_KEY_SHIFT
+				|| key == GLFW_KEY_SPACE)
+		w->moov_object(key);
 	else
 		w->change_rotate_axis(key);
 
