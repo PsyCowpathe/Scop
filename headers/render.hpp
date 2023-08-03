@@ -23,9 +23,9 @@
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 
-#include "./glm/glm/glm.hpp"
-#include "./glm/glm/gtx/transform.hpp"
-#include "./glm/glm/gtx/string_cast.hpp"
+// #include "./glm/glm/glm.hpp"
+// #include "./glm/glm/gtx/transform.hpp"
+// #include "./glm/glm/gtx/string_cast.hpp"
 
 GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
 
@@ -36,13 +36,14 @@ class render
 		GLFWwindow		*_window;
 		GLuint			_vertexArrayID;
 		GLuint			_vertexBuffer;
-		// add colorbuffer here ?
+		GLuint			_colorBuffer;
+		
 		char			_rotate_axis = 'x';
 		matrice			matrice;
 		int				_width;
 		int				_height;
-		float			_pitch = 0;
-		float			_yaw = -90;
+		// float			_pitch = 0;
+		// float			_yaw = -90;
 
 		//GLfloat			*_current_vertex;
 		// const GLfloat	*_original_vertex;

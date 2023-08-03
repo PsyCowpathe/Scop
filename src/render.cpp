@@ -43,6 +43,7 @@ render::~render()
 	
 	// not necessary ?
 	glDeleteBuffers(1, &_vertexArrayID);
+	glDeleteBuffers(1, &_colorBuffer);
 	glDeleteBuffers(1, &_vertexBuffer);
 	glfwDestroyWindow(_window);
 	glfwTerminate();
@@ -74,7 +75,7 @@ static void	get_fps(int &frames, float &last_time)
 	if (current_time - last_time >= 1.0)
 	{
 		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
-		//frames = 0;
+		frames = 0;
 		last_time = glfwGetTime();
 	}
 }
@@ -122,6 +123,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// Matrix4		model;
 	// model = model.identity();
 
+
+	// CREATING VERTICES
 	static const GLfloat g_vertex_buffer_data[] = { 
 		-1.0f,-1.0f,-1.0f,
 		-1.0f,-1.0f, 1.0f,
@@ -199,17 +202,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		0.820f,  0.883f,  0.371f,
 		0.982f,  0.099f,  0.879f
 	};
-	GLuint	colorbuffer;
-
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	
+	glGenBuffers(1, &_colorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
 
 
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
 
-	// send colorbuffer to shader pipeline, at layout = 1
+	// send _colorBuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer
 		(
 		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -225,7 +227,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glGenBuffers(1, &_vertexBuffer);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), &g_vertex_buffer_data, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW); 
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
@@ -300,7 +302,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
     	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
-		glDrawArrays(GL_TRIANGLES, 0, faces.size() * 3); // Starting from vertex 0; 3 vertices = 1 triangle per face
+		glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices = 1 triangle per face
 
 		// glDisableVertexAttribArray(0); // not necessary
 		
@@ -310,16 +312,19 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
 		pos += .1f;
-		// }
+	}
+	// END OF RENDER LOOP
+
 	// delete[] mega_float;
 
 	// I guess it's always a better practice to add those :
-	glDeleteBuffers(1, &colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
+	// glDeleteBuffers(1, &_colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
 	// glDeleteBuffers(1, &_vertexArrayID);
 	// glDeleteBuffers(1, &_vertexBuffer);
-	}
+
 }
 
+// This is our VAO ?
 void	render::create_vertex_array()
 {
 	glGenVertexArrays(1, &_vertexArrayID);

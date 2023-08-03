@@ -10,7 +10,7 @@ out vec3 color;
 void main()
 {
 	gl_Position = vec4(vertexPosition_modelspace, 1.0f);
-	// gl_Position = projection * view *  model * vec4(vertexPosition_modelspace, 1.0f);
+	gl_Position = proj * view *  model * vec4(vertexPosition_modelspace, 1.0f);
 
 	color = in_color;
 }
