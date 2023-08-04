@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/04 15:47:41 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/04 19:33:01 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <GLFW/glfw3.h>
 #include <math.h>
 #include <vector>
+#include <map>
 #include "matrice.hpp"
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
@@ -33,18 +34,19 @@ class render
 {
 	private :
 
-		GLFWwindow		*_window;
-		GLuint			_vertexArrayID;
-		GLuint			_vertexBuffer;
-		GLuint			_colorBuffer;
+		GLFWwindow				*_window;
+		GLuint					_vertexArrayID;
+		GLuint					_vertexBuffer;
+		GLuint					_colorBuffer;
 		
-		char			_rotate_axis = 'y';
-		float			_moov_x = 0;
-		float			_moov_y = 0;
-		float			_moov_z = 0;
-		matrice			matrice;
-		int				_width;
-		int				_height;
+		char					_rotate_axis = 'y';
+		float					_moov_x = 0;
+		float					_moov_y = 0;
+		float					_moov_z = 0;
+		matrice					matrice;
+		int						_width;
+		int						_height;
+		bool					_keys[];
 		// float			_pitch = 0;
 		// float			_yaw = -90;
 
@@ -77,6 +79,7 @@ class render
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
 		Vec4			check_moov(Vec4 factor);
 
+		void			key_print();
 
 	public :
 

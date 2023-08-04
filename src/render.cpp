@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/04 15:56:47 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/04 19:47:43 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,15 +267,10 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glfwSwapBuffers(_window);
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
+		key_print();
 		pos += .1f;
 	}
 	// END OF RENDER LOOP
-
-	// I guess it's always a better practice to add those :
-	// glDeleteBuffers(1, &_colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
-	// glDeleteBuffers(1, &_vertexArrayID);
-	// glDeleteBuffers(1, &_vertexBuffer);
-
 }
 
 // This is our VAO ?
@@ -359,38 +354,42 @@ void	render::change_rotate_axis(int key)
 		_rotate_axis = 'z';
 }
 
-void	render::moov_object(int key, int action)
+void	render::moov_object(int keyd, int action)
 {
-	if (action != GLFW_RELEASE)
-	{
-		if (key == GLFW_KEY_W)
-			_moov_z = -1;
-		if (key == GLFW_KEY_S)
-			_moov_z = 1;
-		if (key == GLFW_KEY_A)
-			_moov_x = -1;
-		if (key == GLFW_KEY_D)
-			_moov_x = 1;
-		if (key == GLFW_KEY_SPACE)
-			_moov_y = -1;
-		if (key == GLFW_KEY_LEFT_SHIFT)
-			_moov_y = 1;
-	}
-	else
-	{
-		if (key == GLFW_KEY_W)
-			_moov_z = 0;
-		if (key == GLFW_KEY_S)
-			_moov_z = 0;
-		if (key == GLFW_KEY_A)
-			_moov_x = 0;
-		if (key == GLFW_KEY_D)
-			_moov_x = 0;
-		if (key == GLFW_KEY_SPACE)
-			_moov_y = 0;
-		if (key == GLFW_KEY_LEFT_SHIFT)
-			_moov_y = 0;
-	}
+	(void)keyd;
+	(void)action;
+	if (_keys[GLFW_KEY_SPACE])
+		_moov_x += 1;
+	// if (action != GLFW_RELEASE)
+	// {
+	// 	if (key == GLFW_KEY_W)
+	// 		_moov_z = -1;
+	// 	if (key == GLFW_KEY_S)
+	// 		_moov_z = 1;
+	// 	if (key == GLFW_KEY_A)
+	// 		_moov_x = -1;
+	// 	if (key == GLFW_KEY_D)
+	// 		_moov_x = 1;
+	// 	if (key == GLFW_KEY_SPACE)
+	// 		_moov_y = -1;
+	// 	if (key == GLFW_KEY_LEFT_SHIFT)
+	// 		_moov_y = 1;
+	// }
+	// else
+	// {
+	// 	if (key == GLFW_KEY_W)
+	// 		_moov_z = 0;
+	// 	if (key == GLFW_KEY_S)
+	// 		_moov_z = 0;
+	// 	if (key == GLFW_KEY_A)
+	// 		_moov_x = 0;
+	// 	if (key == GLFW_KEY_D)
+	// 		_moov_x = 0;
+	// 	if (key == GLFW_KEY_SPACE)
+	// 		_moov_y = 0;
+	// 	if (key == GLFW_KEY_LEFT_SHIFT)
+	// 		_moov_y = 0;
+	// }
 }
 
 void	render::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -403,13 +402,17 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 	std::cout << "action = " << action << std::endl; 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
-	else if (key == GLFW_KEY_W || key == GLFW_KEY_A
-				|| key == GLFW_KEY_S || key == GLFW_KEY_D || key == GLFW_KEY_LEFT_SHIFT
-				|| key == GLFW_KEY_SPACE)
-		w->moov_object(key, action);
+	else if (action == GLFW_PRESS)
+		w->_keys[key] = true;
+	else if (action == GLFW_RELEASE)
+		w->_keys[key] = false;
 	else
 		w->change_rotate_axis(key);
+}
 
+void	render::key_print()
+{
+	std::cout << _keys[GLFW_KEY_SPACE] << std::endl;
 }
 
 void	render::resize_callback(GLFWwindow *win, int width, int height)
