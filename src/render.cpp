@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/04 13:59:32 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/04 15:37:29 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	create_vertex_array();
 
 	// Define viewport dimensions ??
-	// glViewport(0, 0, _width, _height);
+	glViewport(0, 0, _width, _height);
 
 	// Enable/init depth
 	glEnable(GL_DEPTH_TEST);
@@ -123,46 +123,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glCullFace(GL_BACK);
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
-
-	// CREATING VERTICES
-	// static const GLfloat g_vertex_buffer_data[] = { 
-	// 	-1.0f,-1.0f,-1.0f,
-	// 	-1.0f,-1.0f, 1.0f,
-	// 	-1.0f, 1.0f, 1.0f,
-	// 	 1.0f, 1.0f,-1.0f,
-	// 	-1.0f,-1.0f,-1.0f,
-	// 	-1.0f, 1.0f,-1.0f,
-	// 	 1.0f,-1.0f, 1.0f,
-	// 	-1.0f,-1.0f,-1.0f,
-	// 	 1.0f,-1.0f,-1.0f,
-	// 	 1.0f, 1.0f,-1.0f,
-	// 	 1.0f,-1.0f,-1.0f,
-	// 	-1.0f,-1.0f,-1.0f,
-	// 	-1.0f,-1.0f,-1.0f,
-	// 	-1.0f, 1.0f, 1.0f,
-	// 	-1.0f, 1.0f,-1.0f,
-	// 	 1.0f,-1.0f, 1.0f,
-	// 	-1.0f,-1.0f, 1.0f,
-	// 	-1.0f,-1.0f,-1.0f,
-	// 	-1.0f, 1.0f, 1.0f,
-	// 	-1.0f,-1.0f, 1.0f,
-	// 	 1.0f,-1.0f, 1.0f,
-	// 	 1.0f, 1.0f, 1.0f,
-	// 	 1.0f,-1.0f,-1.0f,
-	// 	 1.0f, 1.0f,-1.0f,
-	// 	 1.0f,-1.0f,-1.0f,
-	// 	 1.0f, 1.0f, 1.0f,
-	// 	 1.0f,-1.0f, 1.0f,
-	// 	 1.0f, 1.0f, 1.0f,
-	// 	 1.0f, 1.0f,-1.0f,
-	// 	-1.0f, 1.0f,-1.0f,
-	// 	 1.0f, 1.0f, 1.0f,
-	// 	-1.0f, 1.0f,-1.0f,
-	// 	-1.0f, 1.0f, 1.0f,
-	// 	 1.0f, 1.0f, 1.0f,
-	// 	-1.0f, 1.0f, 1.0f,
-	// 	 1.0f,-1.0f, 1.0f
-	// };
 
 	static const GLfloat color_buffer[] = { 
 		0.583f,  0.771f,  0.014f,
@@ -225,9 +185,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	// VERTEX BUFFER
 	glGenBuffers(1, &_vertexBuffer);
-
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(transformed_vertices) * faces.size(), transformed_vertices, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
@@ -248,6 +207,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	while (!glfwWindowShouldClose(_window))
 	{
+		glUseProgram(programID);
+
 		Matrix4		proj;
 		proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
@@ -269,9 +230,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 		get_fps(frames, last_time);
 
-		// BACKGROUND clear & redraw
-		// glClearColor(0, 255, 0, 1); // Basic colored bg
-
 		// Spice up BG :)
 		static GLclampf c = 0.0f;
 		//Why not a colred bg ?
@@ -283,27 +241,13 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Loop on every face's vertices to transform/rotate/etc. them
-
-		// while (i < faces.size())
-		// {
-			/*std::vector<float>	test(4, 0);
-			test[0] = 0 + (angle / 1000);
-			test[1] = (0);
-			test[2] = (0);
-			test[3] = (0);*/
-
 		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
 		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
 		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
 		glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
 		glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
-		
-		// glBufferData(GL_ARRAY_BUFFER, sizeof(*mega_float) * (faces.size() * 3), mega_float, GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		// glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 		glVertexAttribPointer
 			(
 			 0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -318,14 +262,8 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		// "Wireframe" render mode :)
     	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-
-    	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); // Starting from vertex 0; 3 vertices = 1 triangle per face
-
+		glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
 		// glDisableVertexAttribArray(0); // not necessary
-		
-		glUseProgram(programID);
-		
 		glfwSwapBuffers(_window);
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
@@ -472,3 +410,8 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 		w->change_rotate_axis(key);
 
 }
+
+// void	render::resize_callback(GLFWwindow *win, int width, int height)
+// {
+	
+// }
