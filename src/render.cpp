@@ -14,8 +14,6 @@
 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
 {
-	bool	zero = false;
-	memcpy(_keys, &zero, sizeof(_keys));
 	std::cout << "creation" << std::endl;
 	if (width < 0 || height < 0)
 		clear();
@@ -208,6 +206,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	while (!glfwWindowShouldClose(_window))
 	{
+		handle_inputs();
 		glUseProgram(programID);
 
 		Matrix4		proj;
@@ -344,22 +343,32 @@ void	render::error_callback(int error, const char *description)
 	std::cout << "Error : " << description << std::endl;
 }
 
-void	render::change_rotate_axis(int key)
+void	render::handle_inputs()
 {
-	if (key == GLFW_KEY_RIGHT)
-		_rotate_axis = 'x';
-	else if (key == GLFW_KEY_UP)
-		_rotate_axis = 'y';
-	else if (key == GLFW_KEY_DOWN)
-		_rotate_axis = 'z';
-}
-
-void	render::moov_object(int keyd, int action)
-{
-	(void)keyd;
-	(void)action;
+	if (_keys[GLFW_KEY_W])
+		_moov_z = 1;
+	if (_keys[GLFW_KEY_S])
+		_moov_z = -1;
+	if (_keys[GLFW_KEY_A])
+		_moov_x = 1;
+	if (_keys[GLFW_KEY_D])
+		_moov_x = -1;
 	if (_keys[GLFW_KEY_SPACE])
-		_moov_x += 1;
+		_moov_y = 1;
+	if (_keys[GLFW_KEY_LEFT_SHIFT])
+		_moov_y = -1;
+	else
+	{
+		_moov_x = 0;
+		_moov_y = 0;
+		_moov_z = 0;
+	}
+	// if (_keys[GLFW_KEY_RIGHT])
+	// 	_rotate_axis = 'x';
+	// else if (_keys[GLFW_KEY_UP])
+	// 	_rotate_axis = 'y';
+	// else if (_keys[GLFW_KEY_DOWN])
+	// 	_rotate_axis = 'z';
 	// if (action != GLFW_RELEASE)
 	// {
 	// 	if (key == GLFW_KEY_W)
@@ -406,8 +415,6 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 		w->_keys[key] = true;
 	else if (action == GLFW_RELEASE)
 		w->_keys[key] = false;
-	else
-		w->change_rotate_axis(key);
 }
 
 void	render::key_print()

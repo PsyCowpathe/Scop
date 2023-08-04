@@ -46,7 +46,7 @@ class render
 		matrice					matrice;
 		int						_width;
 		int						_height;
-		bool					_keys[256];
+		std::map<int, bool>		_keys;
 		// float			_pitch = 0;
 		// float			_yaw = -90;
 
@@ -69,8 +69,7 @@ class render
 		static void		error_callback(int error, const char *description);
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		static void		resize_callback(GLFWwindow *win, int width, int height);
-		void			change_rotate_axis(int key);
-		void			moov_object(int key, int action);
+		void			handle_inputs();
 
 		//Utils
 		void			create_vertex_array();
