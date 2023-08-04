@@ -37,11 +37,13 @@ class render
 		GLuint			_vertexArrayID;
 		GLuint			_vertexBuffer;
 		GLuint			_colorBuffer;
-		
+	
 		char			_rotate_axis = 'x';
 		matrice			matrice;
 		int				_width;
 		int				_height;
+		
+		bool			_t_mode = 0;
 		// float			_pitch = 0;
 		// float			_yaw = -90;
 
@@ -64,12 +66,19 @@ class render
 		static void		error_callback(int error, const char *description);
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		void			change_rotate_axis(int key);
+		void			change_color(int key);
+
+		//Texture
+		void			switch_texture();
 
 		//Utils
 		void			create_vertex_array();
 
 		void			clear();
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
+		
+		//Uniforms location pointers
+		GLuint			_color;
 
 	public :
 

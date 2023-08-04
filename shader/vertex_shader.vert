@@ -8,16 +8,7 @@ uniform mat4 view;
 uniform mat4 proj;
 
 uniform float u_test;
-
-uniform float u_Ns;
-
-uniform vec3 u_Ka;
-uniform vec3 u_Kd;
-uniform vec3 u_Ks;
-
-uniform float u_Ni;
-uniform float u_d;
-uniform float u_illu;
+uniform vec3 u_color;
 
 
 out vec3 color;

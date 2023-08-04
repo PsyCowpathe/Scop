@@ -41,7 +41,7 @@ render::~render()
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	
-	// not necessary ?
+	// I guess it's always a better practice to add those :	// but not necessary ?
 	glDeleteBuffers(1, &_vertexArrayID);
 	glDeleteBuffers(1, &_colorBuffer);
 	glDeleteBuffers(1, &_vertexBuffer);
@@ -237,31 +237,13 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	float		pos = 0.0f;
 
 
-	// Trying to set some uniforms 
+	// Trying to set some uniforms (add uniforms locations to render class ?)
 	GLuint my_uniform = glGetUniformLocation(programID, "u_test");
 	glUniform1f(my_uniform, 3.0f);
 
-	GLuint u_Ns = glGetUniformLocation(programID, "u_Ns");
-	glUniform1f(u_Ns, 96.08f);
-
-	GLuint u_Ka = glGetUniformLocation(programID, "u_Ka");;
-	glUniform3f(u_Ka, 0.0f, 0.0f, 0.0f);
-
-	GLuint u_Kd = glGetUniformLocation(programID, "u_Kd");;
-	glUniform3f(u_Kd, 0.64f, 0.64f, 0.64f);
-
-	GLuint u_Ks = glGetUniformLocation(programID, "u_Ks");;
-	glUniform3f(u_Ks, 0.5f, 0.5f, 0.5f);
-
-	GLuint u_Ni = glGetUniformLocation(programID, "u_Ni");;
-	glUniform1f(u_Ni, 1.0f);
-
-	GLuint u_d = glGetUniformLocation(programID, "u_d");;
-	glUniform1f(u_d, 1.0f);
-
-	GLuint u_illu = glGetUniformLocation(programID, "u_illu");;
-	glUniform1f(u_illu, 2.0f);
-
+	// Used in change_color() & switch_texture()
+	this->_color = glGetUniformLocation(programID, "u_color");
+	glUniform3f(this->_color, 1.0f, 1.0f, 1.0f);
 
 	// ***************
 	// * RENDER LOOP *
@@ -342,12 +324,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// END OF RENDER LOOP
 
 	// delete[] mega_float;
-
-	// I guess it's always a better practice to add those :
-	// glDeleteBuffers(1, &_colorbuffer); // maybe this could be also  an attribute, so we can delete it in destructor ?
-	// glDeleteBuffers(1, &_vertexArrayID);
-	// glDeleteBuffers(1, &_vertexBuffer);
-
 }
 
 // This is our VAO ?
@@ -430,15 +406,49 @@ void	render::change_rotate_axis(int key)
 		_rotate_axis = 'z';
 }
 
+void	render::change_color(int key)
+{
+	if (key == GLFW_KEY_R)
+		glUniform3f(_color, 1.0f, 0.0f, 0.0f);
+	else if (key == GLFW_KEY_G)
+		glUniform3f(_color, 0.0f, 1.0f, 0.0f);
+	else if (key == GLFW_KEY_B)
+		glUniform3f(_color, 0.0f, 0.0f, 1.0f);
+	else if (key == GLFW_KEY_C)
+		glUniform3f(_color, 1.0f, 1.0f, 1.0f);
+}
+
+void	render::switch_texture()
+{
+	if (_t_mode == 0)
+	{
+		glUniform3f(_color, 1.0f, 1.0f, 1.0f);
+		_t_mode = 1;
+	}
+	else
+	{
+		glUniform3f(_color, 0.0f, 0.0f, 0.0f);
+		_t_mode = 0;
+	}
+	
+}
+
 void	render::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	(void)scancode;
 	(void)mods;
-	void *data = glfwGetWindowUserPointer(window);  
+	void *data = glfwGetWindowUserPointer(window);
 	render *w = static_cast<render *>(data);
 
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	std::cout << "KEY CODE = " << key << std::endl;
+	
+	if ((key == GLFW_KEY_R || key == GLFW_KEY_G || key == GLFW_KEY_B || key == GLFW_KEY_C )
+				&& action == GLFW_PRESS)
+		w->change_color(key);
+	else if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	else if (key == GLFW_KEY_T && action == GLFW_PRESS)
+		w->switch_texture();
 	else
 		w->change_rotate_axis(key);
 
