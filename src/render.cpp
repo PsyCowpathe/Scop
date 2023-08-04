@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/04 15:37:29 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/04 15:56:47 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glUseProgram(programID);
 
 		Matrix4		proj;
-		proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+		proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
 
 		Matrix4		view;
 		view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
@@ -305,6 +305,7 @@ void	render::set_callback()
 {
 	glfwSetErrorCallback(error_callback);
 	glfwSetKeyCallback(_window, key_callback);
+	glfwSetWindowSizeCallback(_window, resize_callback);
 }
 
 int		render::create_window(std::string name)
@@ -396,7 +397,7 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 {
 	(void)scancode;
 	(void)mods;
-	void *data = glfwGetWindowUserPointer(window);  
+	void *data = glfwGetWindowUserPointer(window);
 	render *w = static_cast<render *>(data);
 	std::cout << "key = " << key << std::endl; 
 	std::cout << "action = " << action << std::endl; 
@@ -411,7 +412,13 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 
 }
 
-// void	render::resize_callback(GLFWwindow *win, int width, int height)
-// {
-	
-// }
+void	render::resize_callback(GLFWwindow *win, int width, int height)
+{
+	void	*data = glfwGetWindowUserPointer(win);
+	render	*r = static_cast<render *>(data);
+	(void)r;
+	r->_width = width;
+	r->_height = height;
+	glViewport(0, 0, r->_width, r->_height);
+	std::cout << "width: " << width << "height: " << height << std::endl;
+}

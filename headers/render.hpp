@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 20:27:29 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/04 15:47:41 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ class render
 		//Callback
 		static void		error_callback(int error, const char *description);
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+		static void		resize_callback(GLFWwindow *win, int width, int height);
 		void			change_rotate_axis(int key);
 		void			moov_object(int key, int action);
 
@@ -75,6 +76,7 @@ class render
 		void			clear();
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
 		Vec4			check_moov(Vec4 factor);
+
 
 	public :
 
