@@ -14,6 +14,8 @@
 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
 {
+	bool	zero = false;
+	memcpy(_keys, &zero, sizeof(_keys));
 	std::cout << "creation" << std::endl;
 	if (width < 0 || height < 0)
 		clear();
@@ -195,7 +197,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	GLuint	proj_id = glGetUniformLocation(programID, "proj");
 	GLuint	rot_id = glGetUniformLocation(programID, "rot");
 	GLuint	trans_id = glGetUniformLocation(programID, "trans");
-	float		pos = 0.0f;
 
 
 	// ***************
@@ -268,7 +269,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
 		key_print();
-		pos += .1f;
 	}
 	// END OF RENDER LOOP
 }

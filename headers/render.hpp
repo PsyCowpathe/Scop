@@ -46,7 +46,7 @@ class render
 		matrice					matrice;
 		int						_width;
 		int						_height;
-		bool					_keys[];
+		bool					_keys[256];
 		// float			_pitch = 0;
 		// float			_yaw = -90;
 
