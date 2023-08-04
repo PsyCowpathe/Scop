@@ -6,12 +6,12 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 16:09:28 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/04 19:26:19 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../headers/render.hpp"
-#include "../headers/load_object.hpp"
+#include "../headers/object_loader.hpp"
 
 int		main(void)
 {
@@ -20,7 +20,7 @@ int		main(void)
 	std::vector<float>			normals;
 	std::vector<unsigned int>	faces;
 
-	load_object("objects/cube.obj", vertices, uv, normals, faces);
+	load_object("objects/test.obj", vertices, uv, normals, faces);
 
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !");
 	/*static const GLfloat vertex_buffer[] =

@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 20:31:09 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/04 19:34:11 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,12 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
 	std::cout << "vertices size " << vertices.size() << std::endl;
     while (i < faces.size())
     {
+		std::cout << "face = " << faces[i] << std::endl;
+		std::cout << "vertices = " << vertices[i] << std::endl << std::endl;
         result[3 * i] = vertices[3 * (faces[i] - 1)];
         result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
         result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
-        std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
+        //std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
         i++;
     }
     return (result);
@@ -114,17 +116,15 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// Enable/init depth
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 
 	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
 	// CREATING VERTICES
-	static const GLfloat g_vertex_buffer_data[] = { 
+	/*static const GLfloat g_vertex_buffer_data[] = { 
 		-1.0f,-1.0f,-1.0f,
 		-1.0f,-1.0f, 1.0f,
 		-1.0f, 1.0f, 1.0f,
@@ -161,7 +161,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		 1.0f, 1.0f, 1.0f,
 		-1.0f, 1.0f, 1.0f,
 		 1.0f,-1.0f, 1.0f
-	};
+	};*/
 
 	static const GLfloat color_buffer[] = { 
 		0.583f,  0.771f,  0.014f,
@@ -223,10 +223,17 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 	// VERTEX BUFFER
+	
+	float	*megafloat;
+
+	megafloat = make_mega_float(vertices, faces);
+	//std::cout << vertices.size() << std::endl;
+	
 	glGenBuffers(1, &_vertexBuffer);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW); 
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*megafloat) * (faces.size() * 3), megafloat, GL_STATIC_DRAW);
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
@@ -302,7 +309,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 		glEnableVertexAttribArray(0);
 		// glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+		//glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 		glVertexAttribPointer
 			(
 			 0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -319,7 +326,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
     	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
-		glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices = 1 triangle per face
+		glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0; 3 vertices = 1 triangle per face
 
 		// glDisableVertexAttribArray(0); // not necessary
 		
@@ -428,13 +435,13 @@ void	render::moov_object(int key, int action)
 		if (key == GLFW_KEY_S)
 			_moov_z = 1;
 		if (key == GLFW_KEY_A)
-			_moov_x = -1;
-		if (key == GLFW_KEY_D)
 			_moov_x = 1;
+		if (key == GLFW_KEY_D)
+			_moov_x = -1;
 		if (key == GLFW_KEY_SPACE)
-			_moov_y = -1;
-		if (key == GLFW_KEY_LEFT_SHIFT)
 			_moov_y = 1;
+		if (key == GLFW_KEY_LEFT_SHIFT)
+			_moov_y = -1;
 	}
 	else
 	{

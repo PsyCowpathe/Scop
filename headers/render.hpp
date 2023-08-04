@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 20:27:29 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/04 14:32:20 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <GLFW/glfw3.h>
 #include <math.h>
 #include <vector>
-#include "matrice.hpp"
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
@@ -42,7 +41,6 @@ class render
 		float			_moov_x = 0;
 		float			_moov_y = 0;
 		float			_moov_z = 0;
-		matrice			matrice;
 		int				_width;
 		int				_height;
 		// float			_pitch = 0;
