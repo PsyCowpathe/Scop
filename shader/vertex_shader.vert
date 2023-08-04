@@ -1,5 +1,5 @@
 #version 330 core
-layout(location = 0) in vec3 position;
+// layout(location = 0) in vec3 position;
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 in_color;
 
@@ -8,6 +8,17 @@ uniform mat4 view;
 uniform mat4 proj;
 
 uniform float u_test;
+
+uniform float u_Ns;
+
+uniform vec3 u_Ka;
+uniform vec3 u_Kd;
+uniform vec3 u_Ks;
+
+uniform float u_Ni;
+uniform float u_d;
+uniform float u_illu;
+
 
 out vec3 color;
 

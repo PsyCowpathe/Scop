@@ -238,22 +238,30 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 	// Trying to set some uniforms 
-	GLuint my_uniform = 3;
-	glUniform1f(my_uniform, 2);
-	// glVertexAttribPointer
-	// 	(
-	// 	 3,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-	// 	 3,				// size (here we have 3 values per vertex)
-	// 	 GL_FLOAT,		// type
-	// 	 GL_FALSE,		// normalized?
-	// 	 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-	// 	 (void*)0		// array buffer offset (at beginning of array)
-	// 	);
+	GLuint my_uniform = glGetUniformLocation(programID, "u_test");
+	glUniform1f(my_uniform, 3.0f);
 
-	
-	// glGenBuffers(1, &data);
-	// glBindBufferBase(GL UNIFORM BUFFER, buff idx, ubo handle);
-	// glBufferData(GL UNIFORM BUFFER, size, nullptr, usage);
+	GLuint u_Ns = glGetUniformLocation(programID, "u_Ns");
+	glUniform1f(u_Ns, 96.08f);
+
+	GLuint u_Ka = glGetUniformLocation(programID, "u_Ka");;
+	glUniform3f(u_Ka, 0.0f, 0.0f, 0.0f);
+
+	GLuint u_Kd = glGetUniformLocation(programID, "u_Kd");;
+	glUniform3f(u_Kd, 0.64f, 0.64f, 0.64f);
+
+	GLuint u_Ks = glGetUniformLocation(programID, "u_Ks");;
+	glUniform3f(u_Ks, 0.5f, 0.5f, 0.5f);
+
+	GLuint u_Ni = glGetUniformLocation(programID, "u_Ni");;
+	glUniform1f(u_Ni, 1.0f);
+
+	GLuint u_d = glGetUniformLocation(programID, "u_d");;
+	glUniform1f(u_d, 1.0f);
+
+	GLuint u_illu = glGetUniformLocation(programID, "u_illu");;
+	glUniform1f(u_illu, 2.0f);
+
 
 	// ***************
 	// * RENDER LOOP *
