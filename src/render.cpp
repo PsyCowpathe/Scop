@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 20:31:09 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/04 13:59:32 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
 	float					last_time = glfwGetTime();
+	float					*transformed_vertices = make_mega_float(vertices, faces);
 
 	create_vertex_array();
 
@@ -124,44 +125,44 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
 	// CREATING VERTICES
-	static const GLfloat g_vertex_buffer_data[] = { 
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		-1.0f,-1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f,-1.0f,
-		 1.0f,-1.0f,-1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f,-1.0f,
-		 1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f, 1.0f, 1.0f,
-		-1.0f, 1.0f, 1.0f,
-		 1.0f,-1.0f, 1.0f
-	};
+	// static const GLfloat g_vertex_buffer_data[] = { 
+	// 	-1.0f,-1.0f,-1.0f,
+	// 	-1.0f,-1.0f, 1.0f,
+	// 	-1.0f, 1.0f, 1.0f,
+	// 	 1.0f, 1.0f,-1.0f,
+	// 	-1.0f,-1.0f,-1.0f,
+	// 	-1.0f, 1.0f,-1.0f,
+	// 	 1.0f,-1.0f, 1.0f,
+	// 	-1.0f,-1.0f,-1.0f,
+	// 	 1.0f,-1.0f,-1.0f,
+	// 	 1.0f, 1.0f,-1.0f,
+	// 	 1.0f,-1.0f,-1.0f,
+	// 	-1.0f,-1.0f,-1.0f,
+	// 	-1.0f,-1.0f,-1.0f,
+	// 	-1.0f, 1.0f, 1.0f,
+	// 	-1.0f, 1.0f,-1.0f,
+	// 	 1.0f,-1.0f, 1.0f,
+	// 	-1.0f,-1.0f, 1.0f,
+	// 	-1.0f,-1.0f,-1.0f,
+	// 	-1.0f, 1.0f, 1.0f,
+	// 	-1.0f,-1.0f, 1.0f,
+	// 	 1.0f,-1.0f, 1.0f,
+	// 	 1.0f, 1.0f, 1.0f,
+	// 	 1.0f,-1.0f,-1.0f,
+	// 	 1.0f, 1.0f,-1.0f,
+	// 	 1.0f,-1.0f,-1.0f,
+	// 	 1.0f, 1.0f, 1.0f,
+	// 	 1.0f,-1.0f, 1.0f,
+	// 	 1.0f, 1.0f, 1.0f,
+	// 	 1.0f, 1.0f,-1.0f,
+	// 	-1.0f, 1.0f,-1.0f,
+	// 	 1.0f, 1.0f, 1.0f,
+	// 	-1.0f, 1.0f,-1.0f,
+	// 	-1.0f, 1.0f, 1.0f,
+	// 	 1.0f, 1.0f, 1.0f,
+	// 	-1.0f, 1.0f, 1.0f,
+	// 	 1.0f,-1.0f, 1.0f
+	// };
 
 	static const GLfloat color_buffer[] = { 
 		0.583f,  0.771f,  0.014f,
@@ -226,7 +227,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glGenBuffers(1, &_vertexBuffer);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(transformed_vertices) * faces.size(), transformed_vertices, GL_STATIC_DRAW); 
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
@@ -319,7 +320,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
     	// Gives the current buffer binded to GL_ARRAY_BUFFER as vertices data to your shader (the shader will draw the triangle)
-		glDrawArrays(GL_TRIANGLES, 0, 36); // Starting from vertex 0; 3 vertices = 1 triangle per face
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); // Starting from vertex 0; 3 vertices = 1 triangle per face
 
 		// glDisableVertexAttribArray(0); // not necessary
 		
