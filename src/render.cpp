@@ -69,17 +69,17 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
-// static void	get_fps(int &frames, float &last_time)
-// {
-// 	float	current_time = glfwGetTime();
-// 	frames++;
-// 	if (current_time - last_time >= 1.0)
-// 	{
-// 		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
-// 		frames = 0;
-// 		last_time = glfwGetTime();
-// 	}
-// }
+static void	get_fps(int &frames, float &last_time)
+{
+	float	current_time = glfwGetTime();
+	frames++;
+	if (current_time - last_time >= 1.0)
+	{
+		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+		frames = 0;
+		last_time = glfwGetTime();
+	}
+}
 
 Vec4	render::check_moov(Vec4 old)
 {
@@ -87,6 +87,7 @@ Vec4	render::check_moov(Vec4 old)
 	float	y = old[1];
 	float	z = old[2];
 
+	std::cout << "x: " << _moov_x << "y: " << _moov_y << "z: " << _moov_z << std::endl;
 	if (_moov_x != 0)
 		x = (_moov_x / 20) + old[0];
 	if (_moov_y != 0)
@@ -203,79 +204,70 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	float	angle = 0;
 	Vec4 factor(0, 0, 0, 0);
-	auto	last_time = std::chrono::high_resolution_clock::now();
+	float	last_time = glfwGetTime();
 
 	while (!glfwWindowShouldClose(_window))
 	{
 		handle_inputs();
-		frames++;
-		auto	current_time = std::chrono::high_resolution_clock::now();
-		auto	frame_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - last_time).count();
-		if (frame_time >= 1000.0/frames)
-		{
-			// std::cout << "delta: " << (delta) << std::endl;
-			// get_fps(frames, last_time);
-			glUseProgram(programID);
+		get_fps(frames, last_time);
+		glUseProgram(programID);
 
-			Matrix4		proj;
-			proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
+		Matrix4		proj;
+		proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
 
-			Matrix4		view;
-			view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+		Matrix4		view;
+		view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
 
-			Matrix4		model;
-			model = model.identity();
+		Matrix4		model;
+		model = model.identity();
 
-			Matrix4		rot;
-			rot = model.rotation(_rotate_axis, angle_to_rad(angle));
+		Matrix4		rot;
+		rot = model.rotation(_rotate_axis, angle_to_rad(angle));
 
-			factor = check_moov(factor);
+		factor = check_moov(factor);
 
-			if (angle >= 360)
-				angle = 0;
-			else
-				angle += 1.0;
-			// Spice up BG :)
-			static GLclampf c = 0.0f;
-			//Why not a colred bg ?
-			glClearColor(c,c,c,1);
-			c += 1.0f/256.0f;
-			if (c >= 1.0f)
-				c = 0.0f;
+		if (angle >= 360)
+			angle = 0;
+		else
+			angle += 1.0;
+		// Spice up BG :)
+		static GLclampf c = 0.0f;
+		//Why not a colred bg ?
+		glClearColor(c,c,c,1);
+		c += 1.0f/256.0f;
+		if (c >= 1.0f)
+			c = 0.0f;
 
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
-			glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
-			glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
-			glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
-			glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
+		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
+		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
+		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
+		glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
+		glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
 
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer
-				(
-				0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
-				3,			// size
-				GL_FLOAT,	// type
-				GL_FALSE,	// normalized?
-				0,			// stride
-				(void*)0	// array buffer offset
-				);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer
+			(
+			0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,			// size
+			GL_FLOAT,	// type
+			GL_FALSE,	// normalized?
+			0,			// stride
+			(void*)0	// array buffer offset
+			);
 
 
-			// "Wireframe" render mode :)
-			//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		// "Wireframe" render mode :)
+		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-			glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
-			// glDisableVertexAttribArray(0); // not necessary
-			glfwSwapBuffers(_window);
-			glfwSetWindowUserPointer(_window, this);
-			glfwPollEvents();
-			key_print();
-			frames = 0;
-			last_time = std::chrono::high_resolution_clock::now();
-		}
+		glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
+		// glDisableVertexAttribArray(0); // not necessary
+		glfwSwapBuffers(_window);
+		glfwSetWindowUserPointer(_window, this);
+		glfwPollEvents();
+		// key_print();
 	}
 	// END OF RENDER LOOP
 }
@@ -353,11 +345,11 @@ void	render::error_callback(int error, const char *description)
 
 void	render::handle_inputs()
 {
+	_moov_x = 0;
+	_moov_y = 0;
+	_moov_z = 0;
 	if (_keys[GLFW_KEY_W])
-	{
-		std::cout << "YES" << std::endl;
 		_moov_z = 1;
-	}
 	if (_keys[GLFW_KEY_S])
 		_moov_z = -1;
 	if (_keys[GLFW_KEY_A])
@@ -370,52 +362,10 @@ void	render::handle_inputs()
 		_moov_y = -1;
 	if (_keys[GLFW_KEY_RIGHT])
 		_rotate_axis = 'x';
-	if (_keys[GLFW_KEY_UP])
+	else if (_keys[GLFW_KEY_UP])
 		_rotate_axis = 'y';
-	if (_keys[GLFW_KEY_DOWN])
+	else if (_keys[GLFW_KEY_DOWN])
 		_rotate_axis = 'z';
-	else
-	{
-		_moov_x = 0;
-		_moov_y = 0;
-		_moov_z = 0;
-	}
-	// if (_keys[GLFW_KEY_RIGHT])
-	// 	_rotate_axis = 'x';
-	// else if (_keys[GLFW_KEY_UP])
-	// 	_rotate_axis = 'y';
-	// else if (_keys[GLFW_KEY_DOWN])
-	// 	_rotate_axis = 'z';
-	// if (action != GLFW_RELEASE)
-	// {
-	// 	if (key == GLFW_KEY_W)
-	// 		_moov_z = -1;
-	// 	if (key == GLFW_KEY_S)
-	// 		_moov_z = 1;
-	// 	if (key == GLFW_KEY_A)
-	// 		_moov_x = -1;
-	// 	if (key == GLFW_KEY_D)
-	// 		_moov_x = 1;
-	// 	if (key == GLFW_KEY_SPACE)
-	// 		_moov_y = -1;
-	// 	if (key == GLFW_KEY_LEFT_SHIFT)
-	// 		_moov_y = 1;
-	// }
-	// else
-	// {
-	// 	if (key == GLFW_KEY_W)
-	// 		_moov_z = 0;
-	// 	if (key == GLFW_KEY_S)
-	// 		_moov_z = 0;
-	// 	if (key == GLFW_KEY_A)
-	// 		_moov_x = 0;
-	// 	if (key == GLFW_KEY_D)
-	// 		_moov_x = 0;
-	// 	if (key == GLFW_KEY_SPACE)
-	// 		_moov_y = 0;
-	// 	if (key == GLFW_KEY_LEFT_SHIFT)
-	// 		_moov_y = 0;
-	// }
 }
 
 void	render::key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
