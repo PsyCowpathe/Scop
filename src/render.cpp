@@ -235,8 +235,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 				angle = 0;
 			else
 				angle += 1.0;
-
-
 			// Spice up BG :)
 			static GLclampf c = 0.0f;
 			//Why not a colred bg ?
@@ -356,7 +354,10 @@ void	render::error_callback(int error, const char *description)
 void	render::handle_inputs()
 {
 	if (_keys[GLFW_KEY_W])
+	{
+		std::cout << "YES" << std::endl;
 		_moov_z = 1;
+	}
 	if (_keys[GLFW_KEY_S])
 		_moov_z = -1;
 	if (_keys[GLFW_KEY_A])
@@ -367,6 +368,12 @@ void	render::handle_inputs()
 		_moov_y = 1;
 	if (_keys[GLFW_KEY_LEFT_SHIFT])
 		_moov_y = -1;
+	if (_keys[GLFW_KEY_RIGHT])
+		_rotate_axis = 'x';
+	if (_keys[GLFW_KEY_UP])
+		_rotate_axis = 'y';
+	if (_keys[GLFW_KEY_DOWN])
+		_rotate_axis = 'z';
 	else
 	{
 		_moov_x = 0;
