@@ -14,6 +14,7 @@
 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
 {
+	glfwSwapInterval(1);
 	std::cout << "creation" << std::endl;
 	if (width < 0 || height < 0)
 		clear();
@@ -68,17 +69,17 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
-static void	get_fps(int &frames, float &last_time)
-{
-	float	current_time = glfwGetTime();
-	frames++;
-	if (current_time - last_time >= 1.0)
-	{
-		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
-		frames = 0;
-		last_time = glfwGetTime();
-	}
-}
+// static void	get_fps(int &frames, float &last_time)
+// {
+// 	float	current_time = glfwGetTime();
+// 	frames++;
+// 	if (current_time - last_time >= 1.0)
+// 	{
+// 		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+// 		frames = 0;
+// 		last_time = glfwGetTime();
+// 	}
+// }
 
 Vec4	render::check_moov(Vec4 old)
 {
@@ -207,67 +208,74 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	while (!glfwWindowShouldClose(_window))
 	{
 		handle_inputs();
-		glUseProgram(programID);
+		frames++;
+		float	delta = glfwGetTime() - last_time;
+		if (delta >= 1.0/60)
+		{
+			// get_fps(frames, last_time);
+			glUseProgram(programID);
 
-		Matrix4		proj;
-		proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
+			Matrix4		proj;
+			proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
 
-		Matrix4		view;
-		view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+			Matrix4		view;
+			view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
 
-		Matrix4		model;
-		model = model.identity();
+			Matrix4		model;
+			model = model.identity();
 
-		Matrix4		rot;
-		rot = model.rotation(_rotate_axis, angle_to_rad(angle));
+			Matrix4		rot;
+			rot = model.rotation(_rotate_axis, angle_to_rad(angle));
 
-		factor = check_moov(factor);
+			factor = check_moov(factor);
 
-		if (angle >= 360)
-			angle = 0;
-		else
-			angle += 1.0f;
-
-		get_fps(frames, last_time);
-
-		// Spice up BG :)
-		static GLclampf c = 0.0f;
-		//Why not a colred bg ?
-		glClearColor(c,c,c,1);
-		c += 1.0f/256.0f;
-		if (c >= 1.0f)
-			c = 0.0f;
+			if (angle >= 360)
+				angle = 0;
+			else
+				angle += 1.0f;
 
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
-		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
-		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
-		glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
-		glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer
-			(
-			 0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
-			 3,			// size
-			 GL_FLOAT,	// type
-			 GL_FALSE,	// normalized?
-			 0,			// stride
-			 (void*)0	// array buffer offset
-			);
+			// Spice up BG :)
+			static GLclampf c = 0.0f;
+			//Why not a colred bg ?
+			glClearColor(c,c,c,1);
+			c += 1.0f/256.0f;
+			if (c >= 1.0f)
+				c = 0.0f;
 
 
-		// "Wireframe" render mode :)
-    	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
-		// glDisableVertexAttribArray(0); // not necessary
-		glfwSwapBuffers(_window);
-		glfwSetWindowUserPointer(_window, this);
-		glfwPollEvents();
-		key_print();
+			glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
+			glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
+			glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
+			glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
+			glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
+
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer
+				(
+				0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
+				3,			// size
+				GL_FLOAT,	// type
+				GL_FALSE,	// normalized?
+				0,			// stride
+				(void*)0	// array buffer offset
+				);
+
+
+			// "Wireframe" render mode :)
+			//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+			glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
+			// glDisableVertexAttribArray(0); // not necessary
+			glfwSwapBuffers(_window);
+			glfwSetWindowUserPointer(_window, this);
+			glfwPollEvents();
+			key_print();
+			frames = 0;
+			last_time = glfwGetTime();
+		}
 	}
 	// END OF RENDER LOOP
 }
