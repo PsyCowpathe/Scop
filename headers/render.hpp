@@ -19,6 +19,7 @@
 #include <math.h>
 #include <vector>
 #include <map>
+#include <chrono>
 #include "matrice.hpp"
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"

@@ -105,7 +105,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	std::vector<float>		vertex(4);
 	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
-	float					last_time = glfwGetTime();
 	float					*transformed_vertices = make_mega_float(vertices, faces);
 
 	create_vertex_array();
@@ -204,14 +203,17 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	float	angle = 0;
 	Vec4 factor(0, 0, 0, 0);
+	auto	last_time = std::chrono::high_resolution_clock::now();
 
 	while (!glfwWindowShouldClose(_window))
 	{
 		handle_inputs();
 		frames++;
-		float	delta = glfwGetTime() - last_time;
-		if (delta >= 1.0/60)
+		auto	current_time = std::chrono::high_resolution_clock::now();
+		auto	frame_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - last_time).count();
+		if (frame_time >= 1000.0/frames)
 		{
+			// std::cout << "delta: " << (delta) << std::endl;
 			// get_fps(frames, last_time);
 			glUseProgram(programID);
 
@@ -232,7 +234,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			if (angle >= 360)
 				angle = 0;
 			else
-				angle += 1.0f;
+				angle += 1.0;
 
 
 			// Spice up BG :)
@@ -274,7 +276,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 			glfwPollEvents();
 			key_print();
 			frames = 0;
-			last_time = glfwGetTime();
+			last_time = std::chrono::high_resolution_clock::now();
 		}
 	}
 	// END OF RENDER LOOP
