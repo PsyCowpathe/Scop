@@ -22,6 +22,7 @@
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
+#include "img_loader.hpp"
 
 // #include "./glm/glm/glm.hpp"
 // #include "./glm/glm/gtx/transform.hpp"
