@@ -60,7 +60,7 @@ int load_bmp(const char* location, GLuint &texture)
 
     /*******************GENERATING TEXTURES*******************/
 
-	glGenTextures(1, texture);             // Generate a texture
+	glGenTextures(1, &texture);             // Generate a texture
 	glBindTexture(GL_TEXTURE_2D, texture); // Bind that texture temporarily
 
 	GLint mode = GL_RGB;                   // Set the mode
@@ -73,7 +73,7 @@ int load_bmp(const char* location, GLuint &texture)
 	glTexImage2D(GL_TEXTURE_2D, 0, mode, w, h, 0, mode, GL_UNSIGNED_BYTE, pixels);
 
 	// Unbind the texture
-	glBindTexture(GL_TEXTURE_2D, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Output a successful message
 	std::cout << "Texture \"" << location << "\" successfully loaded.\n";
