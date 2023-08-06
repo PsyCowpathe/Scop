@@ -13,16 +13,22 @@
 #ifndef RENDER_HPP
 # define RENDER_HPP
 
+#pragma once
 #include <iostream>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <math.h>
 #include <vector>
 #include "matrice.hpp"
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
+
 #include "img_loader.hpp"
+#include "texture.hpp"
+#include "load_object.hpp"
 
 // #include "./glm/glm/glm.hpp"
 // #include "./glm/glm/gtx/transform.hpp"
@@ -38,6 +44,7 @@ class render
 		GLuint			_vertexArrayID;
 		GLuint			_vertexBuffer;
 		GLuint			_colorBuffer;
+		// GLuint			_textureBuffer;
 	
 		char			_rotate_axis = 'x';
 		matrice			matrice;

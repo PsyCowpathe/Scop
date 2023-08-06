@@ -246,8 +246,12 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glUniform3f(this->_color, 1.0f, 1.0f, 1.0f);
 
 	// Trying to load bmp file !!
-	GLuint tex;
-	load_bmp("objects/sample.bmp", tex);
+	// GLuint tex;
+	// load_bmp("objects/sample.bmp", tex);
+
+	Texture tex("objects/sample.bmp");
+	if (tex.load_tex() != 0)
+		clear();
 
 	// ***************
 	// * RENDER LOOP *

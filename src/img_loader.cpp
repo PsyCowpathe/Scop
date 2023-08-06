@@ -1,6 +1,6 @@
 #include "../headers/img_loader.hpp"
 
-int load_bmp(const char* location, GLuint &texture)
+int load_bmp(const std::string &location, GLuint &texture)
 {
     uint8_t * datBuff[2] = {nullptr, nullptr}; // Header buffers
 
@@ -57,6 +57,13 @@ int load_bmp(const char* location, GLuint &texture)
 	// Set width and height to the values loaded from the file
 	GLuint w = bmpInfo->biWidth;
 	GLuint h = bmpInfo->biHeight;
+
+
+
+
+
+
+
 
     /*******************GENERATING TEXTURES*******************/
 

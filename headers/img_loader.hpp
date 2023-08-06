@@ -45,6 +45,6 @@ typedef struct tagBITMAPINFOHEADER
     DWORD    biClrImportant; // 4 /* Important colours */ 
 } __attribute__((packed)) BITMAPINFOHEADER;
 
-int load_bmp(const char* location, GLuint &texture);
+int load_bmp(const std::string &location, GLuint &texture);
 
 #endif
