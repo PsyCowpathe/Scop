@@ -2,6 +2,7 @@
 // layout(location = 0) in vec3 position;
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in vec3 in_color;
+layout(location = 2) in vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -12,6 +13,7 @@ uniform vec3 u_color;
 
 
 out vec3 color;
+out vec2 TexCoord0;
 
 
 // attribute vec3 position;
@@ -26,6 +28,8 @@ void main()
 {
 	gl_Position = vec4(vertexPosition_modelspace, 1.0f);
 	gl_Position = proj * view *  model * vec4(vertexPosition_modelspace, 1.0f);
+
+	TexCoord0 = TexCoord;
 
 	// from shaded mtl thingy
 	// vec4 vertPos4 = model * vec4(position, 1.0);

@@ -19,7 +19,7 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 	// ******************************
 	// * Create and compile shaders *
 	// ******************************
-	std::cout << " WESH !!!" << std::endl;
+
 	////Turn those into attributes ?
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -111,6 +111,12 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 		std::cout << &ProgramErrorMessage[0];
 	}
 
+	// Trying to implement textures
+	GLuint gSamplerLocation = glGetUniformLocation(ProgramID, "gSampler");
+    if (gSamplerLocation == 0) {
+        std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
+        exit(-1);
+    }
 
 	// Addiotionnal good practice : check if linked program is actually compatible !
 	glValidateProgram(ProgramID);

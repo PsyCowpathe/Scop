@@ -113,6 +113,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glCullFace(GL_BACK);
 
 	GLuint		programID = load_shaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
+	
 	// Matrix4		proj;
 	// proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 
@@ -249,9 +250,17 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// GLuint tex;
 	// load_bmp("objects/sample.bmp", tex);
 
+	// ************
+	// * TEXTURES *
+	// ************
 	Texture tex("objects/sample.bmp");
 	if (tex.load_tex() != 0)
 		clear();
+
+	GLuint gSamplerLocation = glGetUniformLocation(programID, "gSampler");
+	glUniform1i(gSamplerLocation, 0);
+
+	// WE NEED TEXTURE COORDINATES in our vertex data, DUH
 
 	// ***************
 	// * RENDER LOOP *
@@ -322,7 +331,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 		// glDisableVertexAttribArray(0); // not necessary
 		
-		glUseProgram(programID);
+		// glUseProgram(programID);
 		
 		glfwSwapBuffers(_window);
 		glfwSetWindowUserPointer(_window, this);

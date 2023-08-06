@@ -8,7 +8,7 @@ class Texture
 {
     private:
         std::string _file_name;
-        GLenum      _texture_target;
+        // GLenum      _texture_target;
         GLuint      _texture_obj;
 
         GLuint      _w;
@@ -26,7 +26,7 @@ class Texture
         void gen_tex();
         bool load_tex();
 
-        void bind_tex(GLenum texture_unit);
+        // void bind_tex(GLenum texture_unit);
 
 };
 
