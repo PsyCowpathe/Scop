@@ -112,7 +112,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
+	GLuint		programID = load_shaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 	// Matrix4		proj;
 	// proj = proj.perspective(angle_to_rad(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 

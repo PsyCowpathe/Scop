@@ -1,16 +1,26 @@
-#include "../headers/img_loader.hpp"
 
-int load_bmp(const std::string &location, GLuint &texture)
+#include "../headers/Texture.hpp"
+#include "../headers/bmp.hpp"
+
+
+Texture::Texture(const std::string &file_name)
+{
+    _file_name = file_name;
+    // uint8_t *datBuff[2] = {nullptr, nullptr}; // Header buffers
+    // this->_datBuff = *datBuff;
+}
+
+int    Texture::check_file()
 {
     uint8_t * datBuff[2] = {nullptr, nullptr}; // Header buffers
-
+    
 	uint8_t* pixels = nullptr; // Pixels
 
 	BITMAPFILEHEADER* bmpHeader = nullptr; // Header
 	BITMAPINFOHEADER* bmpInfo   = nullptr; // Info 
 
     // The file... We open it with it's constructor
-	std::ifstream file(location, std::ios::binary);
+	std::ifstream file(this->_file_name, std::ios::binary);
 	if(!file)
 	{
 		std::cout << "Failure to open bitmap file.\n";
@@ -32,7 +42,7 @@ int load_bmp(const std::string &location, GLuint &texture)
     // Check if the file is an actual BMP file
 	if(bmpHeader->bfType != 0x4D42)
 	{
-		std::cout << "File \"" << location << "\" isn't a bitmap file\n";
+		std::cout << "File \"" << this->_file_name << "\" isn't a bitmap file\n";
 		return 2;
 	}
 
@@ -55,20 +65,22 @@ int load_bmp(const std::string &location, GLuint &texture)
 	}
 
 	// Set width and height to the values loaded from the file
-	GLuint w = bmpInfo->biWidth;
-	GLuint h = bmpInfo->biHeight;
+	this->_w = bmpInfo->biWidth;
+	this->_h = bmpInfo->biHeight;
 
+    this->_pixels = pixels;
+    // delete[] pixels;
 
+	delete[] datBuff[0];
+	delete[] datBuff[1];
+    
+    return (0);
+}
 
-
-
-
-
-
-    /*******************GENERATING TEXTURES*******************/
-
-	glGenTextures(1, &texture);             // Generate a texture
-	glBindTexture(GL_TEXTURE_2D, texture); // Bind that texture temporarily
+void Texture::gen_tex()
+{
+    glGenTextures(1, &_texture_obj);             // Generate a texture
+	glBindTexture(GL_TEXTURE_2D, _texture_obj); // Bind that texture temporarily
 
 	GLint mode = GL_RGB;                   // Set the mode
 
@@ -77,18 +89,25 @@ int load_bmp(const std::string &location, GLuint &texture)
 	 
 	// Create the texture. We get the offsets from the image, then we use it with the image's
 	// pixel data to create it.
-	glTexImage2D(GL_TEXTURE_2D, 0, mode, w, h, 0, mode, GL_UNSIGNED_BYTE, pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, this->_pixels);
 
 	// Unbind the texture
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Output a successful message
-	std::cout << "Texture \"" << location << "\" successfully loaded.\n";
+	std::cout << "Texture \"" << this->_file_name << "\" successfully loaded.\n";
 
 	// Delete the two buffers.
-	delete[] datBuff[0];
-	delete[] datBuff[1];
-	delete[] pixels;
+	// delete[] datBuff[0];
+	// delete[] datBuff[1];
+	delete[] _pixels;
+}
 
-	return 0; // Return success code 
+bool Texture::load_tex()
+{
+    if (check_file() != 0)
+        exit(-1);
+    gen_tex();
+    
+    return (0);
 }

@@ -1,17 +1,25 @@
-#include <GL/glew.h>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <vector>
+#include "../headers/Shader.hpp"
+
+
+Shader::Shader(void)
+{
+    return;
+}
+
+Shader::~Shader(void)
+{
+    return;
+}
+
 
 // this whole chunk can be simplified, divided into several funtions
 // check ogldev approach in his intro to shaders
-GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path)
+GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_path)
 {
 	// ******************************
 	// * Create and compile shaders *
 	// ******************************
-	
+	std::cout << " WESH !!!" << std::endl;
 	////Turn those into attributes ?
 	// Create the shaders
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);

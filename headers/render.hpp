@@ -26,15 +26,14 @@
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 
-#include "img_loader.hpp"
-#include "texture.hpp"
 #include "load_object.hpp"
+#include "Texture.hpp"
 
 // #include "./glm/glm/glm.hpp"
 // #include "./glm/glm/gtx/transform.hpp"
 // #include "./glm/glm/gtx/string_cast.hpp"
 
-GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_path);
+GLuint load_shaders(const char * vertex_file_path, const char * fragment_file_path);
 
 class render
 {
@@ -92,7 +91,7 @@ class render
 
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
 		~render();
-		void	draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
+		void			draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
 };
 
 #endif

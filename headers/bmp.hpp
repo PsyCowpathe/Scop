@@ -1,5 +1,5 @@
-#ifndef IMG_LOADER_HPP
-# define IMG_LOADER_HPP
+#ifndef BMP_HPP
+# define BMP_HPP
 
 #pragma once
 #include <stdint.h>
@@ -44,7 +44,5 @@ typedef struct tagBITMAPINFOHEADER
     DWORD    biClrUsed; // 4 /* Number of colours */ 
     DWORD    biClrImportant; // 4 /* Important colours */ 
 } __attribute__((packed)) BITMAPINFOHEADER;
-
-int load_bmp(const std::string &location, GLuint &texture);
 
 #endif
