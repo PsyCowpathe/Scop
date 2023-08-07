@@ -21,7 +21,7 @@ static void	get_info(std::string line, std::vector<float> &buffer, int ignore)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "cc " << e.what() << std::endl;
 		exit(0);
 	}
 }
@@ -45,14 +45,17 @@ static void	get_uv_info(std::string line, std::vector<float> &buffer)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "ici " << e.what() << std::endl;
 		exit(0);
 	}
 }
 
+//trop de coco sur une ligne = crash
+
+
 // stoi throws an exception when failing
 // it's ugly as hell sorry
-void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n)
+void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n, size_t ln)
 {
 	try
 	{
@@ -60,6 +63,11 @@ void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int
 		bool	first = true;
 		while ((next = line.find('/', last)) != std::string::npos)
 		{
+
+			std::cout << "LINE = " << line << std::endl;
+			std::cout << "next = " << next << std::endl;
+			std::cout << "last = " << last << std::endl;
+			std::cout << "res = " << last - next << std::endl;
 			if (first)
 				v = std::stoi(line.substr(last, last - next));
 			else
@@ -71,7 +79,8 @@ void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << ln << std::endl;
+		std::cout << "la " << e.what() << std::endl;
 		exit(0);
 	}
 	return ;
@@ -100,10 +109,9 @@ size_t			count_char(std::string line, char to_count)
 	return (count);
 }
 
-
-static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
+static void	handle_slash(size_t ln, std::string line, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
 {
-	unsigned int	vertex_index[6], uv_index[6], normal_index[6];
+	unsigned int	vertex_index[4], uv_index[4], normal_index[4];
 	size_t			slash_count;
 	size_t			index;
 	size_t			prev_index;
@@ -114,46 +122,17 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 	index = 2;
 	prev_index = index;
 	i = 0;
-	if (slash_count == 6) // triangle
+	while ((index = line.find(" ", index)) != std::string::npos)
 	{
-		while ((index = line.find(" ", index)) != std::string::npos)
-		{
-			sub = line.substr(prev_index, index - prev_index);
-			prev_index = ++index;
-			set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i]);
-			i++;
-			std::cout << "sub = " << sub << std::endl;
-		}
 		sub = line.substr(prev_index, index - prev_index);
-		//std::cout << "sub = " << sub << std::endl;
-		set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i]);
-		//std::cout << "vert = " << vertex_index[0] << " " << vertex_index[1] << " " << vertex_index[2] << std::endl;
-		//std::cout << "uv = " << uv_index[0] << " " << uv_index[1] << " " << uv_index[2] << std::endl;
-		//std::cout << "normal = " << normal_index[0] << " " << normal_index[1] << " " << normal_index[2] << std::endl;
+		prev_index = ++index;
+		set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i], ln);
+		i++;
 	}
-	else if (slash_count == 8) // cube
-	{
-		while ((index = line.find(" ", index)) != std::string::npos)
-		{
-			sub = line.substr(prev_index, index - prev_index);
-			prev_index = ++index;
-			set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i]);
-			i++;
-			std::cout << "sub = " << sub << std::endl;
-		}
-		sub = line.substr(prev_index, index - prev_index);
-		set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i]);
-		std::cout << "sub = " << sub << std::endl;
-		std::cout << "vert = " << vertex_index[0] << " " << vertex_index[1] << " " << vertex_index[2] << " " << vertex_index[3] << std::endl;
-		std::cout << "uv = " << uv_index[0] << " " << uv_index[1] << " " << uv_index[2] << " " << uv_index[3] << std::endl;
-		std::cout << "normal = " << normal_index[0] << " " << normal_index[1] << " " << normal_index[2] << " " << normal_index[3] << std::endl;
-		
+	sub = line.substr(prev_index, index - prev_index);
+	set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i], ln);
+	if (slash_count == 8)
 		i--;
-	}
-	else
-	{
-		//parsing error
-	}
 	index = 0;
 	while (index <= i)
 	{
@@ -162,31 +141,53 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 		faces.push_back(vertex_index[index]);
 		index++;
 	}
-	faces.push_back(vertex_index[0]);
-	faces.push_back(vertex_index[2]);
-	faces.push_back(vertex_index[3]);
+	if (slash_count == 8)
+	{
+		faces.push_back(vertex_index[0]);
+		faces.push_back(vertex_index[2]);
+		faces.push_back(vertex_index[3]);
+	}
 }
 
 
 // Parses faces info if there are only spaces
 
-static void	handle_spaces(std::string line, std::vector<unsigned int> vertex_indices)
+static void	handle_spaces(std::string line, std::vector<unsigned int> &faces)
 {
-	size_t last = 2; size_t next = 0;
+	size_t 			last = 2;
+	size_t 			next = 0;
+	std::string		sub;
+	unsigned int	vertex_index[4];
+	int				i = 0;
+	int				index = 0;
+	size_t			space_count;
+
 	try
 	{
+		space_count = count_char(line, ' ');
 		while((next = line.find(' ', last)) != std::string::npos)
 		{
-			std::string	debug = line.substr(last, next-last);
+			sub = line.substr(last, next-last);
 			last = next + 1;
-			vertex_indices.push_back(std::stoi(debug));
+			vertex_index[i] = std::stoi(sub);
+			i++;
 		}
-		std::string	debug = line.substr(last);
-		vertex_indices.push_back(std::stoi(debug));
+		sub = line.substr(last);
+		vertex_index[i] = std::stoi(sub);
+		if (space_count == 4)
+			i--;
+		while (index <= i)
+			faces.push_back(vertex_index[index++]);
+		if (space_count == 4)
+		{
+			faces.push_back(vertex_index[0]);
+			faces.push_back(vertex_index[2]);
+			faces.push_back(vertex_index[3]);
+		}
 	}
 	catch(std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "here" << e.what() << std::endl;
 	}
 }
 
@@ -197,7 +198,7 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> vertex_ind
 
 int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
 {
-	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
+	std::vector<unsigned int> uv_indices, normal_indices;
 	std::ifstream	file(path);
 	size_t	ln = 0;
 
@@ -231,9 +232,9 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 			if (line[1] != ' ')
 				parsing_error(line, ln);
 			if (line.find('/') != std::string::npos)
-				handle_slash(line, uv_indices, normal_indices, faces);
+				handle_slash(ln, line, uv_indices, normal_indices, faces);
 			else if (line.find(' ', 3) != std::string::npos)
-				handle_spaces(line, vertex_indices);
+				handle_spaces(line, faces);
 		}
 		else if (line[0] != '#' && line[0])
 			parsing_error(line, ln);
