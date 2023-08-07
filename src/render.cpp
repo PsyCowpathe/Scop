@@ -29,6 +29,7 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 
 	set_callback();
 	set_context();
+	glfwSwapInterval(1);
 	// glfwMaximizeWindow(_window);
 	if (glew_init() == -1)
 		clear();
@@ -71,17 +72,18 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
-// static void	get_fps(int &frames, float &last_time)
-// {
-// 	float	current_time = glfwGetTime();
-// 	frames++;
-// 	if (current_time - last_time >= 1.0)
-// 	{
-// 		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
-// 		frames = 0;
-// 		last_time = glfwGetTime();
-// 	}
-// }
+void	render::get_fps(int &frames, float &last_time)
+{
+	float	current_time = glfwGetTime();
+	_delta_time = current_time - last_time;
+	frames++;
+	if (_delta_time >= 1.0)
+	{
+		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+		frames = 0;
+		last_time = glfwGetTime();
+	}
+}
 
 Vec4	render::check_moov(Vec4 old)
 {
@@ -90,11 +92,11 @@ Vec4	render::check_moov(Vec4 old)
 	float	z = old[2];
 
 	if (_moov_x != 0)
-		x = (_moov_x / 60) + old[0];
+		x += _moov_x / 60;
 	if (_moov_y != 0)
-		y = (_moov_y / 60) + old[1];
+		y += _moov_y / 60;
 	if (_moov_z != 0)
-		z = (_moov_z / 60) + old[2];
+		z += _moov_z / 60;
 	Vec4	factor(x, y, z, 1);
 	return (factor);
 }
@@ -118,7 +120,7 @@ void	render::update()
 	if (_angle >= 360)
 		_angle = 0;
 	else
-		_angle += .01;
+		_angle += .1;
 
 	GLuint	model_id = glGetUniformLocation(_programID, "model");
 	GLuint	view_id = glGetUniformLocation(_programID, "view");
@@ -225,36 +227,14 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
 	// ***************
 	// * RENDER LOOP *
 	// ***************
-
-	static float	fps_limit = 1.0/60.0;
+	int frames = 0;
 	float	last_time = glfwGetTime();
-	float	timer = last_time;
-	float	delta_time = 0;
-	float	now_time = 0;
-	int		updates = 0;
-	int		frames = 0;
-
 	while (!glfwWindowShouldClose(_window))
 	{
-		now_time = glfwGetTime();
-		delta_time += (now_time - last_time) / fps_limit;
-		last_time = now_time;
-		while (delta_time >= 1.0)
-		{
-			handle_inputs();
-			update();
-			updates++;
-			delta_time--;
-		}
+		handle_inputs();
+		update();
 		draw();
-		frames++;
-		if (glfwGetTime() - timer > 1.0)
-		{
-			timer++;
-			std::cout << "FPS: " << frames << "updates: " << updates << std::endl;
-			updates = 0;
-			frames = 0;
-		}
+		get_fps(frames, last_time);
 	}
 	// END OF RENDER LOOP
 }

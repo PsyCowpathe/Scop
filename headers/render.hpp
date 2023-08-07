@@ -46,6 +46,7 @@ class render
 		float					_moov_z = 0;
 		float					_angle = 0;
 		Vec4 					_factor;
+		float					_delta_time = 0;
 		matrice					matrice;
 		int						_width;
 		int						_height;
@@ -77,6 +78,8 @@ class render
 		void			handle_inputs();
 		void			update();
 		void			draw();
+		void			get_fps(int &frames, float &last_time);
+
 
 		//Utils
 		void			create_vertex_array();
