@@ -20,7 +20,6 @@
 #include <vector>
 #include <map>
 #include <chrono>
-#include "matrice.hpp"
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
@@ -47,7 +46,6 @@ class render
 		float					_angle = 0;
 		Vec4 					_factor;
 		float					_delta_time = 0;
-		matrice					matrice;
 		int						_width;
 		int						_height;
 		std::map<int, bool>		_keys;
