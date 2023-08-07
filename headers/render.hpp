@@ -49,6 +49,7 @@ class render
 		int						_width;
 		int						_height;
 		bool					_wireframe = false;
+		bool					_spins = true;
 		std::map<int, bool>		_keys;
 		GLuint					_programID;
 		std::vector<unsigned int> _faces;

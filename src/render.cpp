@@ -121,7 +121,7 @@ void	render::update()
 
 	if (_angle >= 360)
 		_angle = 0;
-	else
+	else if (_spins)
 		_angle += .1;
 
 	GLuint	model_id = glGetUniformLocation(_programID, "model");
@@ -402,6 +402,8 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 				w->_wireframe = false;
 			}
 		}
+		else if (key == GLFW_KEY_0)
+			w->_spins = !w->_spins;
 		w->_keys[key] = true;
 	}
 	else if (action == GLFW_RELEASE)
