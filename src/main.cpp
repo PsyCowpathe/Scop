@@ -45,7 +45,7 @@ int		main(void)
 		-1.0f, -1.0f, 0.0f,
 	};*/
 
-	test.draw_triangle(vertices, faces);
+	test.draw_triangle(vertices, faces, uv);
 	std::cout << "Program end" << std::endl;
 	return (0);
 }

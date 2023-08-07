@@ -80,7 +80,7 @@ static void	get_fps(int &frames, float &last_time)
 	}
 }
 
-void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
+void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces, std::vector<float> uv)
 {
 	(void)faces;
 	(void)vertices;
@@ -203,7 +203,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		0.820f,  0.883f,  0.371f,
 		0.982f,  0.099f,  0.879f
 	};
-	
+
 	glGenBuffers(1, &_colorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
@@ -261,6 +261,24 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	glUniform1i(gSamplerLocation, 0);
 
 	// WE NEED TEXTURE COORDINATES in our vertex data, DUH
+	GLuint texBuffer;
+	glGenBuffers(1, &texBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, texBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(uv), &uv, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, texBuffer);
+
+	// send _colorBuffer to shader pipeline, at layout = 1
+	glVertexAttribPointer
+		(
+		 2,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 3,				// size (here we have 3 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
 
 	// ***************
 	// * RENDER LOOP *

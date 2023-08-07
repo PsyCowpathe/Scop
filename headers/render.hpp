@@ -91,7 +91,7 @@ class render
 
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
 		~render();
-		void			draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
+		void			draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces, std::vector<float> uv);//
 };
 
 #endif

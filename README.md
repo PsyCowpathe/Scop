@@ -43,6 +43,11 @@ make
 Works on Win10, WSL2, GeForce GTX 950.
 
 ### If program segfaults at exit and/or glxinfo -B segfaults or gives errors
+* For Win11, you should update your WSL kernel to version : 1.3.15, by typing in powershell :
+```
+wsl --update --pre-release
+```
+
 * First, update your GPU drivers
 * Follow this : https://gist.github.com/Mluckydwyer/8df7782b1a6a040e5d01305222149f3c
   Installing mesa, etc.
