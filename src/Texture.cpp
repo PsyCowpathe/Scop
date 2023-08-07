@@ -3,11 +3,12 @@
 #include "../headers/bmp.hpp"
 
 
-Texture::Texture(const std::string &file_name)
+Texture::Texture(GLenum texture_target, const std::string &file_name, render *render)
 {
+	_texture_target = texture_target; // GL_TEXTURE
     _file_name = file_name;
-    // uint8_t *datBuff[2] = {nullptr, nullptr}; // Header buffers
-    // this->_datBuff = *datBuff;
+	_render = render;
+
 }
 
 int    Texture::check_file()
@@ -69,7 +70,7 @@ int    Texture::check_file()
 	this->_h = bmpInfo->biHeight;
 
     this->_pixels = pixels;
-    // delete[] pixels;
+	_render->_pixels = *pixels;
 
 	delete[] datBuff[0];
 	delete[] datBuff[1];
@@ -80,19 +81,31 @@ int    Texture::check_file()
 void Texture::gen_tex()
 {
     glGenTextures(1, &_texture_obj);             // Generate a texture
-	glBindTexture(GL_TEXTURE_2D, _texture_obj); // Bind that texture temporarily
+	glBindTexture(_texture_target, _texture_obj); // Bind that texture temporarily
+
+	if (_texture_target != GL_TEXTURE_2D)
+	{
+		std::cout << "not the right texture format" << std::endl;
+		_render->clear();
+		exit(1);
+	}
 
 	GLint mode = GL_RGB;                   // Set the mode
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	 
 	// Create the texture. We get the offsets from the image, then we use it with the image's
 	// pixel data to create it.
-	glTexImage2D(GL_TEXTURE_2D, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, this->_pixels);
+	glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels);
 
-	// Unbind the texture
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glTexParameteri(_texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(_texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(_texture_target, GL_TEXTURE_BASE_LEVEL, 0);
+	glTexParameteri(_texture_target, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(_texture_target, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	glGenerateMipmap(_texture_target);
+
+	// Unbind the GL_TEXTURE_2D texture
+	glBindTexture(_texture_target, 0);
 
 	// Output a successful message
 	std::cout << "Texture \"" << this->_file_name << "\" successfully loaded.\n";
@@ -103,11 +116,18 @@ void Texture::gen_tex()
 	delete[] _pixels;
 }
 
+void Texture::bind_tex(GLenum texture_unit)
+{
+	glActiveTexture(texture_unit); // GL_TEXTURE0
+	glBindBuffer(_texture_target, _texture_obj);
+}
+
 bool Texture::load_tex()
 {
     if (check_file() != 0)
         exit(-1);
     gen_tex();
+	bind_tex(GL_TEXTURE0);
     
     return (0);
 }

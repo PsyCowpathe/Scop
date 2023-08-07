@@ -14,13 +14,16 @@ class Matrix4
 		~Matrix4();
 		Matrix4	identity();
 		// Matrix4	perspective(float width, float height);
-		Matrix4	perspective(float radians, float ratio, float z_near, float z_far);
-		Matrix4	look_at(Vec4 eye, Vec4 center, Vec4 up);
+		Matrix4		perspective(float radians, float ratio, float z_near, float z_far);
+		Matrix4		look_at(Vec4 eye, Vec4 center, Vec4 up);
+		Matrix4		rotation(char rotate, float angle);
+		Matrix4		translate(Vec4 to_add);
 
 		float	&operator[](size_t index);
 		Matrix4	operator*(const Matrix4 &other);
 		Vec4	operator*(const Vec4 &other);
 		Matrix4	operator=(const Matrix4 &other);
+		Matrix4	operator=(const float *other);
 
 		void	print();
 };

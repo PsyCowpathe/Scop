@@ -7,6 +7,8 @@ layout(location = 2) in vec2 TexCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
+uniform mat4 rot;
+uniform vec4 trans;
 
 uniform float u_test;
 uniform vec3 u_color;
@@ -15,27 +17,10 @@ uniform vec3 u_color;
 out vec3 color;
 out vec2 TexCoord0;
 
-
-// attribute vec3 position;
-in vec3 normal;
-uniform mat4 normalMat;
-// uniform mat4 projection, modelview, normalMat;
-
-out vec3 normalInterp;
-out vec3 vertPos;
-
 void main()
 {
-	gl_Position = vec4(vertexPosition_modelspace, 1.0f);
-	gl_Position = proj * view *  model * vec4(vertexPosition_modelspace, 1.0f);
+	gl_Position = proj * view *  model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
 
 	TexCoord0 = TexCoord;
-
-	// from shaded mtl thingy
-	// vec4 vertPos4 = model * vec4(position, 1.0);
-  	// vertPos = vec3(vertPos4) / vertPos4.w;
-  	// normalInterp = vec3(normalMat * vec4(normal, 0.0));
-  	// gl_Position = proj * vertPos4;
-
 	color = in_color;
 }

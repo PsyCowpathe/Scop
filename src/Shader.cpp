@@ -1,5 +1,6 @@
 #include "../headers/Shader.hpp"
 
+GLuint	_gSamplerLocation;
 
 Shader::Shader(void)
 {
@@ -112,8 +113,8 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 	}
 
 	// Trying to implement textures
-	GLuint gSamplerLocation = glGetUniformLocation(ProgramID, "gSampler");
-    if (gSamplerLocation == 0) {
+	_gSamplerLocation = glGetUniformLocation(ProgramID, "gSampler");
+    if (_gSamplerLocation == 0) {
         std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
         exit(-1);
     }
