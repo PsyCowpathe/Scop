@@ -34,7 +34,6 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 	if (glew_init() == -1)
 		clear();
 	_programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag");
-	std::cout << "Ending render init" << std::endl;
 }
 
 render::~render()
@@ -80,7 +79,6 @@ void	render::get_fps(int &frames, float &last_time)
 	frames++;
 	if (_delta_time >= 1.0)
 	{
-		// std::cout << "fps: " << frames << "| frame time: " << 1000.0/float(frames) << std::endl;
 		std::stringstream ss;
 		ss << "Scop [fps: " << frames << " | time: " << 1000.0/(float)frames << "]";
 		glfwSetWindowTitle(_window, ss.str().c_str());
@@ -390,7 +388,22 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	else if (action == GLFW_PRESS)
+	{
+		if (key == GLFW_KEY_M)
+		{
+			if (!w->_wireframe)
+			{
+				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE);
+				w->_wireframe = true;
+			}
+			else if (w->_wireframe)
+			{
+				glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
+				w->_wireframe = false;
+			}
+		}
 		w->_keys[key] = true;
+	}
 	else if (action == GLFW_RELEASE)
 		w->_keys[key] = false;
 }

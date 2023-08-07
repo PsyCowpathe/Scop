@@ -48,11 +48,10 @@ class render
 		float					_delta_time = 0;
 		int						_width;
 		int						_height;
+		bool					_wireframe = false;
 		std::map<int, bool>		_keys;
 		GLuint					_programID;
 		std::vector<unsigned int> _faces;
-		// float			_pitch = 0;
-		// float			_yaw = -90;
 
 		//GLfloat			*_current_vertex;
 		// const GLfloat	*_original_vertex;
