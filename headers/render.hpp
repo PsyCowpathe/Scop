@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/03 20:27:29 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/04 19:33:01 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <GLFW/glfw3.h>
 #include <math.h>
 #include <vector>
+#include <map>
+#include <chrono>
 #include "matrice.hpp"
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
@@ -33,18 +35,24 @@ class render
 {
 	private :
 
-		GLFWwindow		*_window;
-		GLuint			_vertexArrayID;
-		GLuint			_vertexBuffer;
-		GLuint			_colorBuffer;
+		GLFWwindow				*_window;
+		GLuint					_vertexArrayID;
+		GLuint					_vertexBuffer;
+		GLuint					_colorBuffer;
 		
-		char			_rotate_axis = 'y';
-		float			_moov_x = 0;
-		float			_moov_y = 0;
-		float			_moov_z = 0;
-		matrice			matrice;
-		int				_width;
-		int				_height;
+		char					_rotate_axis = 'y';
+		float					_moov_x = 0;
+		float					_moov_y = 0;
+		float					_moov_z = 0;
+		float					_angle = 0;
+		Vec4 					_factor;
+		float					_delta_time = 0;
+		matrice					matrice;
+		int						_width;
+		int						_height;
+		std::map<int, bool>		_keys;
+		GLuint					_programID;
+		std::vector<unsigned int> _faces;
 		// float			_pitch = 0;
 		// float			_yaw = -90;
 
@@ -66,8 +74,12 @@ class render
 		//Callback
 		static void		error_callback(int error, const char *description);
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
-		void			change_rotate_axis(int key);
-		void			moov_object(int key, int action);
+		static void		resize_callback(GLFWwindow *win, int width, int height);
+		void			handle_inputs();
+		void			update();
+		void			draw();
+		void			get_fps(int &frames, float &last_time);
+
 
 		//Utils
 		void			create_vertex_array();
@@ -76,11 +88,13 @@ class render
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
 		Vec4			check_moov(Vec4 factor);
 
+		void			key_print();
+
 	public :
 
-		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
+		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::vector<unsigned int> faces);
 		~render();
-		void	draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
+		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
 };
 
 #endif
