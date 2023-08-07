@@ -72,6 +72,7 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
+#include <sstream>
 void	render::get_fps(int &frames, float &last_time)
 {
 	float	current_time = glfwGetTime();
@@ -79,7 +80,10 @@ void	render::get_fps(int &frames, float &last_time)
 	frames++;
 	if (_delta_time >= 1.0)
 	{
-		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+		// std::cout << "fps: " << frames << "| frame time: " << 1000.0/float(frames) << std::endl;
+		std::stringstream ss;
+		ss << "Scop [fps: " << frames << " | time: " << 1000.0/(float)frames << "]";
+		glfwSetWindowTitle(_window, ss.str().c_str());
 		frames = 0;
 		last_time = glfwGetTime();
 	}
