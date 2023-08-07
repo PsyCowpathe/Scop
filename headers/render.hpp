@@ -44,10 +44,14 @@ class render
 		float					_moov_x = 0;
 		float					_moov_y = 0;
 		float					_moov_z = 0;
+		float					_angle = 0;
+		Vec4 					_factor;
 		matrice					matrice;
 		int						_width;
 		int						_height;
 		std::map<int, bool>		_keys;
+		GLuint					_programID;
+		std::vector<unsigned int> _faces;
 		// float			_pitch = 0;
 		// float			_yaw = -90;
 
@@ -71,6 +75,8 @@ class render
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		static void		resize_callback(GLFWwindow *win, int width, int height);
 		void			handle_inputs();
+		void			update();
+		void			draw();
 
 		//Utils
 		void			create_vertex_array();
@@ -83,9 +89,9 @@ class render
 
 	public :
 
-		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
+		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::vector<unsigned int> faces);
 		~render();
-		void	draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
+		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
 };
 
 #endif

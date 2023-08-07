@@ -12,9 +12,10 @@
 
 #include "../headers/render.hpp"
 
-render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
+render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::vector<unsigned int> faces)
 {
-	std::cout << "creation" << std::endl;
+	_faces = faces;
+	_factor = Vec4(0, 0, 0, 0);
 	if (width < 0 || height < 0)
 		clear();
 	_width = width;
@@ -28,9 +29,11 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 
 	set_callback();
 	set_context();
-
+	// glfwMaximizeWindow(_window);
 	if (glew_init() == -1)
 		clear();
+	_programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag");
+	std::cout << "Ending render init" << std::endl;
 }
 
 render::~render()
@@ -68,17 +71,17 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
-static void	get_fps(int &frames, float &last_time)
-{
-	float	current_time = glfwGetTime();
-	frames++;
-	if (current_time - last_time >= 1.0)
-	{
-		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
-		frames = 0;
-		last_time = glfwGetTime();
-	}
-}
+// static void	get_fps(int &frames, float &last_time)
+// {
+// 	float	current_time = glfwGetTime();
+// 	frames++;
+// 	if (current_time - last_time >= 1.0)
+// 	{
+// 		std::cout << "fps: " << frames << " frame time: " << 1000.0/float(frames) << std::endl;
+// 		frames = 0;
+// 		last_time = glfwGetTime();
+// 	}
+// }
 
 Vec4	render::check_moov(Vec4 old)
 {
@@ -96,15 +99,44 @@ Vec4	render::check_moov(Vec4 old)
 	return (factor);
 }
 
-void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
+void	render::update()
 {
-	// glXSwapIntervalSGI(1);
-	glfwSwapInterval(1);
-	(void)faces;
-	(void)vertices;
+	Matrix4		proj;
+	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
+
+	Matrix4		view;
+	view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+
+	Matrix4		model;
+	model = model.identity();
+
+	Matrix4		rot;
+	rot = model.rotation(_rotate_axis, angle_to_rad(_angle));
+
+	_factor = check_moov(_factor);
+
+	if (_angle >= 360)
+		_angle = 0;
+	else
+		_angle += .01;
+
+	GLuint	model_id = glGetUniformLocation(_programID, "model");
+	GLuint	view_id = glGetUniformLocation(_programID, "view");
+	GLuint	proj_id = glGetUniformLocation(_programID, "proj");
+	GLuint	rot_id = glGetUniformLocation(_programID, "rot");
+	GLuint	trans_id = glGetUniformLocation(_programID, "trans");
+	// might need to move this to render since it's shader related
+	glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
+	glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
+	glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
+	glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
+	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
+}
+
+void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
+{
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
-	int						frames = 0;
 	// TODO: disable fps before correc since using glfw function
 	float					*transformed_vertices = make_mega_float(vertices, faces);
 
@@ -122,8 +154,6 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-
-	GLuint		programID = LoadShaders("shader/vertex_shader.vert", "shader/frag_shader.frag"); //tmp
 
 	static const GLfloat color_buffer[] = { 
 		0.583f,  0.771f,  0.014f,
@@ -191,88 +221,75 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
-	GLuint	model_id = glGetUniformLocation(programID, "model");
-	GLuint	view_id = glGetUniformLocation(programID, "view");
-	GLuint	proj_id = glGetUniformLocation(programID, "proj");
-	GLuint	rot_id = glGetUniformLocation(programID, "rot");
-	GLuint	trans_id = glGetUniformLocation(programID, "trans");
-
 
 	// ***************
 	// * RENDER LOOP *
 	// ***************
 
-	float	angle = 0;
-	Vec4 factor(0, 0, 0, 0);
+	static float	fps_limit = 1.0/60.0;
 	float	last_time = glfwGetTime();
+	float	timer = last_time;
+	float	delta_time = 0;
+	float	now_time = 0;
+	int		updates = 0;
+	int		frames = 0;
 
 	while (!glfwWindowShouldClose(_window))
 	{
-		handle_inputs();
-		get_fps(frames, last_time);
-		glUseProgram(programID);
-
-		Matrix4		proj;
-		proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
-
-		Matrix4		view;
-		view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
-
-		Matrix4		model;
-		model = model.identity();
-
-		Matrix4		rot;
-		rot = model.rotation(_rotate_axis, angle_to_rad(angle));
-
-		factor = check_moov(factor);
-
-		if (angle >= 360)
-			angle = 0;
-		else
-			angle += .01;
-		glClearColor(.2, .2, .2, 1);
-		// Spice up BG :)
-		// Just disabling that on wsl because of epilepsy risks lolz
-		// static GLclampf c = 0.0f;
-		// //Why not a colred bg ?
-		// glClearColor(c,c,c,1);
-		// c += 1.0f/256.0f;
-		// if (c >= 1.0f)
-		// 	c = 0.0f;
-
-
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
-		glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
-		glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
-		glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
-		glUniform4f(trans_id, factor[0], factor[1], factor[2], 0);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer
-			(
-			0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
-			3,			// size
-			GL_FLOAT,	// type
-			GL_FALSE,	// normalized?
-			0,			// stride
-			(void*)0	// array buffer offset
-			);
-
-
-		// "Wireframe" render mode :)
-		// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-		glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
-		// glDisableVertexAttribArray(0); // not necessary
-		glfwSwapBuffers(_window);
-		glfwSetWindowUserPointer(_window, this);
-		glfwPollEvents();
-		glFinish();
-		// key_print();
+		now_time = glfwGetTime();
+		delta_time += (now_time - last_time) / fps_limit;
+		last_time = now_time;
+		while (delta_time >= 1.0)
+		{
+			handle_inputs();
+			update();
+			updates++;
+			delta_time--;
+		}
+		draw();
+		frames++;
+		if (glfwGetTime() - timer > 1.0)
+		{
+			timer++;
+			std::cout << "FPS: " << frames << "updates: " << updates << std::endl;
+			updates = 0;
+			frames = 0;
+		}
 	}
 	// END OF RENDER LOOP
+}
+
+void	render::draw()
+{
+	glUseProgram(_programID);
+
+	glClearColor(.2, .2, .2, 1);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer
+		(
+		0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		3,			// size
+		GL_FLOAT,	// type
+		GL_FALSE,	// normalized?
+		0,			// stride
+		(void*)0	// array buffer offset
+		);
+
+
+	// "Wireframe" render mode :)
+	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+	glDrawArrays(GL_TRIANGLES, 0, _faces.size()); // Starting from vertex 0;
+	// glDisableVertexAttribArray(0); // not necessary
+	glfwSwapBuffers(_window);
+	glfwSetWindowUserPointer(_window, this);
+	glfwPollEvents();
+	glFinish();
+	// key_print();
 }
 
 // This is our VAO ?
@@ -295,6 +312,7 @@ int		render::glew_init()
 void	render::set_context()
 {
 	glfwMakeContextCurrent(_window);
+	glfwSwapInterval(1);
 	glewExperimental = true;
 }
 
@@ -318,10 +336,18 @@ int		render::create_window(std::string name)
 
 void	render::set_hint(int aliasing, float openGL_min, float openGL_max)
 {
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	glfwWindowHint(GLFW_SAMPLES, aliasing);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, openGL_min);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, openGL_max);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+	std::cout << "refresh : " << mode->refreshRate << std::endl;
+	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+	// glfwWindowHint(GLFW_DECORATED, 0);
+	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
 
 int		render::glfw_init()
@@ -352,9 +378,9 @@ void	render::handle_inputs()
 	_moov_y = 0;
 	_moov_z = 0;
 	if (_keys[GLFW_KEY_W])
-		_moov_z = 1;
-	if (_keys[GLFW_KEY_S])
 		_moov_z = -1;
+	if (_keys[GLFW_KEY_S])
+		_moov_z = 1;
 	if (_keys[GLFW_KEY_A])
 		_moov_x = 1;
 	if (_keys[GLFW_KEY_D])

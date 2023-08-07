@@ -22,7 +22,7 @@ int		main(void)
 
 	load_object("objects/cube.obj", vertices, uv, normals, faces);
 
-	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !");
+	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", faces);
 	/*static const GLfloat vertex_buffer[] =
 	{
 		-1.0f, -1.0f, 0.0f,
@@ -46,7 +46,7 @@ int		main(void)
 		-1.0f, -1.0f, 0.0f,
 	};*/
 
-	test.draw_triangle(vertices, faces);
+	test.loop(vertices, faces);
 	std::cout << "Program end" << std::endl;
 	return (0);
 }
