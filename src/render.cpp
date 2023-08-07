@@ -14,7 +14,6 @@
 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
 {
-	glfwSwapInterval(1);
 	std::cout << "creation" << std::endl;
 	if (width < 0 || height < 0)
 		clear();
@@ -87,19 +86,20 @@ Vec4	render::check_moov(Vec4 old)
 	float	y = old[1];
 	float	z = old[2];
 
-	std::cout << "x: " << _moov_x << "y: " << _moov_y << "z: " << _moov_z << std::endl;
 	if (_moov_x != 0)
-		x = (_moov_x / 20) + old[0];
+		x = (_moov_x / 60) + old[0];
 	if (_moov_y != 0)
-		y = (_moov_y / 20) + old[1];
+		y = (_moov_y / 60) + old[1];
 	if (_moov_z != 0)
-		z = (_moov_z / 20) + old[2];
+		z = (_moov_z / 60) + old[2];
 	Vec4	factor(x, y, z, 1);
 	return (factor);
 }
 
 void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
+	// glXSwapIntervalSGI(1);
+	glfwSwapInterval(1);
 	(void)faces;
 	(void)vertices;
 	std::vector<float>		tmp;
@@ -229,14 +229,16 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		if (angle >= 360)
 			angle = 0;
 		else
-			angle += 1.0;
+			angle += .01;
+		glClearColor(.2, .2, .2, 1);
 		// Spice up BG :)
-		static GLclampf c = 0.0f;
-		//Why not a colred bg ?
-		glClearColor(c,c,c,1);
-		c += 1.0f/256.0f;
-		if (c >= 1.0f)
-			c = 0.0f;
+		// Just disabling that on wsl because of epilepsy risks lolz
+		// static GLclampf c = 0.0f;
+		// //Why not a colred bg ?
+		// glClearColor(c,c,c,1);
+		// c += 1.0f/256.0f;
+		// if (c >= 1.0f)
+		// 	c = 0.0f;
 
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -260,13 +262,14 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 
 		// "Wireframe" render mode :)
-		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
 		glDrawArrays(GL_TRIANGLES, 0, faces.size()); // Starting from vertex 0;
 		// glDisableVertexAttribArray(0); // not necessary
 		glfwSwapBuffers(_window);
 		glfwSetWindowUserPointer(_window, this);
 		glfwPollEvents();
+		glFinish();
 		// key_print();
 	}
 	// END OF RENDER LOOP
@@ -374,8 +377,6 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 	(void)mods;
 	void *data = glfwGetWindowUserPointer(window);
 	render *w = static_cast<render *>(data);
-	std::cout << "key = " << key << std::endl; 
-	std::cout << "action = " << action << std::endl; 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	else if (action == GLFW_PRESS)
@@ -397,5 +398,4 @@ void	render::resize_callback(GLFWwindow *win, int width, int height)
 	r->_width = width;
 	r->_height = height;
 	glViewport(0, 0, r->_width, r->_height);
-	std::cout << "width: " << width << "height: " << height << std::endl;
 }
