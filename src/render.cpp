@@ -114,7 +114,7 @@ void	render::update()
 	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
 
 	Matrix4		view;
-	view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, -1, 0, 0));
+	view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, 1, 0, 0));
 
 	Matrix4		model;
 	model = model.identity();
