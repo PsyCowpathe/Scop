@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "../headers/render.hpp"
-#include "../headers/load_object.hpp"
+#include "../headers/object_loader.hpp"
 
 int		main(void)
 {
