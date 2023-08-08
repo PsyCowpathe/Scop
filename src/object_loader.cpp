@@ -183,6 +183,10 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, si
 	try
 	{
 		space_count = count_char(line, ' ');
+		std::cout << "count = " << count_char(line, '/') << std::endl;
+		std::cout << "line = " << line << std::endl;
+		if (space_count < 3 || space_count > 4 || count_char(line, '/') != 0)
+			parsing_error(line, ln);
 		while((next = line.find(' ', last)) != std::string::npos)
 		{
 			sub = line.substr(last, next-last);
@@ -224,7 +228,6 @@ void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
 
 	while (i < size)
 	{
-		std::cout << "face = " << faces[i] << std::endl;
 		if (faces[i] > max)
 		{
 			max = faces[i];
@@ -232,13 +235,11 @@ void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
 		}
 		i++;
 	}
-	std::cout << "max = " << max << std::endl;
 	if (max > vertices.size() / 3)
 	{
 		std::cout << "wrong data in faces " << index / 3 << " : [" << faces[index] << "]" << std::endl;
 		exit(-1);
 	}
-	std::cout << "max = " << max << std::endl;
 }
 
 int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
@@ -246,6 +247,7 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 	std::vector<unsigned int> uv_indices, normal_indices;
 	std::ifstream	file(path);
 	std::string	line;
+	int			type = -1;
 
 	size_t	ln = 0;
 
@@ -277,10 +279,16 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 		{
 			if (line[1] != ' ')
 				parsing_error(line, ln);
-			if (line.find('/') != std::string::npos)
+			if (line.find('/') != std::string::npos && (type == -1 || type == 1))
+			{
 				handle_slash(line, uv_indices, normal_indices, faces, ln);
-			else if (line.find(' ', 3) != std::string::npos)
+				type = 1;
+			}
+			else if (line.find(' ', 3) != std::string::npos && (type == -1 || type == 2))
+			{
 				handle_spaces(line, faces, ln);
+				type = 2;
+			}
 		}
 		else if (line[0] != '#' && line[0])
 			parsing_error(line, ln);
