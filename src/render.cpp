@@ -203,7 +203,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 		0.673f,  0.211f,  0.457f,
 		0.820f,  0.883f,  0.371f,
 		0.982f,  0.099f,  0.879f,
-				0.583f,  0.771f,  0.014f,
+		0.583f,  0.771f,  0.014f,
 		0.609f,  0.115f,  0.436f,
 		0.327f,  0.483f,  0.844f,
 		0.822f,  0.569f,  0.201f,
