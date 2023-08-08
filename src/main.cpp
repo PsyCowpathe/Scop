@@ -20,7 +20,7 @@ int		main(void)
 	std::vector<float>			normals;
 	std::vector<unsigned int>	faces;
 
-	load_object("objects/cube.obj", vertices, uv, normals, faces);
+	load_object("objects/teapot2.obj", vertices, uv, normals, faces);
 
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", faces);
 	/*static const GLfloat vertex_buffer[] =
