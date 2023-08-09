@@ -1,19 +1,47 @@
-#include "../headers/load_object.hpp"
+#include "../headers/object_loader.hpp"
 #include <iomanip>
 
+static void	parsing_error(std::string line, size_t ln)
+{
+	std::cout << "wrong format at line " << ln << " : [" << line << "]" << std::endl;
+	exit(-1);
+}
+
+size_t			count_char(std::string line, char to_count)
+{
+	size_t	index;
+	size_t	count;
+
+	index = 0;
+	count = 0;
+	while ((index = line.find(to_count, index)) != std::string::npos)
+	{
+		count++;
+		index++;
+	}
+	return (count);
+}
+
 // TODO: add error check
-static void	get_info(std::string line, std::vector<float> &buffer, int ignore)
+static void	get_info(std::string line, std::vector<float> &buffer, int ignore, size_t ln)
 {
 	try
 	{
 		std::string xyz[3];
 		size_t i = 0;
 		size_t last = ignore; size_t next = 0;
+		size_t space_count;
+
+		space_count = count_char(line, ' ');
+
+		if (space_count != 3)
+			parsing_error(line, ln);
 		while ((next = line.find(' ', last)) != std::string::npos)
 		{
+			if (i > 1)
+				parsing_error(line, ln);
 			xyz[i] =  line.substr(last, next-last);
 				buffer.push_back(std::stof(xyz[i]));
-			// std::cout << xyz[i] << std::endl;
 			last = next + 1;
 			i++;
 		}
@@ -22,24 +50,30 @@ static void	get_info(std::string line, std::vector<float> &buffer, int ignore)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "cc " << e.what() << " at line : " << ln << std::endl;
 		exit(0);
 	}
 }
 
-static void	get_uv_info(std::string line, std::vector<float> &buffer)
+static void	get_uv_info(std::string line, std::vector<float> &buffer, size_t ln)
 {
 	try
 	{
-		std::cout << "getting uv info" << std::endl;
 		std::string xyz[2];
 		size_t i = 0;
 		size_t last = 3; size_t next = 0;
+		size_t space_count;
+
+		space_count = count_char(line, ' ');
+
+		if (space_count != 2)
+			parsing_error(line, ln);
 		while ((next = line.find(' ', last)) != std::string::npos)
 		{
+			if (i > 0)
+				parsing_error(line, ln);
 			xyz[i] =  line.substr(last, next-last);
 			buffer.push_back(std::stof(xyz[i]));
-			// std::cout << xyz[i] << std::endl;
 			last = next + 1;
 			i++;
 		}
@@ -48,14 +82,17 @@ static void	get_uv_info(std::string line, std::vector<float> &buffer)
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "ici " << e.what() << " at line : " << ln << std::endl;
 		exit(0);
 	}
 }
 
+//trop de coco sur une ligne = crash
+
+
 // stoi throws an exception when failing
 // it's ugly as hell sorry
-void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n)
+void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int &n, size_t ln)
 {
 	try
 	{
@@ -63,97 +100,116 @@ void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int
 		bool	first = true;
 		while ((next = line.find('/', last)) != std::string::npos)
 		{
-			std::cout << "[" << line.substr(last, last - next) << "]" << std::endl;
 			if (first)
-			{
 				v = std::stoi(line.substr(last, last - next));
-				std::cout << "V" << v << std::endl;
-			}
 			else
-			{
 				u = std::stoi(line.substr(last, last - next));
-				std::cout << "U" << u << std::endl;
-			}
 			last = next + 1;
 			first = !first;
 		}
 		n = std::stoi(line.substr(last));
-		std::cout << "FK[" << n << "]" << std::endl;
 	}
 	catch (std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "la " << e.what() << " at line : " << ln << std::endl;
 		exit(0);
 	}
 	return ;
 }
 
-static void	parsing_error(std::string line, size_t ln)
-{
-	std::cout << "wrong format at line " << ln << " : [" << line << "]" << std::endl;
-	exit(-1);
-}
+
 
 // Parses faces info if there are only spaces
 
-static void	handle_slash(std::string line, std::vector<unsigned int> &vertex_indices, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces)
+
+
+static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces, size_t ln)
 {
-	unsigned int	vertex_index[3], uv_index[3], normal_index[3];
-	int i = 0;
-	size_t last = 2; size_t next = 0;
-	std::cout << "contains slash" << std::endl;
-	while ((next = line.find(' ', last)) != std::string::npos)
+	unsigned int	vertex_index[4], uv_index[4], normal_index[4];
+	size_t			slash_count;
+	size_t			space_count;
+	size_t			index;
+	size_t			prev_index;
+	size_t			i;
+	std::string		sub;
+
+	slash_count = count_char(line, '/');
+	space_count = count_char(line, ' ');
+	index = 2;
+	prev_index = index;
+	i = 0;
+	while ((index = line.find(" ", index)) != std::string::npos)
 	{
-		std::string debug =  line.substr(last, next-last);
-		set_arrays(debug, vertex_index[i], uv_index[i], normal_index[i]);
-		std::cout << "DEBUG" << debug << std::endl;
-		last = next + 1;
+		sub = line.substr(prev_index, index - prev_index);
+		prev_index = ++index;
+		set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i], ln);
 		i++;
 	}
-	std::string	end = line.substr(last);
-	std::cout << "END" << end << std::endl;
-	set_arrays(end, vertex_index[2], uv_index[2], normal_index[2]);
-	vertex_indices.push_back(vertex_index[0]);
-	vertex_indices.push_back(vertex_index[1]);
-	vertex_indices.push_back(vertex_index[2]);
-	uv_indices.push_back(uv_index[0]);
-	uv_indices.push_back(uv_index[1]);
-	uv_indices.push_back(uv_index[2]);
-	normal_indices.push_back(normal_index[0]);
-	normal_indices.push_back(normal_index[1]);
-	normal_indices.push_back(normal_index[2]);
-	faces.push_back(vertex_index[0]);
-	faces.push_back(vertex_index[1]);
-	faces.push_back(vertex_index[2]);
+	if ((space_count == 3 && (i != 2 || slash_count != 6)) || (space_count == 4 && (i != 3 || slash_count != 8)))
+		parsing_error(line, ln);
+	sub = line.substr(prev_index, index - prev_index);
+	set_arrays(sub, vertex_index[i], uv_index[i], normal_index[i], ln);
+	if (slash_count == 8)
+		i--;
+	index = 0;
+	while (index <= i)
+	{
+		uv_indices.push_back(uv_index[index]);
+		normal_indices.push_back(normal_index[index]);
+		faces.push_back(vertex_index[index]);
+		index++;
+	}
+	if (slash_count == 8)
+	{
+		faces.push_back(vertex_index[0]);
+		faces.push_back(vertex_index[2]);
+		faces.push_back(vertex_index[3]);
+	}
 }
 
 
 // Parses faces info if there are only spaces
 
-static void	handle_spaces(std::string line, std::vector<unsigned int> vertex_indices)
+static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, size_t ln)
 {
-	size_t last = 2; size_t next = 0;
+	size_t 			last = 2;
+	size_t 			next = 0;
+	std::string		sub;
+	unsigned int	vertex_index[4];
+	int				i = 0;
+	int				index = 0;
+	size_t			space_count;
+
 	try
 	{
+		space_count = count_char(line, ' ');
+		std::cout << "count = " << count_char(line, '/') << std::endl;
+		std::cout << "line = " << line << std::endl;
+		if (space_count < 3 || space_count > 4 || count_char(line, '/') != 0)
+			parsing_error(line, ln);
 		while((next = line.find(' ', last)) != std::string::npos)
 		{
-			std::string	debug = line.substr(last, next-last);
-			std::cout << "DEBUG" << debug << std::endl;
+			sub = line.substr(last, next-last);
 			last = next + 1;
-			vertex_indices.push_back(std::stoi(debug));
+			vertex_index[i] = std::stoi(sub);
+			i++;
 		}
-		std::string	debug = line.substr(last);
-		vertex_indices.push_back(std::stoi(debug));
-		size_t	t = 0;
-		while (t < vertex_indices.size())
+		sub = line.substr(last);
+		vertex_index[i] = std::stoi(sub);
+		if (space_count == 4)
+			i--;
+		while (index <= i)
+			faces.push_back(vertex_index[index++]);
+		if (space_count == 4)
 		{
-			std::cout << "Vector = " << vertex_indices[t] << std::endl;
-			t++;
+			faces.push_back(vertex_index[0]);
+			faces.push_back(vertex_index[2]);
+			faces.push_back(vertex_index[3]);
 		}
 	}
 	catch(std::exception &e)
 	{
-		std::cout << e.what() << std::endl;
+		std::cout << "here " << e.what() << " at line : " << ln << std::endl;
 	}
 }
 
@@ -162,10 +218,37 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> vertex_ind
 // Currently handles v, vt, vf, f
 // TODO: add support for texture, s(?) and mat(?)
 
+void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
+{
+	float	max = 0;
+	int		i = 0;
+	int		index = 0;
+	int		size = faces.size();
+	(void) vertices;
+
+	while (i < size)
+	{
+		if (faces[i] > max)
+		{
+			max = faces[i];
+			index = i;
+		}
+		i++;
+	}
+	if (max > vertices.size() / 3)
+	{
+		std::cout << "wrong data in faces " << index / 3 << " : [" << faces[index] << "]" << std::endl;
+		exit(-1);
+	}
+}
+
 int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
 {
-	std::vector<unsigned int> vertex_indices, uv_indices, normal_indices;
+	std::vector<unsigned int> uv_indices, normal_indices;
 	std::ifstream	file(path);
+	std::string	line;
+	int			type = -1;
+
 	size_t	ln = 0;
 
 	if (!file.is_open())
@@ -173,24 +256,22 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 		std::cout << "couldn't read file at path: " << path << "are you sure the file exists?" << std::endl;
 		exit(-1);
 	}
-	std::string	line;
 	while (std::getline(file, line))
 	{
 		ln++;
 		if (line[0] == 'v' && line[1] == ' ')
-			get_info(line, vertices, 2);
+			get_info(line, vertices, 2, ln);
 		else if (line[0] == 'v' && line[1] == 't')
 		{
-			std::cout << "LINE VT" << std::endl;
 			if (line[2] == ' ')
-				get_uv_info(line, uv);
+				get_uv_info(line, uv, ln);
 			else
 				parsing_error(line, ln);
 		}
 		else if (line[0] == 'v' && line[1] == 'n')
 		{
 			if (line[2] == ' ')
-				get_info(line, normals, 3);
+				get_info(line, normals, 3, ln);
 			else
 				parsing_error(line, ln);
 		}
@@ -198,17 +279,20 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 		{
 			if (line[1] != ' ')
 				parsing_error(line, ln);
-			if (line.find('/') != std::string::npos)
-				handle_slash(line, vertex_indices, uv_indices, normal_indices, faces);
-			else if (line.find(' ', 3) != std::string::npos)
-				handle_spaces(line, vertex_indices);
+			if (line.find('/') != std::string::npos && (type == -1 || type == 1))
+			{
+				handle_slash(line, uv_indices, normal_indices, faces, ln);
+				type = 1;
+			}
+			else if (line.find(' ', 3) != std::string::npos && (type == -1 || type == 2))
+			{
+				handle_spaces(line, faces, ln);
+				type = 2;
+			}
 		}
 		else if (line[0] != '#' && line[0])
 			parsing_error(line, ln);
 	}
-	std::cout << vertices.size() << std::endl;
-	std::cout << uv.size() << std::endl;
-	std::cout << normals.size() << std::endl;
-	std::cout << "end" << std::endl;
+	check_data(vertices, faces);
 	return (0);
 }

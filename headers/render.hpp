@@ -23,12 +23,12 @@
 #include <vector>
 #include <map>
 #include <chrono>
-#include "matrice.hpp"
+#include <sstream>
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 
-#include "load_object.hpp"
+#include "object_loader.hpp"
 #include "Texture.hpp"
 
 // #include "./glm/glm/glm.hpp"
@@ -47,21 +47,27 @@ class render
 		GLuint			_colorBuffer;
 		GLuint			_texBuffer;
 		
-		char			_rotate_axis = 'y';
+		char					_rotate_axis = 'y';
 		float					_moov_x = 0;
 		float					_moov_y = 0;
 		float					_moov_z = 0;
-		matrice					matrice;
+		float					_angle = 0;
+		Vec4 					_factor;
+		float					_delta_time = 0;
 		int						_width;
 		int						_height;
+		bool					_wireframe = false;
+		bool					_spins = true;
 		std::map<int, bool>		_keys;
-		bool			_t_mode = 0;
+		bool					_t_mode = 0;
 		
-		// float			_pitch = 0;
-		// float			_yaw = -90;
+		// float					_pitch = 0;
+		// float					_yaw = -90;
+		GLuint						_programID;
+		std::vector<unsigned int> 	_faces;
 
-		//GLfloat			*_current_vertex;
-		// const GLfloat	*_original_vertex;
+		//GLfloat					*_current_vertex;
+		// const GLfloat			*_original_vertex;
 
 		//Init
 		
@@ -80,11 +86,14 @@ class render
 		static void		key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 		static void		resize_callback(GLFWwindow *win, int width, int height);
 		void			handle_inputs();
-		void			change_rotate_axis(int key);
 		void			change_color(int key);
 
 		//Texture
 		void			switch_texture();
+		void			update();
+		void			draw();
+		void			get_fps(int &frames, float &last_time);
+
 
 		//Utils
 		void			create_vertex_array();
@@ -101,9 +110,10 @@ class render
 
 		void			clear();
 		GLuint			_pixels;
-		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name);
+
+		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::vector<unsigned int> faces);
 		~render();
-		void			draw_triangle(std::vector<float>	vertices, std::vector<unsigned int>	faces, std::vector<float> uv);//
+		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
 };
 
 #endif

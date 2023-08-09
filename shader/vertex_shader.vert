@@ -14,13 +14,15 @@ uniform float u_test;
 uniform vec3 u_color;
 
 
-out vec3 color;
+// out vec3 color;
 out vec2 TexCoord0;
 
+out vec4 color;
 void main()
 {
 	gl_Position = proj * view *  model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
 
 	TexCoord0 = TexCoord;
-	color = in_color;
+	color = vec4(in_color, 1.0f);
+	color = vec4(vertexPosition_modelspace, 1.0);
 }

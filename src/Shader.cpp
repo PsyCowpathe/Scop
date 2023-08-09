@@ -23,6 +23,7 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 
 	////Turn those into attributes ?
 	// Create the shaders
+	std::cout << "SALUT" << std::endl;
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
