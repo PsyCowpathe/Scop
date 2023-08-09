@@ -20,7 +20,8 @@ int		main(void)
 	std::vector<float>			normals;
 	std::vector<unsigned int>	faces;
 
-	load_object("objects/teapot.obj", vertices, uv, normals, faces);
+	load_object("objects/cub/source/model/LowpolyCube/LowpolycubeObj.obj", vertices, uv, normals, faces);
+	// load_object("objects/ball.obj", vertices, uv, normals, faces);
 
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", faces);
 	/*static const GLfloat vertex_buffer[] =
@@ -46,8 +47,7 @@ int		main(void)
 		-1.0f, -1.0f, 0.0f,
 	};*/
 
-	// test.draw_triangle(vertices, faces, uv);
-	test.loop(vertices, faces);
+	test.loop(vertices, faces, uv);
 	std::cout << "Program end" << std::endl;
 	return (0);
 }

@@ -78,6 +78,7 @@ static void	get_uv_info(std::string line, std::vector<float> &buffer, size_t ln)
 			i++;
 		}
 		xyz[1] = line.substr(last);
+		// std::cout << std::stof(xyz[1]) << " OH" << std::endl;
 		buffer.push_back(std::stof(xyz[1]));
 	}
 	catch (std::exception &e)
@@ -183,8 +184,8 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, si
 	try
 	{
 		space_count = count_char(line, ' ');
-		std::cout << "count = " << count_char(line, '/') << std::endl;
-		std::cout << "line = " << line << std::endl;
+		// std::cout << "count = " << count_char(line, '/') << std::endl;
+		// std::cout << "line = " << line << std::endl;
 		if (space_count < 3 || space_count > 4 || count_char(line, '/') != 0)
 			parsing_error(line, ln);
 		while((next = line.find(' ', last)) != std::string::npos)
@@ -244,8 +245,8 @@ void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
 
 int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
 {
-	std::vector<unsigned int> uv_indices, normal_indices;
-	std::ifstream	file(path);
+	std::vector<unsigned int>	uv_indices, normal_indices;
+	std::ifstream				file(path);
 	std::string	line;
 	int			type = -1;
 

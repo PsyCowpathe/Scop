@@ -44,8 +44,8 @@ render::~render()
 	std::cout << "destruction" << std::endl;
 
 	// not necessary
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	// glDisableVertexAttribArray(0);
+	// glDisableVertexAttribArray(1);
 	
 	// I guess it's always a better practice to add those :	// but not necessary ?
 	glDeleteBuffers(1, &_vertexArrayID);
@@ -53,6 +53,31 @@ render::~render()
 	glDeleteBuffers(1, &_vertexBuffer);
 	glfwDestroyWindow(_window);
 	glfwTerminate();
+}
+
+float    *render::make_tex_mega_float(std::vector<float> uv)
+{
+    float    *result = new float[uv.size()]; //dont forget delete[]
+    size_t   i;
+
+    i = 0;
+	// std::cout << "face size " << faces.size() << std::endl;
+	std::cout << "vertices size " << uv.size() << std::endl;
+    while (i < uv.size())
+    {
+		//std::cout << "face = " << faces[i] << std::endl;
+		std::cout << "uv = " << uv[i] << std::endl << std::endl;
+		//std::cout << "crash = " << 3 * (faces[i] - 1) << std::endl;
+		//std::cout << "wut =" << faces[i] - 1 << std::endl;
+        result[i] = uv[i];
+		//std::cout << "pas crash" << std::endl;
+        // result[2 * i + 1] = uv[2 * (faces[i] - 1) + 1];
+        // result[2 * i + 2] = uv[2 * (faces[i] - 1) + 2];
+        // std::cout << "face = " << faces[i] << " : x = " << result[2 * i] << " y = " << result[2 * i + 1] << std::endl;
+        i++;
+    }
+	std::cout << "uv[0] = " << uv[0] << std::endl;
+    return (result);
 }
 
 float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
@@ -151,12 +176,17 @@ void	render::update()
 	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
 }
 
-void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
+void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, std::vector<float> uv)
 {
+	// std::cout << uv[0] << " OH" << std::endl;
+	(void)uv;
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
 	// TODO: disable fps before correc since using glfw function
 	float					*transformed_vertices = make_mega_float(vertices, faces);
+	float					*transformed_uv = make_tex_mega_float(uv);
+
+	
 
 	create_vertex_array();
 
@@ -234,9 +264,25 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
 	// VERTEX BUFFER
 	//std::cout << vertices.size() << std::endl;
 	
+	glEnableVertexAttribArray(0);
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
+	// glEnableVertexAttribArray(1);
+	
+
+	glVertexAttribPointer
+		(
+		 0,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 3,				// size (here we have 3 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
+
+	// glBindBuffer(GL_ARRAY_BUFFER, 0);
+	
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
@@ -253,7 +299,7 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
 	// * TEXTURES *
 	// ************
 
-	p_tex = new Texture(GL_TEXTURE_2D, "objects/sas.bmp", this);
+	p_tex = new Texture(GL_TEXTURE_2D, "objects/lambert.bmp", this);
 	if (p_tex->load_tex() != 0)
 	{
 		clear();
@@ -269,22 +315,32 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
 	glUniform1i(gSamplerLocation, 0);
 
 
+	// GENERATE TEXCOORDINATES BUFFER
 
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(D), , GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(2);
+	(void)transformed_uv;
+	glEnableVertexAttribArray(1);
+	glGenBuffers(1, &_texBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
-
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (uv.size()), transformed_uv, GL_STATIC_DRAW); 
+	
 	// send texBuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer
 		(
-		 2,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
 		 2,				// size (here we have 2 values per vertex)
 		 GL_FLOAT,		// type
 		 GL_FALSE,		// normalized?
 		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
+
+	// 	glTexCoordPointer
+		// (
+		// 	1,				// size (here we have 2 values per vertex)
+		// 	GL_FLOAT,		// type
+		// 	0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		// 	(void*)0		// array buffer offset (at beginning of array)
+		// );
 
 	// // WE NEED TEXTURE COORDINATES in our vertex data, DUH
 	// ROFL we need a buffer for tex coordinates AND texture image data ...
@@ -313,21 +369,22 @@ void	render::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer
-		(
-		0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,			// size
-		GL_FLOAT,	// type
-		GL_FALSE,	// normalized?
-		0,			// stride
-		(void*)0	// array buffer offset
-		);
+	// glEnableVertexAttribArray(0);
+	// glVertexAttribPointer
+	// 	(
+	// 	0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
+	// 	3,			// size
+	// 	GL_FLOAT,	// type
+	// 	GL_FALSE,	// normalized?
+	// 	0,			// stride
+	// 	(void*)0	// array buffer offset
+	// 	);
 
 
 	// "Wireframe" render mode :)
 	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
+	// glBindTexture(GL_TEXTURE_2D, _texBuffer);
 	glDrawArrays(GL_TRIANGLES, 0, _faces.size()); // Starting from vertex 0;
 	// glDisableVertexAttribArray(0); // not necessary
 	glfwSwapBuffers(_window);

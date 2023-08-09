@@ -77,6 +77,7 @@ int    Texture::check_file()
 	// {
 	// 	printf("%u/n", _pixels[i]);
 	// }
+	std::cout << "Texture \"" << this->_file_name << "\" successfully loaded.\n";
 
 	delete[] datBuff[0];
 	delete[] datBuff[1];
@@ -98,9 +99,6 @@ void Texture::gen_tex()
 
 	GLint mode = GL_RGB;                   // Set the mode
 
-	// Create the texture. We get the offsets from the image, then we use it with the image's
-	// pixel data to create it.
-	glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels);
 
 	glTexParameteri(_texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(_texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -108,13 +106,19 @@ void Texture::gen_tex()
 	glTexParameteri(_texture_target, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(_texture_target, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-	glGenerateMipmap(_texture_target);
+	// Create the texture. We get the offsets from the image, then we use it with the image's
+	// pixel data to create it.
+	if (_pixels)
+	{
+		glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels);
+		glGenerateMipmap(_texture_target);
+	}
 
 	// Unbind the GL_TEXTURE_2D texture
-	glBindTexture(_texture_target, 0);
+	// glBindTexture(_texture_target, 0);
 
 	// Output a successful message
-	std::cout << "Texture \"" << this->_file_name << "\" successfully loaded.\n";
+	std::cout << "Texture based on \"" << this->_file_name << "\" successfully generated.\n";
 
 	// Delete the two buffers.
 	// delete[] datBuff[0];
@@ -124,8 +128,8 @@ void Texture::gen_tex()
 
 void Texture::bind_tex(GLenum texture_unit)
 {
-	glActiveTexture(texture_unit); // GL_TEXTURE0
-	glBindBuffer(_texture_target, _texture_obj);
+	glActiveTexture(texture_unit); // 
+	glBindBuffer(texture_unit, _texture_obj);
 }
 
 bool Texture::load_tex()
@@ -133,7 +137,7 @@ bool Texture::load_tex()
     if (check_file() != 0)
         exit(-1);
     gen_tex();
-	bind_tex(GL_TEXTURE0);
+	bind_tex(GL_TEXTURE_2D);
     
     return (0);
 }

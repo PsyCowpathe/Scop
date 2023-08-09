@@ -1,8 +1,8 @@
 #version 330 core
 // layout(location = 0) in vec3 position;
 layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec3 in_color;
-layout(location = 2) in vec2 TexCoord;
+// layout(location = 1) in vec3 in_color;
+layout(location = 1) in vec2 TexCoord;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -23,6 +23,6 @@ void main()
 	gl_Position = proj * view *  model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
 
 	TexCoord0 = TexCoord;
-	color = vec4(in_color, 1.0f);
-	color = vec4(vertexPosition_modelspace, 1.0);
+	// color = vec4(in_color, 1.0f);
+	// color = vec4(vertexPosition_modelspace, 1.0);
 }

@@ -98,6 +98,7 @@ class render
 		//Utils
 		void			create_vertex_array();
 
+		float    		*make_tex_mega_float(std::vector<float> uv);
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
 		Vec4			check_moov(Vec4 factor);
 
@@ -113,7 +114,7 @@ class render
 
 		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::vector<unsigned int> faces);
 		~render();
-		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
+		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces, std::vector<float> uv);
 };
 
 #endif
