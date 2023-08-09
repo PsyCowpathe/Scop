@@ -34,25 +34,31 @@ class render
 {
 	private :
 
-		GLFWwindow				*_window;
-		GLuint					_vertexArrayID;
-		GLuint					_vertexBuffer;
-		GLuint					_colorBuffer;
-		
-		char					_rotate_axis = 'y';
-		float					_moov_x = 0;
-		float					_moov_y = 0;
-		float					_moov_z = 0;
-		float					_angle = 0;
-		Vec4 					_factor;
-		float					_delta_time = 0;
-		int						_width;
-		int						_height;
-		bool					_wireframe = false;
-		bool					_spins = true;
-		std::map<int, bool>		_keys;
-		GLuint					_programID;
-		std::vector<unsigned int> _faces;
+		GLFWwindow					*_window;
+		GLuint						_vertexArrayID;
+		GLuint						_vertexBuffer;
+		GLuint						_colorBuffer;
+
+		// Parsed info
+		std::vector<float>			_parsed_vertices;
+		std::vector<float>			_parsed_uv;
+		std::vector<float>			_parsed_normals;
+		std::vector<unsigned int>	_parsed_faces;
+
+		char						_rotate_axis = 'y';
+		float						_moov_x = 0;
+		float						_moov_y = 0;
+		float						_moov_z = 0;
+		float						_angle = 0;
+		Vec4 						_factor;
+		float						_delta_time = 0;
+		int							_width;
+		int							_height;
+		bool						_wireframe = false;
+		bool						_spins = true;
+		std::map<int, bool>			_keys;
+		GLuint						_programID;
+		std::vector<unsigned int>	_faces;
 
 		//GLfloat			*_current_vertex;
 		// const GLfloat	*_original_vertex;
