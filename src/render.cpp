@@ -109,6 +109,7 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 {
 	// USE THIISSSSSS !!!!!!!!!!!!!!!!
 	// uv;
+	(void)uv;
 
 
 
@@ -226,7 +227,10 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	p_tex = new Texture(GL_TEXTURE_2D, "objects/sas.bmp", this);
 	if (p_tex->load_tex() != 0)
+	{
 		clear();
+		exit(-1);
+	}
 
 	GLuint gSamplerLocation = glGetUniformLocation(programID, "gSampler");
 	if (gSamplerLocation == 0)
@@ -240,19 +244,19 @@ void	render::draw_triangle(std::vector<float> vertices, std::vector<unsigned int
 
 	// glBufferData(GL_ARRAY_BUFFER, sizeof(D), , GL_STATIC_DRAW);
 
-	// glEnableVertexAttribArray(2);
-	// glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
 
-	// // send texBuffer to shader pipeline, at layout = 1
-	// glVertexAttribPointer
-	// 	(
-	// 	 2,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-	// 	 2,				// size (here we have 2 values per vertex)
-	// 	 GL_FLOAT,		// type
-	// 	 GL_FALSE,		// normalized?
-	// 	 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-	// 	 (void*)0		// array buffer offset (at beginning of array)
-	// 	);
+	// send texBuffer to shader pipeline, at layout = 1
+	glVertexAttribPointer
+		(
+		 2,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 2,				// size (here we have 2 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
 
 	// // WE NEED TEXTURE COORDINATES in our vertex data, DUH
 	// ROFL we need a buffer for tex coordinates AND texture image data ...

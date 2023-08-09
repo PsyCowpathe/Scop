@@ -72,6 +72,12 @@ int    Texture::check_file()
     this->_pixels = pixels;
 	_render->_pixels = *pixels;
 
+	// uint8_t i;
+	// for (i = 0; i < bmpInfo->biSizeImage; i++)
+	// {
+	// 	printf("%u/n", _pixels[i]);
+	// }
+
 	delete[] datBuff[0];
 	delete[] datBuff[1];
     
