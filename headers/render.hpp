@@ -23,6 +23,7 @@
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
+#include "object_loader.hpp"
 
 // #include "./glm/glm/glm.hpp"
 // #include "./glm/glm/gtx/transform.hpp"
@@ -96,9 +97,9 @@ class render
 
 	public :
 
-		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::vector<unsigned int> faces);
+		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::string obj_path);
 		~render();
-		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces);//
+		void	loop();//
 };
 
 #endif

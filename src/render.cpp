@@ -12,9 +12,9 @@
 
 #include "../headers/render.hpp"
 
-render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::vector<unsigned int> faces)
+render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path)
 {
-	_faces = faces;
+	load_object(obj_path.c_str(), _parsed_vertices, _parsed_uv, _parsed_normals, _faces);
 	_factor = Vec4(0, 0, 0, 0);
 	if (width < 0 || height < 0)
 		clear();
@@ -142,12 +142,12 @@ void	render::update()
 	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
 }
 
-void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
+void	render::loop()
 {
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
 	// TODO: disable fps before correc since using glfw function
-	float					*transformed_vertices = make_mega_float(vertices, faces);
+	float					*transformed_vertices = make_mega_float(_parsed_vertices, _faces);
 
 	create_vertex_array();
 
@@ -230,7 +230,7 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces)
 	
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (_faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
 	// static draw flag : "The data store contents will be modified once and used many times 
 	//as the source for GL drawing commands. "
 
