@@ -20,7 +20,7 @@ out vec2 TexCoord0;
 out vec4 color;
 void main()
 {
-	gl_Position = proj * view *  model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
+	gl_Position = proj * view *  model * (trans + (/*rot **/ vec4(vertexPosition_modelspace, 1.0f)));
 
 	TexCoord0 = TexCoord;
 	// color = vec4(in_color, 1.0f);

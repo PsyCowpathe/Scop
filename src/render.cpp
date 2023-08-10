@@ -55,28 +55,27 @@ render::~render()
 	glfwTerminate();
 }
 
-float    *render::make_tex_mega_float(std::vector<float> uv)
+float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigned int> uv_indices)
 {
-    float    *result = new float[uv.size()]; //dont forget delete[]
+	float    *result = new float[uv_indices.size() * 2]; //dont forget delete[]
     size_t   i;
 
     i = 0;
-	// std::cout << "face size " << faces.size() << std::endl;
-	std::cout << "vertices size " << uv.size() << std::endl;
-    while (i < uv.size())
+	//std::cout << "face size " << faces.size() << std::endl;
+	//std::cout << "vertices size " << vertices.size() << std::endl;
+    while (i < uv_indices.size())
     {
 		//std::cout << "face = " << faces[i] << std::endl;
-		std::cout << "uv = " << uv[i] << std::endl << std::endl;
+		//std::cout << "vertices = " << vertices[i] << std::endl << std::endl;
 		//std::cout << "crash = " << 3 * (faces[i] - 1) << std::endl;
 		//std::cout << "wut =" << faces[i] - 1 << std::endl;
-        result[i] = uv[i];
+        result[2 * i] = uv[2 * (uv_indices[i] - 1)];
 		//std::cout << "pas crash" << std::endl;
-        // result[2 * i + 1] = uv[2 * (faces[i] - 1) + 1];
-        // result[2 * i + 2] = uv[2 * (faces[i] - 1) + 2];
-        // std::cout << "face = " << faces[i] << " : x = " << result[2 * i] << " y = " << result[2 * i + 1] << std::endl;
+        result[2 * i + 1] = uv[2 * (uv_indices[i] - 1) + 1];
+		std::cout << "result = " << result[2 * i] << " " << result[2 * i + 1] << std::endl;
+        //std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
         i++;
     }
-	std::cout << "uv[0] = " << uv[0] << std::endl;
     return (result);
 }
 
@@ -176,7 +175,7 @@ void	render::update()
 	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
 }
 
-void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, std::vector<float> uv)
+void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, std::vector<float> uv, std::vector<unsigned int> uv_indices)
 {
 	// std::cout << uv[0] << " OH" << std::endl;
 	(void)uv;
@@ -184,7 +183,7 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	std::vector<float>		vertex(4);
 	// TODO: disable fps before correc since using glfw function
 	float					*transformed_vertices = make_mega_float(vertices, faces);
-	float					*transformed_uv = make_tex_mega_float(uv);
+	float					*transformed_uv = make_tex_mega_float(uv, uv_indices);
 
 	
 
@@ -299,7 +298,7 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	// * TEXTURES *
 	// ************
 
-	p_tex = new Texture(GL_TEXTURE_2D, "objects/lambert.bmp", this);
+	p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
 	if (p_tex->load_tex() != 0)
 	{
 		clear();
@@ -317,11 +316,11 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 
 	// GENERATE TEXCOORDINATES BUFFER
 
-	(void)transformed_uv;
 	glEnableVertexAttribArray(1);
 	glGenBuffers(1, &_texBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (uv.size()), transformed_uv, GL_STATIC_DRAW); 
+	std::cout << " size = " << sizeof(*transformed_uv) * (uv.size() * 2) << std::endl;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (uv.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
 	
 	// send texBuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer

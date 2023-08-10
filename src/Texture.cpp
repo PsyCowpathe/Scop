@@ -16,6 +16,7 @@ int    Texture::check_file()
     uint8_t * datBuff[2] = {nullptr, nullptr}; // Header buffers
     
 	uint8_t* pixels = nullptr; // Pixels
+	uint8_t* verif = nullptr; // Pixels
 
 	BITMAPFILEHEADER* bmpHeader = nullptr; // Header
 	BITMAPINFOHEADER* bmpInfo   = nullptr; // Info 
@@ -49,10 +50,19 @@ int    Texture::check_file()
 
     // First allocate pixel memory
 	pixels = new uint8_t[bmpInfo->biSizeImage];
+	verif = new uint8_t[bmpInfo->biSizeImage];
 
 	// Go to where image data starts, then read in image data
 	file.seekg(bmpHeader->bfOffBits);
 	file.read((char*)pixels, bmpInfo->biSizeImage);
+	file.seekg(bmpHeader->bfOffBits);
+	file.read((char*)verif, bmpInfo->biSizeImage);
+
+	if (*verif != *pixels)
+	{
+		std::cout << "BMP format error" << std::endl;
+		exit(-1);
+	}
 
     // We're almost done. We have our image loaded, however it's not in the right format.
 	// .bmp files store image data in the BGR format, and we have to convert it to RGB.
@@ -65,12 +75,14 @@ int    Texture::check_file()
 		pixels[i + 2] = tmpRGB;
 	}
 
+
 	// Set width and height to the values loaded from the file
 	this->_w = bmpInfo->biWidth;
 	this->_h = bmpInfo->biHeight;
 
     this->_pixels = pixels;
 	_render->_pixels = *pixels;
+
 
 	// uint8_t i;
 	// for (i = 0; i < bmpInfo->biSizeImage; i++)
@@ -110,7 +122,10 @@ void Texture::gen_tex()
 	// pixel data to create it.
 	if (_pixels)
 	{
+		std::cout << "test" << std::endl;
+		std::cout << "pix = " << _pixels << std::endl;
 		glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels);
+		std::cout << "testeuuuh" << std::endl;
 		glGenerateMipmap(_texture_target);
 	}
 

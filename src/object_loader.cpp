@@ -165,6 +165,9 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 		faces.push_back(vertex_index[0]);
 		faces.push_back(vertex_index[2]);
 		faces.push_back(vertex_index[3]);
+		uv_indices.push_back(uv_index[0]);
+		uv_indices.push_back(uv_index[2]);
+		uv_indices.push_back(uv_index[3]);
 	}
 }
 
@@ -243,9 +246,9 @@ void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
 	}
 }
 
-int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces)
+int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces, std::vector<unsigned int> &uv_indices)
 {
-	std::vector<unsigned int>	uv_indices, normal_indices;
+	std::vector<unsigned int>	normal_indices;
 	std::ifstream				file(path);
 	std::string	line;
 	int			type = -1;

@@ -19,8 +19,9 @@ int		main(void)
 	std::vector<float>			uv;
 	std::vector<float>			normals;
 	std::vector<unsigned int>	faces;
+	std::vector<unsigned int>	uv_indices;
 
-	load_object("objects/cub/source/model/LowpolyCube/LowpolycubeObj.obj", vertices, uv, normals, faces);
+	load_object("objects/cube.obj", vertices, uv, normals, faces, uv_indices);
 	// load_object("objects/ball.obj", vertices, uv, normals, faces);
 
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", faces);
@@ -47,7 +48,7 @@ int		main(void)
 		-1.0f, -1.0f, 0.0f,
 	};*/
 
-	test.loop(vertices, faces, uv);
+	test.loop(vertices, faces, uv, uv_indices);
 	std::cout << "Program end" << std::endl;
 	return (0);
 }

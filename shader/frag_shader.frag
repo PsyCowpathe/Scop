@@ -22,6 +22,6 @@ void main()
 
   // TEXTURE work in progress
   FragColor = texture2D(gSampler, TexCoord0);
-  // FragColor.r = 0.5f;
+  //FragColor.r = 0.5f;
 
 }
