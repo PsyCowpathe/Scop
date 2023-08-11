@@ -21,8 +21,7 @@ int		main(void)
 	std::vector<unsigned int>	faces;
 	std::vector<unsigned int>	uv_indices;
 
-	load_object("objects/cube.obj", vertices, uv, normals, faces, uv_indices);
-	// load_object("objects/ball.obj", vertices, uv, normals, faces);
+	load_object("objects/ball.obj", vertices, uv, normals, faces, uv_indices);
 
 	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", faces);
 	/*static const GLfloat vertex_buffer[] =

@@ -14,7 +14,7 @@
 
 Texture *p_tex = NULL;
 
-// render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name)
+// CTOR inits a lot of things & loads shaders 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::vector<unsigned int> faces)
 {
 	_faces = faces;
@@ -37,6 +37,20 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 	if (glew_init() == -1)
 		clear();
 	_programID = load_shaders("shader/vertex_shader.vert", "shader/frag_shader.frag");
+
+	// Init VAO
+	create_vertex_array();
+
+	// Define viewport dimensions
+	glViewport(0, 0, _width, _height);
+
+	// Enable/init depth
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 }
 
 render::~render()
@@ -44,13 +58,14 @@ render::~render()
 	std::cout << "destruction" << std::endl;
 
 	// not necessary
-	// glDisableVertexAttribArray(0);
-	// glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 	
 	// I guess it's always a better practice to add those :	// but not necessary ?
 	glDeleteBuffers(1, &_vertexArrayID);
 	glDeleteBuffers(1, &_colorBuffer);
 	glDeleteBuffers(1, &_vertexBuffer);
+	glDeleteBuffers(1, &_texBuffer);
 	glfwDestroyWindow(_window);
 	glfwTerminate();
 }
@@ -134,7 +149,7 @@ Vec4	render::check_moov(Vec4 old)
 	return (factor);
 }
 
-// This is our VAO ?
+// This is our VAO
 void	render::create_vertex_array()
 {
 	glGenVertexArrays(1, &_vertexArrayID);
@@ -177,8 +192,6 @@ void	render::update()
 
 void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, std::vector<float> uv, std::vector<unsigned int> uv_indices)
 {
-	// std::cout << uv[0] << " OH" << std::endl;
-	(void)uv;
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
 	// TODO: disable fps before correc since using glfw function
@@ -186,89 +199,17 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	float					*transformed_uv = make_tex_mega_float(uv, uv_indices);
 
 	
+	// ************
+	// * VERTICES *
+	// ************
 
-	create_vertex_array();
-
-	// Define viewport dimensions ??
-	glViewport(0, 0, _width, _height);
-
-	// Enable/init depth
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS);
-
-	// Add culling (1st line culls backfaces by default, so 2nd line is optionnal ?)
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
-
-	// // CREATING VERTICES
-	// static const GLfloat color_buffer[] = { 
-    //     0.583f,  0.771f,  0.014f,
-    //     0.609f,  0.115f,  0.436f,
-    //     0.327f,  0.483f,  0.844f,
-    //     0.822f,  0.569f,  0.201f,
-    //     0.435f,  0.602f,  0.223f,
-    //     0.310f,  0.747f,  0.185f,
-    //     0.597f,  0.770f,  0.761f,
-    //     0.559f,  0.436f,  0.730f,
-    //     0.359f,  0.583f,  0.152f,
-    //     0.483f,  0.596f,  0.789f,
-    //     0.559f,  0.861f,  0.639f,
-    //     0.195f,  0.548f,  0.859f,
-    //     0.014f,  0.184f,  0.576f,
-    //     0.771f,  0.328f,  0.970f,
-    //     0.406f,  0.615f,  0.116f,
-    //     0.676f,  0.977f,  0.133f,
-    //     0.971f,  0.572f,  0.833f,
-    //     0.140f,  0.616f,  0.489f,
-    //     0.997f,  0.513f,  0.064f,
-    //     0.945f,  0.719f,  0.592f,
-    //     0.543f,  0.021f,  0.978f,
-    //     0.279f,  0.317f,  0.505f,
-    //     0.167f,  0.620f,  0.077f,
-    //     0.347f,  0.857f,  0.137f,
-    //     0.055f,  0.953f,  0.042f,
-    //     0.714f,  0.505f,  0.345f,
-    //     0.783f,  0.290f,  0.734f,
-    //     0.722f,  0.645f,  0.174f,
-    //     0.302f,  0.455f,  0.848f,
-    //     0.225f,  0.587f,  0.040f,
-    //     0.517f,  0.713f,  0.338f,
-    //     0.053f,  0.959f,  0.120f,
-    //     0.393f,  0.621f,  0.362f,
-    //     0.673f,  0.211f,  0.457f,
-    //     0.820f,  0.883f,  0.371f,
-    //     0.982f,  0.099f,  0.879f
-    // };
-	
-	// glGenBuffers(1, &_colorBuffer);
-	// glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(color_buffer), color_buffer, GL_STATIC_DRAW);
-
-
-	// glEnableVertexAttribArray(1);
-	// glBindBuffer(GL_ARRAY_BUFFER, _colorBuffer);
-
-	// // send _colorBuffer to shader pipeline, at layout = 1
-	// glVertexAttribPointer
-	// 	(
-	// 	 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-	// 	 3,				// size (here we have 3 values per vertex)
-	// 	 GL_FLOAT,		// type
-	// 	 GL_FALSE,		// normalized?
-	// 	 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-	// 	 (void*)0		// array buffer offset (at beginning of array)
-	// 	);
-
-
-	// VERTEX BUFFER
+	// // CREATING VERTEX BUFFER
 	//std::cout << vertices.size() << std::endl;
-	
 	glEnableVertexAttribArray(0);
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
-	// glEnableVertexAttribArray(1);
-	
+	// static draw flag : "The data store contents will be modified once and used many times as the source for GL drawing commands. "
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 	
 
 	glVertexAttribPointer
 		(
@@ -279,18 +220,9 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
-
-	// glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// glBindBuffer(GL_ARRAY_BUFFER, 0); // unbinds previously bound buffer
 	
-	// static draw flag : "The data store contents will be modified once and used many times 
-	//as the source for GL drawing commands. "
-
-
-	// Trying to set some uniforms (add uniforms locations to render class ?)
-	GLuint my_uniform = glGetUniformLocation(_programID, "u_test");
-	glUniform1f(my_uniform, 3.0f);
-
-	// Used in change_color() & switch_texture()
+	// Colored BG : Used in change_color() & switch_texture()
 	this->_color = glGetUniformLocation(_programID, "u_color");
 	glUniform3f(this->_color, 1.0f, 1.0f, 1.0f);
 
@@ -299,23 +231,18 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	// ************
 
 	p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
-	if (p_tex->load_tex() != 0)
-	{
-		clear();
-		exit(-1);
-	}
+	p_tex->load_tex();
 
 	GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
 	if (gSamplerLocation == 0)
 	{
-    	printf("Error getting uniform location of 'gSampler'\n");
-    	clear();
+		std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
+     	clear();
     }
 	glUniform1i(gSamplerLocation, 0);
 
 
-	// GENERATE TEXCOORDINATES BUFFER
-
+	// GENERATE & FILL TEXCOORDINATES BUFFER
 	glEnableVertexAttribArray(1);
 	glGenBuffers(1, &_texBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
@@ -333,17 +260,6 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
 
-	// 	glTexCoordPointer
-		// (
-		// 	1,				// size (here we have 2 values per vertex)
-		// 	GL_FLOAT,		// type
-		// 	0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-		// 	(void*)0		// array buffer offset (at beginning of array)
-		// );
-
-	// // WE NEED TEXTURE COORDINATES in our vertex data, DUH
-	// ROFL we need a buffer for tex coordinates AND texture image data ...
-
 	// ***************
 	// * RENDER LOOP *
 	// ***************
@@ -356,7 +272,6 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 		draw();
 		get_fps(frames, last_time);
 	}
-	// END OF RENDER LOOP
 }
 
 void	render::draw()
@@ -367,25 +282,10 @@ void	render::draw()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-	// glEnableVertexAttribArray(0);
-	// glVertexAttribPointer
-	// 	(
-	// 	0,			// attribute 0. No particular reason for 0, but must match the layout in the shader.
-	// 	3,			// size
-	// 	GL_FLOAT,	// type
-	// 	GL_FALSE,	// normalized?
-	// 	0,			// stride
-	// 	(void*)0	// array buffer offset
-	// 	);
-
-
 	// "Wireframe" render mode :)
 	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-	// glBindTexture(GL_TEXTURE_2D, _texBuffer);
 	glDrawArrays(GL_TRIANGLES, 0, _faces.size()); // Starting from vertex 0;
-	// glDisableVertexAttribArray(0); // not necessary
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
@@ -422,7 +322,7 @@ int		render::create_window(std::string name)
 	_window = glfwCreateWindow(_width, _height, name.c_str(), NULL, NULL);
 	if (!_window)
 	{
-		std::cout << "GLFW Init failed :(" << std::endl;
+		std::cout << "GLFW window creation failed :(" << std::endl;
 		return (-1);
 	}
 	return (1);
@@ -454,7 +354,7 @@ int		render::glfw_init()
 	return (1);
 }
 
-void	render::clear() //comment on sait dans le main qu'il y a eu un clear et stop le prgm ?
+void	render::clear()
 {
 	std::cout << "CLEAR" << std::endl;
 	glfwTerminate();
@@ -494,6 +394,7 @@ void	render::handle_inputs()
 	// ADD CODE HERE !
 }
 
+// needs to be re-done, or dropped
 void	render::change_color(int key)
 {
 	if (key == GLFW_KEY_R)
@@ -506,6 +407,7 @@ void	render::change_color(int key)
 		glUniform3f(_color, 1.0f, 1.0f, 1.0f);
 }
 
+// needs to be re-done
 void	render::switch_texture()
 {
 	if (_t_mode == 0)

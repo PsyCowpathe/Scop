@@ -11,7 +11,7 @@ Texture::Texture(GLenum texture_target, const std::string &file_name, render *re
 
 }
 
-int    Texture::check_file()
+void    Texture::check_file()
 {
     uint8_t * datBuff[2] = {nullptr, nullptr}; // Header buffers
     
@@ -26,8 +26,7 @@ int    Texture::check_file()
 	if(!file)
 	{
 		std::cout << "Failure to open bitmap file.\n";
-
-		return 1;
+		_render->clear();
 	}
 
     // Allocate byte memory that will hold the two headers
@@ -45,7 +44,7 @@ int    Texture::check_file()
 	if(bmpHeader->bfType != 0x4D42)
 	{
 		std::cout << "File \"" << this->_file_name << "\" isn't a bitmap file\n";
-		return 2;
+		_render->clear();
 	}
 
     // First allocate pixel memory
@@ -61,7 +60,7 @@ int    Texture::check_file()
 	if (*verif != *pixels)
 	{
 		std::cout << "BMP format error" << std::endl;
-		exit(-1);
+		_render->clear();
 	}
 
     // We're almost done. We have our image loaded, however it's not in the right format.
@@ -80,8 +79,8 @@ int    Texture::check_file()
 	this->_w = bmpInfo->biWidth;
 	this->_h = bmpInfo->biHeight;
 
+	// Fill member attribute with image data
     this->_pixels = pixels;
-	_render->_pixels = *pixels;
 
 
 	// uint8_t i;
@@ -94,7 +93,7 @@ int    Texture::check_file()
 	delete[] datBuff[0];
 	delete[] datBuff[1];
     
-    return (0);
+    return;
 }
 
 void Texture::gen_tex()
@@ -104,13 +103,9 @@ void Texture::gen_tex()
 
 	if (_texture_target != GL_TEXTURE_2D)
 	{
-		std::cout << "not the right texture format" << std::endl;
+		std::cout << "Not the right texture format." << std::endl;
 		_render->clear();
-		exit(1);
 	}
-
-	GLint mode = GL_RGB;                   // Set the mode
-
 
 	glTexParameteri(_texture_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(_texture_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -118,15 +113,21 @@ void Texture::gen_tex()
 	glTexParameteri(_texture_target, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(_texture_target, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
+	GLint mode = GL_RGB;                   // Set the mode
 	// Create the texture. We get the offsets from the image, then we use it with the image's
 	// pixel data to create it.
 	if (_pixels)
 	{
 		std::cout << "test" << std::endl;
 		std::cout << "pix = " << _pixels << std::endl;
-		glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels);
+		glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels); // pushes data to GL_TEXTURE_2D
 		std::cout << "testeuuuh" << std::endl;
 		glGenerateMipmap(_texture_target);
+	}
+	else
+	{
+		std::cout << "Something went wrong while generating texture." << std::endl;
+		_render->clear();
 	}
 
 	// Unbind the GL_TEXTURE_2D texture
@@ -135,9 +136,7 @@ void Texture::gen_tex()
 	// Output a successful message
 	std::cout << "Texture based on \"" << this->_file_name << "\" successfully generated.\n";
 
-	// Delete the two buffers.
-	// delete[] datBuff[0];
-	// delete[] datBuff[1];
+	// Delete remaining buffer.
 	delete[] _pixels;
 }
 
@@ -147,12 +146,9 @@ void Texture::bind_tex(GLenum texture_unit)
 	glBindBuffer(texture_unit, _texture_obj);
 }
 
-bool Texture::load_tex()
+void Texture::load_tex()
 {
-    if (check_file() != 0)
-        exit(-1);
+    check_file();
     gen_tex();
 	bind_tex(GL_TEXTURE_2D);
-    
-    return (0);
 }

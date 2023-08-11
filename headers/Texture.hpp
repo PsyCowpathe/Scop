@@ -24,9 +24,9 @@ class Texture
     public:
         Texture(GLenum texture_target, const std::string &file_name, render *render);
 
-        int check_file();
+        void check_file();
         void gen_tex();
-        bool load_tex();
+        void load_tex();
 
 
 };

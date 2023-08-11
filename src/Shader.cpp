@@ -22,8 +22,7 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 	// ******************************
 
 	////Turn those into attributes ?
-	// Create the shaders
-	std::cout << "SALUT" << std::endl;
+	// Create the shaders IDs
 	GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -94,7 +93,6 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 	std::cout << "Linking program" << std::endl;
 	GLuint ProgramID = glCreateProgram();
 	if (ProgramID == 0) {
-		//error
 		std::cout << "Error creating Shader handle (:" << std::endl;
 		exit(-1);
 	}
@@ -113,13 +111,6 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 		std::cout << &ProgramErrorMessage[0];
 	}
 
-	// Trying to implement textures
-	_gSamplerLocation = glGetUniformLocation(ProgramID, "gSampler");
-    if (_gSamplerLocation == 0) {
-        std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
-        exit(-1);
-    }
-
 	// Addiotionnal good practice : check if linked program is actually compatible !
 	glValidateProgram(ProgramID);
 	glGetProgramiv(ProgramID, GL_VALIDATE_STATUS, &InfoLogLength);
@@ -132,7 +123,6 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 	// make program and shaders active on GPU's side
 	glUseProgram(ProgramID);
 
-
 	// We don't need the sources of shaders anymore, we can detach them from program & delete them
 	glDetachShader(ProgramID, VertexShaderID);
 	glDetachShader(ProgramID, FragmentShaderID);
@@ -140,11 +130,5 @@ GLuint load_shaders(const char * vertex_file_path,const char * fragment_file_pat
 	glDeleteShader(VertexShaderID);
 	glDeleteShader(FragmentShaderID);
 
-	// debug
-	// int count = 0;
-	// GLuint shad[2];
-
-	// glGetAttachedShaders(ProgramID, 2, &count, shad);
-	// std::cout << "COUNT IS = " << count << std::endl;
 	return ProgramID;
 }

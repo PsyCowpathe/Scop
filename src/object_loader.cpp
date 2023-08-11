@@ -220,7 +220,7 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, si
 // PARSING
 // Parses the obj file and store infos to vectors
 // Currently handles v, vt, vf, f
-// TODO: add support for texture, s(?) and mat(?)
+// TODO: refine support for texture (vt)
 
 void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
