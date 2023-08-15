@@ -7,7 +7,6 @@
 Matrix4::Matrix4()
 {
 	// Note: this should be faster than anything else
-	// but I don't know how it behaves with static arrays
 	memset(_m, 0, 16 * sizeof(float));
 }
 
@@ -30,22 +29,6 @@ Matrix4::~Matrix4()
 {
 
 }
-
-// Matrix4	Matrix4::perspective(float width, float height)
-// {
-// 	float	y_scale = 1.0 / tanf(fov / 2.0f);
-// 	float	x_scale = y_scale / ratio;
-// 	float	near_far = z_near - z_far;
-
-// 	float	buff[16] = {
-// 		x_scale, 0.0f, 0.0f, 0.0f,
-// 		0.0f, y_scale, 0.0f, 0.0f,
-// 		0.0f, 0.0f, (z_far + z_near) / near_far, -1,
-// 		0.0f, 0.0f, 2 * z_far * z_near / near_far, 0.0f
-// 	};
-// 	Matrix4	res(buff);
-// 	return (res);
-// }
 
 Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
 {

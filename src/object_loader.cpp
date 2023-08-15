@@ -41,7 +41,7 @@ static void	get_info(std::string line, std::vector<float> &buffer, int ignore, s
 			if (i > 1)
 				parsing_error(line, ln);
 			xyz[i] =  line.substr(last, next-last);
-				buffer.push_back(std::stof(xyz[i]));
+			buffer.push_back(std::stof(xyz[i]));
 			last = next + 1;
 			i++;
 		}
@@ -50,7 +50,7 @@ static void	get_info(std::string line, std::vector<float> &buffer, int ignore, s
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "cc " << e.what() << " at line : " << ln << std::endl;
+		std::cout << e.what() << " at line : " << ln << std::endl;
 		exit(0);
 	}
 }
@@ -78,18 +78,14 @@ static void	get_uv_info(std::string line, std::vector<float> &buffer, size_t ln)
 			i++;
 		}
 		xyz[1] = line.substr(last);
-		// std::cout << std::stof(xyz[1]) << " OH" << std::endl;
 		buffer.push_back(std::stof(xyz[1]));
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "ici " << e.what() << " at line : " << ln << std::endl;
+		std::cout << e.what() << " at line : " << ln << std::endl;
 		exit(0);
 	}
 }
-
-//trop de coco sur une ligne = crash
-
 
 // stoi throws an exception when failing
 // it's ugly as hell sorry
@@ -112,7 +108,7 @@ void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "la " << e.what() << " at line : " << ln << std::endl;
+		std::cout << e.what() << " at line : " << ln << std::endl;
 		exit(0);
 	}
 	return ;
@@ -156,7 +152,6 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 	while (index <= i)
 	{
 		uv_indices.push_back(uv_index[index]);
-		std::cout << "push = " << uv_index[index] << std::endl;;
 		normal_indices.push_back(normal_index[index]);
 		faces.push_back(vertex_index[index]);
 		index++;
@@ -188,8 +183,6 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, si
 	try
 	{
 		space_count = count_char(line, ' ');
-		// std::cout << "count = " << count_char(line, '/') << std::endl;
-		// std::cout << "line = " << line << std::endl;
 		if (space_count < 3 || space_count > 4 || count_char(line, '/') != 0)
 			parsing_error(line, ln);
 		while((next = line.find(' ', last)) != std::string::npos)
@@ -214,7 +207,7 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, si
 	}
 	catch(std::exception &e)
 	{
-		std::cout << "here " << e.what() << " at line : " << ln << std::endl;
+		std::cout << e.what() << " at line : " << ln << std::endl;
 	}
 }
 
@@ -258,7 +251,7 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 
 	if (!file.is_open())
 	{
-		std::cout << "couldn't read file at path: " << path << "are you sure the file exists?" << std::endl;
+		std::cout << "couldn't read file at path: " << path << " are you sure the file exists?" << std::endl;
 		exit(-1);
 	}
 	while (std::getline(file, line))

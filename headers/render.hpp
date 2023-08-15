@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 15:31:13 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/15 16:56:01 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 #include "Matrix4x4.hpp"
 #include "Vector3.hpp"
 #include "Vector4.hpp"
+#include "object_loader.hpp"
 
 #include "object_loader.hpp"
 #include "Texture.hpp"
@@ -39,32 +40,34 @@ GLuint load_shaders(const char * vertex_file_path, const char * fragment_file_pa
 class render
 {
 	private :
+		GLFWwindow					*_window;
+		GLuint						_vertexArrayID;
+		GLuint						_vertexBuffer;
+		GLuint						_colorBuffer;
+		GLuint						_texBuffer;
 
-		GLFWwindow		*_window;
-		GLuint			_vertexArrayID;
-		GLuint			_vertexBuffer;
-		GLuint			_colorBuffer;
-		GLuint			_texBuffer;
-		
-		char					_rotate_axis = 'y';
-		float					_moov_x = 0;
-		float					_moov_y = 0;
-		float					_moov_z = 0;
-		float					_angle = 0;
-		Vec4 					_factor;
-		float					_delta_time = 0;
-		int						_width;
-		int						_height;
-		bool					_wireframe = false;
-		bool					_spins = true;
-		std::map<int, bool>		_keys;
-		bool					_t_mode = 0;
-		
-		// float					_pitch = 0;
-		// float					_yaw = -90;
+		// Parsed info
+		std::vector<float>			_vertices;
+		std::vector<unsigned int>	_vert_indices;
+		std::vector<float>			_uv;
+		std::vector<unsigned int>	_uv_indices;
+		std::vector<float>			_normals;
+		std::vector<unsigned int>	_normals_indices;
+
+		char						_rotate_axis = 'y';
+		float						_moov_x = 0;
+		float						_moov_y = 0;
+		float						_moov_z = 0;
+		float						_angle = 0;
+		Vec4 						_factor;
+		float						_delta_time = 0;
+		int							_width;
+		int							_height;
+		bool						_wireframe = false;
+		bool						_spins = true;
+		std::map<int, bool>			_keys;
 		GLuint						_programID;
-		std::vector<unsigned int> 	_faces;
-
+		bool						_t_mode;
 		//GLfloat					*_current_vertex;
 		// const GLfloat			*_original_vertex;
 
@@ -107,13 +110,11 @@ class render
 		GLuint			_color;
 
 	public :
-
 		void			clear();
 		GLuint			_pixels;
-
-		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::vector<unsigned int> faces);
+		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::string obj_path);
 		~render();
-		void	loop(std::vector<float>	vertices, std::vector<unsigned int>	faces, std::vector<float> uv, std::vector<unsigned int>	uv_indices);
+		void	loop();
 };
 
 #endif

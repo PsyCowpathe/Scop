@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 16:18:44 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/15 17:08:17 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 Texture *p_tex = NULL;
 
 // CTOR inits a lot of things & loads shaders 
-render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::vector<unsigned int> faces)
+render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path)
 {
-	_faces = faces;
+	load_object(obj_path.c_str(), _vertices, _uv, _normals, _vert_indices, _uv_indices);
 	_factor = Vec4(0, 0, 0, 0);
 	if (width < 0 || height < 0)
 		clear();
@@ -33,7 +33,6 @@ render::render(int aliasing, float openGL_min, float openGL_max, int width, int 
 	set_callback();
 	set_context();
 	glfwSwapInterval(1);
-	// glfwMaximizeWindow(_window);
 	if (glew_init() == -1)
 		clear();
 	_programID = load_shaders("shader/vertex_shader.vert", "shader/frag_shader.frag");
@@ -73,25 +72,13 @@ render::~render()
 float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigned int> uv_indices)
 {
 	float    *result = new float[uv_indices.size() * 2]; //dont forget delete[]
-	std::cout << "uv indices size " << uv_indices.size() << std::endl;
-	std::cout << "uv size " << uv.size() << std::endl;
-	std::cout << "alloc = " << uv_indices.size() * 2 << std::endl;
     size_t   i;
 
     i = 0;
-	//std::cout << "face size " << faces.size() << std::endl;
-	//std::cout << "vertices size " << vertices.size() << std::endl;
     while (i < uv_indices.size())
     {
-		//std::cout << "face = " << faces[i] << std::endl;
-		//std::cout << "vertices = " << vertices[i] << std::endl << std::endl;
-		//std::cout << "crash = " << 3 * (faces[i] - 1) << std::endl;
-		//std::cout << "wut =" << faces[i] - 1 << std::endl;
         result[2 * i] = uv[2 * (uv_indices[i] - 1)];
-		//std::cout << "pas crash" << std::endl;
         result[2 * i + 1] = uv[2 * (uv_indices[i] - 1) + 1];
-		std::cout << "result = " << result[2 * i] << " " << result[2 * i + 1] << std::endl;
-        //std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
         i++;
     }
     return (result);
@@ -99,21 +86,15 @@ float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigne
 
 float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
-    float    *result = new float[faces.size() * 3]; //dont forget delete[]
+    float    *result = new float[faces.size() * 3];
     size_t   i;
 
     i = 0;
 	    while (i < faces.size())
     {
-		//std::cout << "face = " << faces[i] << std::endl;
-		//std::cout << "vertices = " << vertices[i] << std::endl << std::endl;
-		//std::cout << "crash = " << 3 * (faces[i] - 1) << std::endl;
-		//std::cout << "wut =" << faces[i] - 1 << std::endl;
         result[3 * i] = vertices[3 * (faces[i] - 1)];
-		//std::cout << "pas crash" << std::endl;
         result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
         result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
-        //std::cout << "face = " << faces[i] << " : x = " << result[3 * i] << " y = " << result[3 * i + 1] << " z = " << result[3 * i + 2] << std::endl;
         i++;
     }
     return (result);
@@ -141,11 +122,11 @@ Vec4	render::check_moov(Vec4 old)
 	float	z = old[2];
 
 	if (_moov_x != 0)
-		x += _moov_x / 60;
+		x += _moov_x / 10;
 	if (_moov_y != 0)
-		y += _moov_y / 60;
+		y += _moov_y / 10;
 	if (_moov_z != 0)
-		z += _moov_z / 60;
+		z += _moov_z / 10;
 	Vec4	factor(x, y, z, 1);
 	return (factor);
 }
@@ -183,7 +164,7 @@ void	render::update()
 	GLuint	proj_id = glGetUniformLocation(_programID, "proj");
 	GLuint	rot_id = glGetUniformLocation(_programID, "rot");
 	GLuint	trans_id = glGetUniformLocation(_programID, "trans");
-	// might need to move this to render since it's shader related
+
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
 	glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
 	glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
@@ -191,13 +172,12 @@ void	render::update()
 	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
 }
 
-void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, std::vector<float> uv, std::vector<unsigned int> uv_indices)
+void	render::loop()
 {
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
-	// TODO: disable fps before correc since using glfw function
-	float					*transformed_vertices = make_mega_float(vertices, faces);
-	float					*transformed_uv = make_tex_mega_float(uv, uv_indices);
+	float					*transformed_vertices = make_mega_float(_vertices, _vert_indices);
+	float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
 
 	
 	// ************
@@ -205,13 +185,11 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	// ************
 
 	// // CREATING VERTEX BUFFER
-	//std::cout << vertices.size() << std::endl;
 	glEnableVertexAttribArray(0);
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (_vert_indices.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
 	delete[] transformed_vertices;
-	// glEnableVertexAttribArray(1);
 
 	glVertexAttribPointer
 		(
@@ -222,7 +200,6 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
-	// glBindBuffer(GL_ARRAY_BUFFER, 0); // unbinds previously bound buffer
 	
 	// Colored BG : Used in change_color() & switch_texture()
 	this->_color = glGetUniformLocation(_programID, "u_color");
@@ -248,10 +225,8 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	glEnableVertexAttribArray(1);
 	glGenBuffers(1, &_texBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
-	std::cout << " size = " << sizeof(*transformed_uv) * (uv_indices.size() * 2) << std::endl;
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (_uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
 	delete[] transformed_uv;
-	
 	// send texBuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer
 		(
@@ -285,15 +260,11 @@ void	render::draw()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// "Wireframe" render mode :)
-	// glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-	glDrawArrays(GL_TRIANGLES, 0, _faces.size()); // Starting from vertex 0;
+	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
 	glFinish();
-	// key_print();
 }
 
 int		render::glew_init()
@@ -322,7 +293,7 @@ void	render::set_callback()
 
 int		render::create_window(std::string name)
 {
-	_window = glfwCreateWindow(_width, _height, name.c_str(), NULL, NULL);
+	_window = glfwCreateWindow(_width, _height, name.c_str(), NULL , NULL);
 	if (!_window)
 	{
 		std::cout << "GLFW window creation failed :(" << std::endl;
@@ -341,10 +312,7 @@ void	render::set_hint(int aliasing, float openGL_min, float openGL_max)
 	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-	std::cout << "refresh : " << mode->refreshRate << std::endl;
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-	// glfwWindowHint(GLFW_DECORATED, 0);
-	// glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 }
 
 int		render::glfw_init()
@@ -380,23 +348,22 @@ void	render::handle_inputs()
 	if (_keys[GLFW_KEY_S])
 		_moov_z = 1;
 	if (_keys[GLFW_KEY_A])
-		_moov_x = 1;
-	if (_keys[GLFW_KEY_D])
 		_moov_x = -1;
+	if (_keys[GLFW_KEY_D])
+		_moov_x = 1;
 	if (_keys[GLFW_KEY_SPACE])
-		_moov_y = 1;
-	if (_keys[GLFW_KEY_LEFT_SHIFT])
 		_moov_y = -1;
+	if (_keys[GLFW_KEY_LEFT_SHIFT])
+		_moov_y = 1;
 	if (_keys[GLFW_KEY_RIGHT])
 		_rotate_axis = 'x';
 	else if (_keys[GLFW_KEY_UP])
 		_rotate_axis = 'y';
 	else if (_keys[GLFW_KEY_DOWN])
 		_rotate_axis = 'z';
-
-	// ADD CODE HERE !
 }
 
+// TODO: do something
 // needs to be re-done, or dropped
 void	render::change_color(int key)
 {

@@ -6,48 +6,16 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 15:33:20 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/15 16:55:20 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "render.hpp"
-#include "object_loader.hpp"
+#include "../headers/render.hpp"
 
 int		main(void)
 {
-	std::vector<float>			vertices;
-	std::vector<float>			uv;
-	std::vector<float>			normals;
-	std::vector<unsigned int>	faces;
-	std::vector<unsigned int>	uv_indices;
-
-	load_object("objects/ball.obj", vertices, uv, normals, faces, uv_indices);
-
-	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", faces);
-	/*static const GLfloat vertex_buffer[] =
-	{
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, -1.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, -1.0f, 1.0f,
-	};*/
-
-	/*static const GLfloat vertex_buffer[] =
-	{
-		-1.0f, 1.0f, 0.0f,
-		1.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		-1.0f, 1.0f, 0.0,
-		1.0f, -1.0f, 0.0f,
-		-1.0f, -1.0f, 0.0f,
-	};*/
-
-	test.loop(vertices, faces, uv, uv_indices);
+	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", "objects/teapot.obj");
+	test.loop();
 	std::cout << "Program end" << std::endl;
 	return (0);
 }

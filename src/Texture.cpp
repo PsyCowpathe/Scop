@@ -82,17 +82,11 @@ void    Texture::check_file()
 	// Fill member attribute with image data
     this->_pixels = pixels;
 
-
-	// uint8_t i;
-	// for (i = 0; i < bmpInfo->biSizeImage; i++)
-	// {
-	// 	printf("%u/n", _pixels[i]);
-	// }
 	std::cout << "Texture \"" << this->_file_name << "\" successfully loaded.\n";
 
 	delete[] datBuff[0];
 	delete[] datBuff[1];
-    
+
     return;
 }
 
@@ -118,10 +112,7 @@ void Texture::gen_tex()
 	// pixel data to create it.
 	if (_pixels)
 	{
-		std::cout << "test" << std::endl;
-		std::cout << "pix = " << _pixels << std::endl;
 		glTexImage2D(_texture_target, 0, mode, _w, _h, 0, mode, GL_UNSIGNED_BYTE, _pixels); // pushes data to GL_TEXTURE_2D
-		std::cout << "testeuuuh" << std::endl;
 		glGenerateMipmap(_texture_target);
 	}
 	else
