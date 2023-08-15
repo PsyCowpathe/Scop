@@ -151,5 +151,4 @@ void Texture::load_tex()
     check_file();
     gen_tex();
 	bind_tex(GL_TEXTURE_2D);
-    return (0);
 }
