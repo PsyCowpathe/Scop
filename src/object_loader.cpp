@@ -156,6 +156,7 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 	while (index <= i)
 	{
 		uv_indices.push_back(uv_index[index]);
+		std::cout << "push = " << uv_index[index] << std::endl;;
 		normal_indices.push_back(normal_index[index]);
 		faces.push_back(vertex_index[index]);
 		index++;

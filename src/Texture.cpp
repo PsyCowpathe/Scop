@@ -63,7 +63,7 @@ int    Texture::check_file()
 		std::cout << "BMP format error" << std::endl;
 		exit(-1);
 	}
-
+	delete[] verif;
     // We're almost done. We have our image loaded, however it's not in the right format.
 	// .bmp files store image data in the BGR format, and we have to convert it to RGB.
 	// Since we have the value in bytes, this shouldn't be to hard to accomplish
