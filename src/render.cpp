@@ -6,11 +6,11 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/04 19:47:43 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/15 16:18:44 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/render.hpp"
+#include "render.hpp"
 
 Texture *p_tex = NULL;
 
@@ -73,6 +73,9 @@ render::~render()
 float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigned int> uv_indices)
 {
 	float    *result = new float[uv_indices.size() * 2]; //dont forget delete[]
+	std::cout << "uv indices size " << uv_indices.size() << std::endl;
+	std::cout << "uv size " << uv.size() << std::endl;
+	std::cout << "alloc = " << uv_indices.size() * 2 << std::endl;
     size_t   i;
 
     i = 0;
@@ -100,9 +103,7 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     size_t   i;
 
     i = 0;
-	std::cout << "face size " << faces.size() << std::endl;
-	std::cout << "vertices size " << vertices.size() << std::endl;
-    while (i < faces.size())
+	    while (i < faces.size())
     {
 		//std::cout << "face = " << faces[i] << std::endl;
 		//std::cout << "vertices = " << vertices[i] << std::endl << std::endl;
@@ -175,7 +176,7 @@ void	render::update()
 	if (_angle >= 360)
 		_angle = 0;
 	else if (_spins)
-		_angle += .1;
+		_angle += 1;
 
 	GLuint	model_id = glGetUniformLocation(_programID, "model");
 	GLuint	view_id = glGetUniformLocation(_programID, "view");
@@ -208,8 +209,9 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	glEnableVertexAttribArray(0);
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-	// static draw flag : "The data store contents will be modified once and used many times as the source for GL drawing commands. "
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 	
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (faces.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
+	delete[] transformed_vertices;
+	// glEnableVertexAttribArray(1);
 
 	glVertexAttribPointer
 		(
@@ -246,8 +248,9 @@ void	render::loop(std::vector<float> vertices, std::vector<unsigned int> faces, 
 	glEnableVertexAttribArray(1);
 	glGenBuffers(1, &_texBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
-	std::cout << " size = " << sizeof(*transformed_uv) * (uv.size() * 2) << std::endl;
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (uv.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
+	std::cout << " size = " << sizeof(*transformed_uv) * (uv_indices.size() * 2) << std::endl;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
+	delete[] transformed_uv;
 	
 	// send texBuffer to shader pipeline, at layout = 1
 	glVertexAttribPointer

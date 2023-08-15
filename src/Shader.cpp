@@ -1,4 +1,4 @@
-#include "../headers/Shader.hpp"
+#include "Shader.hpp"
 
 GLuint	_gSamplerLocation;
 

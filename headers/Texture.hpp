@@ -1,7 +1,6 @@
 #ifndef TEXTURE_HPP
 # define TEXTURE_HPP
 
-#pragma once
 #include "render.hpp"
 
 class render;

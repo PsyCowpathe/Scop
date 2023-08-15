@@ -1,7 +1,7 @@
 CC= clang++
 CFLAGS=  -Wall -Wextra -Werror -std=c++17
 LDFLAGS=  -lGL -lGLU -lGLEW -lglfw
-MAKEFLAGS += --no-print-directory -j
+MAKEFLAGS += --no-print-directory  -j
 
 NAME= scop
 
@@ -10,38 +10,45 @@ HEADER := $(wildcard $(HEADER_PATH)/*.hpp)
 
 SRC_PATH := ./src
 SRC := $(wildcard $(SRC_PATH)/*.cpp)
-OBJS = $(SRC:%.cpp=%.o)
+
+OBJS = $(patsubst ./src/%, %, $(patsubst %.cpp, %.o, $(SRC)))
+OBJS_DIR = obj
+OBJS_PATH = $(addprefix $(OBJS_DIR)/, $(OBJS))
 
 
-%.o:	%.cpp Makefile $(HEADER)
-		$(CC) $(CFLAGS) -c $< -o $@
+$(OBJS_DIR)/%.o: $(SRC_PATH)/%.cpp Makefile $(HEADER)
+		$(CC) $(CFLAGS) -I headers/ -c $< -o $@
 
-all: $(NAME)
+all: create_obj_dir $(NAME)
 
 leaks: CFLAGS += -g3 -fsanitize=address
-leaks: $(OBJS)
+leaks: $(OBJS_PATH)
 leaks: $(NAME)
 	./$(NAME)
 
 debug: CFLAGS += -g3
-debug: $(OBJS)
+debug: $(OBJS_PATH)
 debug: $(NAME)
 	lldb ./scop
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
+$(NAME): $(OBJS_PATH)
+	$(CC) $(CFLAGS) $(OBJS_PATH) $(LDFLAGS) -o $(NAME)
+
+create_obj_dir :
+			@rm -f obj 2> /dev/null || true 
+			@mkdir -p obj
 
 clean:
-	@rm -f $(OBJS)
+	@rm -f $(OBJS_PATH)
 
 fclean: clean
 	@rm -f $(NAME)
+	@rm -rf obj
 
 re: fclean
 	$(MAKE) all
 
-run: $(NAME)
+run: all
 	./$(NAME)
 
-
-.PHONY: clean fclean re run debug leaks
+.PHONY: clean fclean re run debug leaks create_obj_dir

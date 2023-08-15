@@ -1,6 +1,6 @@
 
-#include "../headers/Texture.hpp"
-#include "../headers/bmp.hpp"
+#include "Texture.hpp"
+#include "bmp.hpp"
 
 
 Texture::Texture(GLenum texture_target, const std::string &file_name, render *render)
@@ -62,7 +62,7 @@ void    Texture::check_file()
 		std::cout << "BMP format error" << std::endl;
 		_render->clear();
 	}
-
+	delete[] verif;
     // We're almost done. We have our image loaded, however it's not in the right format.
 	// .bmp files store image data in the BGR format, and we have to convert it to RGB.
 	// Since we have the value in bytes, this shouldn't be to hard to accomplish
@@ -151,4 +151,5 @@ void Texture::load_tex()
     check_file();
     gen_tex();
 	bind_tex(GL_TEXTURE_2D);
+    return (0);
 }

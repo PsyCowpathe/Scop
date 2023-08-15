@@ -6,14 +6,13 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/04 19:33:01 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/15 15:31:13 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RENDER_HPP
 # define RENDER_HPP
 
-#pragma once
 #include <iostream>
 
 #include <GL/glew.h>

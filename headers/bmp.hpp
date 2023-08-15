@@ -1,7 +1,6 @@
 #ifndef BMP_HPP
 # define BMP_HPP
 
-#pragma once
 #include <stdint.h>
 #include <iostream>
 #include <fstream>
