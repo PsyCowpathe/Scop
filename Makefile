@@ -48,7 +48,7 @@ fclean: clean
 re: fclean
 	$(MAKE) all
 
-run: $(NAME)
+run: all
 	./$(NAME)
 
 .PHONY: clean fclean re run debug leaks create_obj_dir
