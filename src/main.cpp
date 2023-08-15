@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 16:55:20 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/15 18:45:25 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int		main(void)
 {
-	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", "objects/teapot.obj");
+	render	test(4, 3, 3, 640, 480, "GLFW BUT IN A CLASS !", "objects/42.obj");
 	test.loop();
 	std::cout << "Program end" << std::endl;
 	return (0);

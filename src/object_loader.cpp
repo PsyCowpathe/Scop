@@ -120,7 +120,7 @@ void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int
 
 
 
-static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &faces, size_t ln)
+static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices, std::vector<unsigned int> &normal_indices, std::vector<unsigned int> &vert_indices, size_t ln)
 {
 	unsigned int	vertex_index[4], uv_index[4], normal_index[4];
 	size_t			slash_count;
@@ -153,14 +153,14 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 	{
 		uv_indices.push_back(uv_index[index]);
 		normal_indices.push_back(normal_index[index]);
-		faces.push_back(vertex_index[index]);
+		vert_indices.push_back(vertex_index[index]);
 		index++;
 	}
 	if (slash_count == 8)
 	{
-		faces.push_back(vertex_index[0]);
-		faces.push_back(vertex_index[2]);
-		faces.push_back(vertex_index[3]);
+		vert_indices.push_back(vertex_index[0]);
+		vert_indices.push_back(vertex_index[2]);
+		vert_indices.push_back(vertex_index[3]);
 		uv_indices.push_back(uv_index[0]);
 		uv_indices.push_back(uv_index[2]);
 		uv_indices.push_back(uv_index[3]);
@@ -170,12 +170,13 @@ static void	handle_slash(std::string line, std::vector<unsigned int> &uv_indices
 
 // Parses faces info if there are only spaces
 
-static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, size_t ln)
+static void	handle_spaces(std::string line, std::vector<unsigned int> &vert_indices, std::vector<unsigned int> &uv_indices, size_t ln)
 {
 	size_t 			last = 2;
 	size_t 			next = 0;
 	std::string		sub;
 	unsigned int	vertex_index[4];
+	unsigned int	uv_index[4] = {2, 4, 3, 1};
 	int				i = 0;
 	int				index = 0;
 	size_t			space_count;
@@ -197,12 +198,29 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &faces, si
 		if (space_count == 4)
 			i--;
 		while (index <= i)
-			faces.push_back(vertex_index[index++]);
+		{
+			vert_indices.push_back(vertex_index[index]);
+
+			if (index == 0)
+				uv_indices.push_back(uv_index[0]);
+			else if (index == 1)
+				uv_indices.push_back(uv_index[1]);
+			//	uv_indices.push_back(uv_index[2]);
+			else
+				uv_indices.push_back(uv_index[2]);
+			//	uv_indices.push_back(uv_index[3]);
+			index++;
+		}
 		if (space_count == 4)
 		{
-			faces.push_back(vertex_index[0]);
-			faces.push_back(vertex_index[2]);
-			faces.push_back(vertex_index[3]);
+			vert_indices.push_back(vertex_index[0]);
+			vert_indices.push_back(vertex_index[2]);
+			vert_indices.push_back(vertex_index[3]);
+			uv_indices.push_back(uv_index[0]);
+			uv_indices.push_back(uv_index[0]);
+			uv_indices.push_back(uv_index[0]);
+			//uv_indices.push_back(uv_index[2]);
+			//uv_indices.push_back(uv_index[3]);
 		}
 	}
 	catch(std::exception &e)
@@ -245,6 +263,7 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 	std::vector<unsigned int>	normal_indices;
 	std::ifstream				file(path);
 	std::string	line;
+	std::vector<float> tmp = {0, 0, 0, 1, 1, 0, 1, 1};
 	int			type = -1;
 
 	size_t	ln = 0;
@@ -284,7 +303,8 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 			}
 			else if (line.find(' ', 3) != std::string::npos && (type == -1 || type == 2))
 			{
-				handle_spaces(line, faces, ln);
+				handle_spaces(line, faces, uv_indices, ln);
+				uv = tmp;
 				type = 2;
 			}
 		}

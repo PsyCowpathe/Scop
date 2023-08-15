@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 17:08:17 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/15 18:39:30 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigne
     i = 0;
     while (i < uv_indices.size())
     {
+		std::cout << "indice = " << uv_indices[i] << std::endl;
         result[2 * i] = uv[2 * (uv_indices[i] - 1)];
         result[2 * i + 1] = uv[2 * (uv_indices[i] - 1) + 1];
         i++;
@@ -171,6 +172,7 @@ void	render::update()
 	glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
 	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
 }
+
 
 void	render::loop()
 {
