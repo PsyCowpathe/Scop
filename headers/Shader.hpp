@@ -1,8 +1,6 @@
 #ifndef SHADER_HPP
 # define SHADER_HPP
 
-#pragma once
-
 #include <GL/glew.h>
 #include <iostream>
 #include <fstream>

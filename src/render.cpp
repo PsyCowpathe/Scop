@@ -6,11 +6,11 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 13:58:58 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/15 15:34:01 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/render.hpp"
+#include "render.hpp"
 
 Texture *p_tex = NULL;
 

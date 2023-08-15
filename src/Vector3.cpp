@@ -1,4 +1,4 @@
-#include "../headers/Vector3.hpp"
+#include "Vector3.hpp"
 
 Vec3::Vec3()
 {

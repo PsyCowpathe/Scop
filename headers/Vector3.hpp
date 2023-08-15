@@ -1,6 +1,6 @@
 #include <math.h>
 #include <iostream>
-#pragma once
+
 class Vec3
 {
 	private:

@@ -6,12 +6,12 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:31:20 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 13:40:04 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/15 15:33:20 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/render.hpp"
-#include "../headers/object_loader.hpp"
+#include "render.hpp"
+#include "object_loader.hpp"
 
 int		main(void)
 {

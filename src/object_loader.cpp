@@ -1,4 +1,4 @@
-#include "../headers/object_loader.hpp"
+#include "object_loader.hpp"
 #include <iomanip>
 
 static void	parsing_error(std::string line, size_t ln)

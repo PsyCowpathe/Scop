@@ -1,4 +1,4 @@
-#include "../headers/Matrix4x4.hpp"
+#include "Matrix4x4.hpp"
 
 /*	MATRIX
 //	Constuctors and destructors

@@ -1,6 +1,6 @@
 
-#include "../headers/Texture.hpp"
-#include "../headers/bmp.hpp"
+#include "Texture.hpp"
+#include "bmp.hpp"
 
 
 Texture::Texture(GLenum texture_target, const std::string &file_name, render *render)
