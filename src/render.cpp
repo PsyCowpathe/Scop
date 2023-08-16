@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 19:22:13 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 19:58:18 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ void	render::loop()
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
 	float					*transformed_vertices = make_mega_float(_vertices, _vert_indices);
-	float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
+	// float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
 
 	
 	// ************
@@ -216,39 +216,40 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-	p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
-	p_tex->load_tex();
+		// p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
+		// p_tex->load_tex();
 
-	GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
-	if (gSamplerLocation == 0)
-	{
-		std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
-     	clear();
-    }
-	glUniform1i(gSamplerLocation, 0);
+		// GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
+		// if (gSamplerLocation == 0)
+		// {
+		// 	std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
+    	// 	clear();
+    	// }
+	// glUniform1i(gSamplerLocation, 0);
 
 
-	// GENERATE & FILL TEXCOORDINATES BUFFER
-	glEnableVertexAttribArray(1);
-	glGenBuffers(1, &_texBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (_uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
-	delete[] transformed_uv;
-	// send texBuffer to shader pipeline, at layout = 1
-	glVertexAttribPointer
-		(
-		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		 2,				// size (here we have 2 values per vertex)
-		 GL_FLOAT,		// type
-		 GL_FALSE,		// normalized?
-		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-		 (void*)0		// array buffer offset (at beginning of array)
-		);
+	// // GENERATE & FILL TEXCOORDINATES BUFFER
+	// glEnableVertexAttribArray(1);
+	// glGenBuffers(1, &_texBuffer);
+	// glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
+	// glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (_uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
+	// delete[] transformed_uv;
+	// // send texBuffer to shader pipeline, at layout = 1
+	// glVertexAttribPointer
+	// 	(
+	// 	 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+	// 	 2,				// size (here we have 2 values per vertex)
+	// 	 GL_FLOAT,		// type
+	// 	 GL_FALSE,		// normalized?
+	// 	 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+	// 	 (void*)0		// array buffer offset (at beginning of array)
+	// 	);
 	// glDisableVertexAttribArray(0);
 	// glDisableVertexAttribArray(1);
 	// ***************
 	// * RENDER LOOP *
 	// ***************
+	glUseProgram(_programID);
 	initText("objects/Holstein.DDS");
 	float	last_time = glfwGetTime();
 	while (!glfwWindowShouldClose(_window))
@@ -293,9 +294,9 @@ void	render::draw()
 		);
 
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
-	// glDisableVertexAttribArray(0);
-	// glDisableVertexAttribArray(1);
-	// printText("test", 10, 550, 30);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	printText("test", 10, 550, 30);
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
