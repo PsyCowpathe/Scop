@@ -12,5 +12,5 @@ void main()
   if (fmod == 1)
     FragColor = texture2D(gSampler, TexCoord0);
   else
-    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    FragColor = color;
 }
