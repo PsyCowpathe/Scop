@@ -1,7 +1,7 @@
 #version 330 core
 
 uniform sampler2D		gSampler;
-in  vec4				color;
+flat in  vec4				color;
 in  vec2				TexCoord0;
 out vec4				FragColor;
 

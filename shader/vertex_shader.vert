@@ -11,7 +11,7 @@ uniform vec4 trans;
 uniform int mod;
 
 out vec2 TexCoord0;
-out vec4 color;
+flat out vec4 color;
 
 float random (vec2 st) {
 	return fract(sin(dot(st.xy,
