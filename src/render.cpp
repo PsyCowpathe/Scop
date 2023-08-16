@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 18:59:24 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 19:22:13 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,7 +244,8 @@ void	render::loop()
 		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
-
+	// glDisableVertexAttribArray(0);
+	// glDisableVertexAttribArray(1);
 	// ***************
 	// * RENDER LOOP *
 	// ***************
@@ -292,9 +293,9 @@ void	render::draw()
 		);
 
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	printText("test", 10, 550, 60);
+	// glDisableVertexAttribArray(0);
+	// glDisableVertexAttribArray(1);
+	// printText("test", 10, 550, 30);
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();

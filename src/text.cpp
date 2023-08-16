@@ -1,6 +1,4 @@
 #include "text.hpp"
-#include "./glm/glm.hpp"
-// #include "./glm/"
 
 unsigned int	textTextureID;
 unsigned int	textVertBufferID;
