@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 15:36:43 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 17:56:48 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void	render::get_fps(int &frames, float &last_time)
 	{
 		std::stringstream ss;
 		ss << "Scop [fps: " << frames << " | time: " << 1000.0/(float)frames << "]";
+		printText(ss.str().c_str(), 10, 500, 60);
 		glfwSetWindowTitle(_window, ss.str().c_str());
 		frames = 0;
 		last_time = glfwGetTime();
@@ -248,6 +249,7 @@ void	render::loop()
 	// ***************
 	// * RENDER LOOP *
 	// ***************
+	initText("objects/Holstein.DDS");
 	int frames = 0;
 	float	last_time = glfwGetTime();
 	while (!glfwWindowShouldClose(_window))

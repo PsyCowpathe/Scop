@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 13:28:53 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 17:15:53 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 #include "object_loader.hpp"
+#include "text.hpp"
 
 #include "object_loader.hpp"
 #include "Texture.hpp"
