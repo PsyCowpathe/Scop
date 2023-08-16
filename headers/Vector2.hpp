@@ -6,9 +6,9 @@
 class Vec2
 {
 	private:
-		float _d[2];
 
 	public:
+		float _d[2];
 		void setX(float x);
 		const float &getX(void) const { return _d[0]; };
 

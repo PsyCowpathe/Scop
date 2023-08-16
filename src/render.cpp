@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 17:56:48 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 18:59:24 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,18 +101,17 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
-void	render::get_fps(int &frames, float &last_time)
+void	render::get_fps(float &last_time)
 {
 	float	current_time = glfwGetTime();
 	_delta_time = current_time - last_time;
-	frames++;
+	_frames++;
 	if (_delta_time >= 1.0)
 	{
 		std::stringstream ss;
-		ss << "Scop [fps: " << frames << " | time: " << 1000.0/(float)frames << "]";
-		printText(ss.str().c_str(), 10, 500, 60);
+		ss << "Scop [fps: " << _frames << " | time: " << 1000.0/(float)_frames << "]";
 		glfwSetWindowTitle(_window, ss.str().c_str());
-		frames = 0;
+		_frames = 0;
 		last_time = glfwGetTime();
 	}
 }
@@ -250,14 +249,13 @@ void	render::loop()
 	// * RENDER LOOP *
 	// ***************
 	initText("objects/Holstein.DDS");
-	int frames = 0;
 	float	last_time = glfwGetTime();
 	while (!glfwWindowShouldClose(_window))
 	{
+		get_fps(last_time);
 		handle_inputs();
 		update();
 		draw();
-		get_fps(frames, last_time);
 	}
 }
 
@@ -269,7 +267,34 @@ void	render::draw()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	glVertexAttribPointer
+		(
+		 0,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 3,				// size (here we have 3 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
+	glVertexAttribPointer
+		(
+		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 2,				// size (here we have 2 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
+
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	printText("test", 10, 550, 60);
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();

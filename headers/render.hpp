@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 17:15:53 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 18:46:46 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ class render
 		float						_moov_y = 0;
 		float						_moov_z = 0;
 		float						_angle = 0;
-		Vec4 						_factor;
+		Vec4						_factor;
 		float						_delta_time = 0;
 		int							_width;
 		int							_height;
@@ -70,8 +70,7 @@ class render
 		GLuint						_programID;
 		bool						_t_mode;
 		int							_s_mod;
-		//GLfloat					*_current_vertex;
-		// const GLfloat			*_original_vertex;
+		int							_frames = 0;
 
 		//Init
 		
@@ -96,7 +95,7 @@ class render
 		void			switch_texture();
 		void			update();
 		void			draw();
-		void			get_fps(int &frames, float &last_time);
+		void			get_fps(float &last_time);
 
 
 		//Utils

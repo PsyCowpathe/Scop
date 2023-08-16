@@ -1,4 +1,6 @@
 #include "text.hpp"
+#include "./glm/glm.hpp"
+// #include "./glm/"
 
 unsigned int	textTextureID;
 unsigned int	textVertBufferID;
@@ -110,7 +112,7 @@ void	initText(const char *path)
 	glGenBuffers(1, &textVertBufferID);
 	glGenBuffers(1, &textUVBufferID);
 
-	textShaderID = load_shaders("../shader/text.vert", "../shader/text.frag");
+	textShaderID = load_shaders("shader/text.vert", "shader/text.frag");
 
 	textUniformID = glGetUniformLocation(textShaderID, "my_texture_sampler");
 }
