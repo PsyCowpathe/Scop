@@ -8,11 +8,16 @@ uniform mat4 proj;
 uniform mat4 rot;
 uniform vec4 trans;
 
+uniform int mod;
+
 out vec2 TexCoord0;
 out vec4 color;
 
 void main()
 {
 	gl_Position = proj * view *  model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
-	TexCoord0 = TexCoord;
+	if (mod == 	1)
+		TexCoord0 = TexCoord;
+	else
+		color = vec4(1.0, 0.0, 0.0, 1.0);
 }

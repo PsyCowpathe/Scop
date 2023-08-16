@@ -5,9 +5,12 @@ in  vec4				color;
 in  vec2				TexCoord0;
 out vec4				FragColor;
 
+uniform int fmod;
 
 void main()
 {
-  FragColor = texture2D(gSampler, TexCoord0);
-  //FragColor.r = 0.5f;
+  if (fmod == 1)
+    FragColor = texture2D(gSampler, TexCoord0);
+  else
+    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
