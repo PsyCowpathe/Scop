@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 17:08:17 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 13:35:58 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ Texture *p_tex = NULL;
 // CTOR inits a lot of things & loads shaders 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path)
 {
+	_s_mod = 0;
 	load_object(obj_path.c_str(), _vertices, _uv, _normals, _vert_indices, _uv_indices);
 	_factor = Vec4(0, 0, 0, 0);
 	if (width < 0 || height < 0)
@@ -164,12 +165,17 @@ void	render::update()
 	GLuint	proj_id = glGetUniformLocation(_programID, "proj");
 	GLuint	rot_id = glGetUniformLocation(_programID, "rot");
 	GLuint	trans_id = glGetUniformLocation(_programID, "trans");
+	GLuint	mod_id = glGetUniformLocation(_programID, "mod");
+	GLuint	f_mod_id = glGetUniformLocation(_programID, "fmod");
 
 	glUniformMatrix4fv(model_id, 1, GL_FALSE, &model._m[0]);
 	glUniformMatrix4fv(view_id, 1, GL_FALSE, &view._m[0]);
 	glUniformMatrix4fv(proj_id, 1, GL_FALSE, &proj._m[0]);
 	glUniformMatrix4fv(rot_id, 1, GL_FALSE, &rot._m[0]);
 	glUniform4f(trans_id, _factor[0], _factor[1], _factor[2], 0);
+	glUniform1i(mod_id, _s_mod);
+	glUniform1i(f_mod_id, _s_mod);
+
 }
 
 void	render::loop()
@@ -424,6 +430,13 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 		else if (key == GLFW_KEY_T)
 			w->switch_texture();
+		else if (key == GLFW_KEY_L)
+		{
+			if (w->_s_mod == 0)
+				w->_s_mod = 1;
+			else
+				w->_s_mod = 0;
+		}
 		w->_keys[key] = true;
 	}
 	else if (action == GLFW_RELEASE)

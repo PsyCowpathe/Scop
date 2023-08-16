@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/15 16:56:01 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 13:28:53 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ class render
 		std::map<int, bool>			_keys;
 		GLuint						_programID;
 		bool						_t_mode;
+		int							_s_mod;
 		//GLfloat					*_current_vertex;
 		// const GLfloat			*_original_vertex;
 
