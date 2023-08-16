@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 13:28:53 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 19:29:06 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ class render
 		float    		*make_tex_mega_float(std::vector<float> uv, std::vector<unsigned int> uv_indices);
 		float			*make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces);
 		Vec4			check_moov(Vec4 factor);
+		void			to_center(float *result, size_t size);
 
 		void			key_print();
 		

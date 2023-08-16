@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 15:36:43 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 19:30:34 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,19 +85,48 @@ float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigne
     return (result);
 }
 
+void	render::to_center(float *result, size_t size)
+{
+	Matrix4		translate;
+	Vec4		to_add;
+	size_t		i;
+
+	i = 0;
+	while (i < size)
+	{
+		to_add[0] += result[3 * i];
+		to_add[1] += result[3 * i + 1];
+		to_add[2] += result[3 * i + 2];
+		i++;
+	}
+	to_add[0] /= i;
+	to_add[1] /= i;
+	to_add[2] /= i;
+	translate = translate.translate(to_add);
+	i = 0;
+	while (i < size)
+	{
+		result[3 * i] = result[3 * i] - translate[3];
+		result[3 * i + 1] = result[3 * i + 1] - translate[7];
+		result[3 * i + 2] = result[3 * i + 2] - translate[11];
+		i++;
+	}
+}
+
 float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsigned int> faces)
 {
-    float    *result = new float[faces.size() * 3];
-    size_t   i;
+    float	*result = new float[faces.size() * 3];
+    size_t	i;
 
     i = 0;
-	    while (i < faces.size())
+	while (i < faces.size())
     {
         result[3 * i] = vertices[3 * (faces[i] - 1)];
         result[3 * i + 1] = vertices[3 * (faces[i] - 1) + 1];
         result[3 * i + 2] = vertices[3 * (faces[i] - 1) + 2];
         i++;
     }
+	to_center(result, faces.size());
     return (result);
 }
 
