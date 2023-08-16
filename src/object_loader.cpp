@@ -51,7 +51,7 @@ static void	get_info(std::string line, std::vector<float> &buffer, int ignore, s
 	catch (std::exception &e)
 	{
 		std::cout << e.what() << " at line : " << ln << std::endl;
-		exit(0);
+		exit(-1);
 	}
 }
 
@@ -83,7 +83,7 @@ static void	get_uv_info(std::string line, std::vector<float> &buffer, size_t ln)
 	catch (std::exception &e)
 	{
 		std::cout << e.what() << " at line : " << ln << std::endl;
-		exit(0);
+		exit(-1);
 	}
 }
 
@@ -109,7 +109,7 @@ void	set_arrays(std::string line, unsigned int &v, unsigned int &u, unsigned int
 	catch (std::exception &e)
 	{
 		std::cout << e.what() << " at line : " << ln << std::endl;
-		exit(0);
+		exit(-1);
 	}
 	return ;
 }
@@ -200,16 +200,7 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &vert_indi
 		while (index <= i)
 		{
 			vert_indices.push_back(vertex_index[index]);
-
-			if (index == 0)
-				uv_indices.push_back(uv_index[0]);
-			else if (index == 1)
-				uv_indices.push_back(uv_index[1]);
-			//	uv_indices.push_back(uv_index[2]);
-			else
-				uv_indices.push_back(uv_index[2]);
-			//	uv_indices.push_back(uv_index[3]);
-			index++;
+			uv_indices.push_back(uv_index[index++]);
 		}
 		if (space_count == 4)
 		{
@@ -217,15 +208,14 @@ static void	handle_spaces(std::string line, std::vector<unsigned int> &vert_indi
 			vert_indices.push_back(vertex_index[2]);
 			vert_indices.push_back(vertex_index[3]);
 			uv_indices.push_back(uv_index[0]);
-			uv_indices.push_back(uv_index[0]);
-			uv_indices.push_back(uv_index[0]);
-			//uv_indices.push_back(uv_index[2]);
-			//uv_indices.push_back(uv_index[3]);
+			uv_indices.push_back(uv_index[2]);
+			uv_indices.push_back(uv_index[3]);
 		}
 	}
-	catch(std::exception &e)
+	catch (std::exception &e)
 	{
 		std::cout << e.what() << " at line : " << ln << std::endl;
+		exit(-1);
 	}
 }
 
@@ -258,15 +248,95 @@ void	check_data(std::vector<float> vertices, std::vector<unsigned int> faces)
 	}
 }
 
+void	get_shading_group(std::string line, size_t ln, std::vector<int> &shading_group)
+{
+	std::string			sub;
+
+	try
+	{
+		sub = line.substr(2, std::string::npos);
+		if (sub.compare("off") == 0)
+			shading_group.push_back(0);
+		else if (sub.find_first_not_of("0123456789 ") == std::string::npos)
+			shading_group.push_back(std::stoi(sub));
+		else
+			parsing_error(line, ln);
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << " at line : " << ln << std::endl;
+		exit(-1);
+	}
+}
+
+void	get_mtllib(std::string line, size_t ln, std::vector<std::vector<std::string>> &mtllibs)
+{
+	std::string					sub;
+	size_t 						last = 7;
+	size_t 						next = 0;
+	std::vector<std::string>	list;
+
+	while ((next = line.find(' ', last)) != std::string::npos)
+	{
+		sub = line.substr(last, next-last);
+		if (sub.size() == 0)
+			parsing_error(line, ln);
+		list.push_back(sub);
+		last = next + 1;
+	}
+	sub = line.substr(last);
+	if (sub.size() == 0)
+		parsing_error(line, ln);
+	list.push_back(sub);
+	mtllibs.push_back(list);
+}
+
+void	get_usemtl(std::string line, size_t ln, std::vector<std::string> &mtl_names)
+{
+	std::string		sub;
+	size_t			find;
+
+	find = line.find_first_of(' ', 7);
+	sub = line.substr(7, line.find_first_of(' ', find) - 7);
+	if (sub.size() == 0 || line.find_first_not_of(" ", 7 + sub.size()) != std::string::npos)
+		parsing_error(line, ln);
+	mtl_names.push_back(sub);
+}
+
+void	get_groups(std::string line, size_t ln, std::vector<std::vector<std::string>> &groups)
+{
+	std::string					sub;
+	size_t 						last = 2;
+	size_t 						next = 0;
+	std::vector<std::string>	list;
+
+	while ((next = line.find(' ', last)) != std::string::npos)
+	{
+		sub = line.substr(last, next-last);
+		if (sub.size() == 0)
+			parsing_error(line, ln);
+		list.push_back(sub);
+		last = next + 1;
+	}
+	sub = line.substr(last);
+	if (sub.size() == 0)
+		parsing_error(line, ln);
+	list.push_back(sub);
+	groups.push_back(list);
+}
+
 int	load_object(const char *path, std::vector<float> &vertices, std::vector<float> &uv, std::vector<float> &normals, std::vector<unsigned int> &faces, std::vector<unsigned int> &uv_indices)
 {
-	std::vector<unsigned int>	normal_indices;
-	std::ifstream				file(path);
-	std::string	line;
-	std::vector<float> tmp = {0, 0, 0, 1, 1, 0, 1, 1};
-	int			type = -1;
-
-	size_t	ln = 0;
+	std::vector<std::vector<std::string>>	mtllibs;
+	std::vector<std::vector<std::string>>	groups;
+	std::vector<int>						shading_group;
+	std::vector<std::string>				mtl_names;
+	std::vector<unsigned int>				normal_indices;
+	std::ifstream							file(path);
+	std::string								line;
+	std::vector<float> 						tmp = {0, 0, 0, 1, 1, 0, 1, 1};
+	int										type = -1;
+	size_t									ln = 0;
 
 	if (!file.is_open())
 	{
@@ -308,7 +378,15 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 				type = 2;
 			}
 		}
-		else if (line[0] != '#' && line[0])
+		else if (line[0] == 's' && line[1] == ' ')
+			get_shading_group(line, ln, shading_group);
+		else if (line.size() > 6 && line.substr(0, 6).compare("mtllib") == 0 && line[6] == ' ')
+			get_mtllib(line, ln, mtllibs);
+		else if (line.size() > 6 && line.substr(0, 6).compare("usemtl") == 0 && line[6] == ' ')
+			get_usemtl(line, ln, mtl_names);
+		else if (line[0] == 'g' && line[1] == ' ')
+			get_groups(line, ln, groups);
+		else if ((line[0] != '#' && line[0]) && (count_char(line, ' ') != line.size()))
 			parsing_error(line, ln);
 	}
 	check_data(vertices, faces);

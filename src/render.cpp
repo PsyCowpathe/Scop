@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 13:59:45 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/16 15:36:43 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ float    *render::make_tex_mega_float(std::vector<float> uv, std::vector<unsigne
     i = 0;
     while (i < uv_indices.size())
     {
-		std::cout << "indice = " << uv_indices[i] << std::endl;
         result[2 * i] = uv[2 * (uv_indices[i] - 1)];
         result[2 * i + 1] = uv[2 * (uv_indices[i] - 1) + 1];
         i++;
