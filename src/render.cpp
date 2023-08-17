@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/17 18:16:41 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/17 19:25:29 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,6 +184,17 @@ void	render::update()
 
 }
 
+void	render::printUI()
+{
+	printText(_ui_fps.str().c_str(), 5, 580, 10);
+	std::stringstream	v_size;
+	std::stringstream	model_name;
+	model_name << "Name: " << _model_name << std::endl;
+	v_size << "Polygons: " << std::to_string(_vertices.size() / 3).c_str();
+	printText(v_size.str().c_str(), 5, 570, 10);
+	printText(model_name.str().c_str(), 5, 560, 10);
+}
+
 
 void	render::loop()
 {
@@ -248,7 +259,7 @@ void	render::loop()
 	// ***************
 	initText("objects/Holstein.DDS");
 	float	last_time = glfwGetTime();
-	get_fps(last_time);
+	_ui_fps << "fps: loading..." << std::endl;
 	while (!glfwWindowShouldClose(_window))
 	{
 		glUseProgram(_programID);
@@ -293,15 +304,8 @@ void	render::draw()
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	printText(_ui_fps.str().c_str(), 5, 580, 10);
-	printText("BARBARA", 5, 570, 10);
-	std::stringstream	v_size;
-	std::stringstream	model_name;
-	model_name << "Name: " << _model_name << std::endl;
-	v_size << "Polygons: " << std::to_string(_vertices.size() / 3).c_str();
-	printText(v_size.str().c_str(), 5, 560, 10);
-	printText(model_name.str().c_str(), 5, 550, 10);
-
+	if (_debug_mode)
+		printUI();
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
@@ -456,6 +460,10 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 				glPolygonMode( GL_FRONT_AND_BACK, GL_FILL);
 				w->_wireframe = false;
 			}
+		}
+		if (key == GLFW_KEY_F3)
+		{
+			w->_debug_mode = !w->_debug_mode;
 		}
 		else if (key == GLFW_KEY_0)
 			w->_spins = !w->_spins;
