@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/17 15:51:59 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/17 18:16:41 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,11 @@ Texture *p_tex = NULL;
 // CTOR inits a lot of things & loads shaders 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path)
 {
+	size_t	find = obj_path.find_last_of('/');
+	_model_name = "default";
+	if (find != std::string::npos && obj_path.length() != 1)
+		_model_name = obj_path.substr(find + 1, obj_path.find_last_of('.') - find - 1);
+	std::cout << "name: " << _model_name << std::endl;
 	_s_mod = 0;
 	load_object(obj_path.c_str(), _vertices, _uv, _normals, _vert_indices, _uv_indices);
 	_factor = Vec4(0, 0, 0, 0);
@@ -142,7 +147,6 @@ void	render::create_vertex_array()
 
 void	render::update()
 {
-	std::cout << "UPDATE" << _frames << std::endl;
 	Matrix4		proj;
 	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
 
@@ -244,6 +248,7 @@ void	render::loop()
 	// ***************
 	initText("objects/Holstein.DDS");
 	float	last_time = glfwGetTime();
+	get_fps(last_time);
 	while (!glfwWindowShouldClose(_window))
 	{
 		glUseProgram(_programID);
@@ -288,7 +293,15 @@ void	render::draw()
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	printText(_ui_fps.str().c_str(), 10, 550, 30);
+	printText(_ui_fps.str().c_str(), 5, 580, 10);
+	printText("BARBARA", 5, 570, 10);
+	std::stringstream	v_size;
+	std::stringstream	model_name;
+	model_name << "Name: " << _model_name << std::endl;
+	v_size << "Polygons: " << std::to_string(_vertices.size() / 3).c_str();
+	printText(v_size.str().c_str(), 5, 560, 10);
+	printText(model_name.str().c_str(), 5, 550, 10);
+
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
