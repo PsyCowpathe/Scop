@@ -6,11 +6,12 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 19:58:18 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/17 15:20:55 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "render.hpp"
+#include <string>
 
 Texture *p_tex = NULL;
 
@@ -141,6 +142,7 @@ void	render::create_vertex_array()
 
 void	render::update()
 {
+	std::cout << "UPDATE" << _frames << std::endl;
 	Matrix4		proj;
 	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
 
@@ -184,7 +186,8 @@ void	render::loop()
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
 	float					*transformed_vertices = make_mega_float(_vertices, _vert_indices);
-	// float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
+	glUseProgram(_programID);
+	float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
 
 	
 	// ************
@@ -197,16 +200,6 @@ void	render::loop()
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (_vert_indices.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
 	delete[] transformed_vertices;
-
-	glVertexAttribPointer
-		(
-		 0,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		 3,				// size (here we have 3 values per vertex)
-		 GL_FLOAT,		// type
-		 GL_FALSE,		// normalized?
-		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-		 (void*)0		// array buffer offset (at beginning of array)
-		);
 	
 	// Colored BG : Used in change_color() & switch_texture()
 	this->_color = glGetUniformLocation(_programID, "u_color");
@@ -216,44 +209,44 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-		// p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
-		// p_tex->load_tex();
+		p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
+		p_tex->load_tex();
 
-		// GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
-		// if (gSamplerLocation == 0)
-		// {
-		// 	std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
-    	// 	clear();
-    	// }
-	// glUniform1i(gSamplerLocation, 0);
+		GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
+		if (gSamplerLocation == 0)
+		{
+			std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
+    		clear();
+    	}
+	glUniform1i(gSamplerLocation, 0);
 
 
-	// // GENERATE & FILL TEXCOORDINATES BUFFER
-	// glEnableVertexAttribArray(1);
-	// glGenBuffers(1, &_texBuffer);
-	// glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (_uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
-	// delete[] transformed_uv;
-	// // send texBuffer to shader pipeline, at layout = 1
-	// glVertexAttribPointer
-	// 	(
-	// 	 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-	// 	 2,				// size (here we have 2 values per vertex)
-	// 	 GL_FLOAT,		// type
-	// 	 GL_FALSE,		// normalized?
-	// 	 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-	// 	 (void*)0		// array buffer offset (at beginning of array)
-	// 	);
-	// glDisableVertexAttribArray(0);
-	// glDisableVertexAttribArray(1);
+	// GENERATE & FILL TEXCOORDINATES BUFFER
+	glEnableVertexAttribArray(1);
+	glGenBuffers(1, &_texBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_uv) * (_uv_indices.size() * 2), transformed_uv, GL_STATIC_DRAW); //SEGFAULT WITH FSANITIZE A PATCH
+	delete[] transformed_uv;
+	// send texBuffer to shader pipeline, at layout = 1
+	glVertexAttribPointer
+		(
+		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 2,				// size (here we have 2 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 	// ***************
 	// * RENDER LOOP *
 	// ***************
-	glUseProgram(_programID);
 	initText("objects/Holstein.DDS");
 	float	last_time = glfwGetTime();
 	while (!glfwWindowShouldClose(_window))
 	{
+		glUseProgram(_programID);
 		get_fps(last_time);
 		handle_inputs();
 		update();
@@ -263,8 +256,6 @@ void	render::loop()
 
 void	render::draw()
 {
-	glUseProgram(_programID);
-
 	glClearColor(.2, .2, .2, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -296,11 +287,12 @@ void	render::draw()
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	printText("test", 10, 550, 30);
+	// if (_keys[GLFW_KEY_Z])
+		printText(std::to_string(_frames).c_str(), 10, 500, 60);
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
-	glFinish();
+	// glFinish();
 }
 
 int		render::glew_init()
