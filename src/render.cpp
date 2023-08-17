@@ -6,17 +6,23 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 19:30:34 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/17 19:25:29 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "render.hpp"
+#include <string>
 
 Texture *p_tex = NULL;
 
 // CTOR inits a lot of things & loads shaders 
 render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path)
 {
+	size_t	find = obj_path.find_last_of('/');
+	_model_name = "default";
+	if (find != std::string::npos && obj_path.length() != 1)
+		_model_name = obj_path.substr(find + 1, obj_path.find_last_of('.') - find - 1);
+	std::cout << "name: " << _model_name << std::endl;
 	_s_mod = 0;
 	load_object(obj_path.c_str(), _vertices, _uv, _normals, _vert_indices, _uv_indices);
 	_factor = Vec4(0, 0, 0, 0);
@@ -130,17 +136,17 @@ float    *render::make_mega_float(std::vector<float> vertices, std::vector<unsig
     return (result);
 }
 
-void	render::get_fps(int &frames, float &last_time)
+void	render::get_fps(float &last_time)
 {
 	float	current_time = glfwGetTime();
 	_delta_time = current_time - last_time;
-	frames++;
+	_frames++;
 	if (_delta_time >= 1.0)
 	{
-		std::stringstream ss;
-		ss << "Scop [fps: " << frames << " | time: " << 1000.0/(float)frames << "]";
-		glfwSetWindowTitle(_window, ss.str().c_str());
-		frames = 0;
+		std::stringstream	window_name;
+		_ui_fps.str(std::string());
+		_ui_fps << "fps: " << _frames << " (" << 1000.0/(float)_frames << ")";
+		_frames = 0;
 		last_time = glfwGetTime();
 	}
 }
@@ -207,6 +213,17 @@ void	render::update()
 
 }
 
+void	render::printUI()
+{
+	printText(_ui_fps.str().c_str(), 5, 580, 20);
+	std::stringstream	v_size;
+	std::stringstream	model_name;
+	model_name << "Name: " << _model_name << std::endl;
+	v_size << "Polygons: " << std::to_string(_vertices.size() / 3).c_str();
+	printText(v_size.str().c_str(), 5, 570, 10);
+	printText(model_name.str().c_str(), 5, 560, 10);
+}
+
 
 void	render::loop()
 {
@@ -226,16 +243,6 @@ void	render::loop()
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (_vert_indices.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
 	delete[] transformed_vertices;
-
-	glVertexAttribPointer
-		(
-		 0,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
-		 3,				// size (here we have 3 values per vertex)
-		 GL_FLOAT,		// type
-		 GL_FALSE,		// normalized?
-		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
-		 (void*)0		// array buffer offset (at beginning of array)
-		);
 	
 	// Colored BG : Used in change_color() & switch_texture()
 	this->_color = glGetUniformLocation(_programID, "u_color");
@@ -245,18 +252,19 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-	p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
-	p_tex->load_tex();
+		p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
+		p_tex->load_tex();
 
-	GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
-	if (gSamplerLocation == 0)
-	{
-		std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
-     	clear();
-    }
+		GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
+		if (gSamplerLocation == 0)
+		{
+			std::cout << "Error getting uniform location of 'gSampler'" << std::endl;
+    		clear();
+    	}
 	glUniform1i(gSamplerLocation, 0);
 
 
+	glUseProgram(_programID);
 	// GENERATE & FILL TEXCOORDINATES BUFFER
 	glEnableVertexAttribArray(1);
 	glGenBuffers(1, &_texBuffer);
@@ -273,30 +281,60 @@ void	render::loop()
 		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
 		 (void*)0		// array buffer offset (at beginning of array)
 		);
-
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 	// ***************
 	// * RENDER LOOP *
 	// ***************
-	int frames = 0;
+	initText("objects/mono2.dds");
 	float	last_time = glfwGetTime();
+	_ui_fps << "fps: loading..." << std::endl;
 	while (!glfwWindowShouldClose(_window))
 	{
+		glUseProgram(_programID);
+		get_fps(last_time);
 		handle_inputs();
 		update();
 		draw();
-		get_fps(frames, last_time);
 	}
 }
 
 void	render::draw()
 {
-	glUseProgram(_programID);
-
+	glBindTexture(GL_TEXTURE_2D, p_tex->_texture_obj);
 	glClearColor(.2, .2, .2, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+	glVertexAttribPointer
+		(
+		 0,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 3,				// size (here we have 3 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, _texBuffer);
+	glVertexAttribPointer
+		(
+		 1,				// attribute 0. No particular reason for 0, but must match the layout in the shader.
+		 2,				// size (here we have 2 values per vertex)
+		 GL_FLOAT,		// type
+		 GL_FALSE,		// normalized?
+		 0,				// stride (y-a-t il un ecart entre les donnes de chaque vertice dans l'array ?)
+		 (void*)0		// array buffer offset (at beginning of array)
+		);
+
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	if (_debug_mode)
+		printUI();
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
@@ -452,6 +490,12 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 				w->_wireframe = false;
 			}
 		}
+		if (key == GLFW_KEY_F3)
+		{
+			w->_debug_mode = !w->_debug_mode;
+		}
+		if (key == GLFW_KEY_R)
+			w->_factor = Vec4(0, 0, 0, 0);
 		else if (key == GLFW_KEY_0)
 			w->_spins = !w->_spins;
 		else if ((key == GLFW_KEY_R || key == GLFW_KEY_G || key == GLFW_KEY_B || key == GLFW_KEY_C ))

@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 19:29:06 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/17 19:24:52 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #include "Vector3.hpp"
 #include "Vector4.hpp"
 #include "object_loader.hpp"
+#include "text.hpp"
 
 #include "object_loader.hpp"
 #include "Texture.hpp"
@@ -59,7 +60,7 @@ class render
 		float						_moov_y = 0;
 		float						_moov_z = 0;
 		float						_angle = 0;
-		Vec4 						_factor;
+		Vec4						_factor;
 		float						_delta_time = 0;
 		int							_width;
 		int							_height;
@@ -69,8 +70,12 @@ class render
 		GLuint						_programID;
 		bool						_t_mode;
 		int							_s_mod;
-		//GLfloat					*_current_vertex;
-		// const GLfloat			*_original_vertex;
+		int							_frames = 0;
+
+		// UI
+		std::stringstream			_ui_fps;
+		std::string					_model_name;
+		bool						_debug_mode = false;
 
 		//Init
 		
@@ -95,7 +100,7 @@ class render
 		void			switch_texture();
 		void			update();
 		void			draw();
-		void			get_fps(int &frames, float &last_time);
+		void			get_fps(float &last_time);
 
 
 		//Utils
@@ -107,6 +112,7 @@ class render
 		void			to_center(float *result, size_t size);
 
 		void			key_print();
+		void			printUI();
 		
 		//Uniforms location pointers
 		GLuint			_color;
