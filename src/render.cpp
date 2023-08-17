@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/17 15:31:31 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/17 15:51:59 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,6 @@ void	render::get_fps(float &last_time)
 		std::stringstream	window_name;
 		_ui_fps.str(std::string());
 		_ui_fps << "fps: " << _frames << " (" << 1000.0/(float)_frames << ")";
-		window_name << "Scop [fps: " << _frames << " | time: " << 1000.0/(float)_frames << "]";
-		glfwSetWindowTitle(_window, _ui_fps.str().c_str());
 		_frames = 0;
 		last_time = glfwGetTime();
 	}
@@ -258,6 +256,7 @@ void	render::loop()
 
 void	render::draw()
 {
+	glBindTexture(GL_TEXTURE_2D, p_tex->_texture_obj);
 	glClearColor(.2, .2, .2, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -293,7 +292,7 @@ void	render::draw()
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
-	// glFinish();
+	glFinish();
 }
 
 int		render::glew_init()

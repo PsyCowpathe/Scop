@@ -10,7 +10,6 @@ class Texture
     private:
         std::string         _file_name;
         GLenum              _texture_target;
-        GLuint              _texture_obj;
 
         GLuint              _w;
         GLuint              _h;
@@ -21,6 +20,7 @@ class Texture
 
         void bind_tex(GLenum texture_unit);
     public:
+        GLuint              _texture_obj;
         Texture(GLenum texture_target, const std::string &file_name, render *render);
 
         void check_file();
