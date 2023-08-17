@@ -186,7 +186,7 @@ void	render::update()
 
 void	render::printUI()
 {
-	printText(_ui_fps.str().c_str(), 5, 580, 10);
+	printText(_ui_fps.str().c_str(), 5, 580, 20);
 	std::stringstream	v_size;
 	std::stringstream	model_name;
 	model_name << "Name: " << _model_name << std::endl;
@@ -257,7 +257,7 @@ void	render::loop()
 	// ***************
 	// * RENDER LOOP *
 	// ***************
-	initText("objects/Holstein.DDS");
+	initText("objects/Holstein.dds");
 	float	last_time = glfwGetTime();
 	_ui_fps << "fps: loading..." << std::endl;
 	while (!glfwWindowShouldClose(_window))
@@ -465,6 +465,8 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 		{
 			w->_debug_mode = !w->_debug_mode;
 		}
+		if (key == GLFW_KEY_R)
+			w->_factor = Vec4(0, 0, 0, 0);
 		else if (key == GLFW_KEY_0)
 			w->_spins = !w->_spins;
 		else if ((key == GLFW_KEY_R || key == GLFW_KEY_G || key == GLFW_KEY_B || key == GLFW_KEY_C ))
