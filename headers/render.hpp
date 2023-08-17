@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/16 18:46:46 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/17 15:26:34 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,9 @@ class render
 		bool						_t_mode;
 		int							_s_mod;
 		int							_frames = 0;
+
+		// UI
+		std::stringstream			_ui_fps;
 
 		//Init
 		

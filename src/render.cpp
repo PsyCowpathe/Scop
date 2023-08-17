@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/17 15:20:55 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/17 15:31:31 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,9 +109,11 @@ void	render::get_fps(float &last_time)
 	_frames++;
 	if (_delta_time >= 1.0)
 	{
-		std::stringstream ss;
-		ss << "Scop [fps: " << _frames << " | time: " << 1000.0/(float)_frames << "]";
-		glfwSetWindowTitle(_window, ss.str().c_str());
+		std::stringstream	window_name;
+		_ui_fps.str(std::string());
+		_ui_fps << "fps: " << _frames << " (" << 1000.0/(float)_frames << ")";
+		window_name << "Scop [fps: " << _frames << " | time: " << 1000.0/(float)_frames << "]";
+		glfwSetWindowTitle(_window, _ui_fps.str().c_str());
 		_frames = 0;
 		last_time = glfwGetTime();
 	}
@@ -186,7 +188,6 @@ void	render::loop()
 	std::vector<float>		tmp;
 	std::vector<float>		vertex(4);
 	float					*transformed_vertices = make_mega_float(_vertices, _vert_indices);
-	glUseProgram(_programID);
 	float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
 
 	
@@ -221,6 +222,7 @@ void	render::loop()
 	glUniform1i(gSamplerLocation, 0);
 
 
+	glUseProgram(_programID);
 	// GENERATE & FILL TEXCOORDINATES BUFFER
 	glEnableVertexAttribArray(1);
 	glGenBuffers(1, &_texBuffer);
@@ -287,8 +289,7 @@ void	render::draw()
 	glDrawArrays(GL_TRIANGLES, 0, _vert_indices.size()); // Starting from vertex 0;
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
-	// if (_keys[GLFW_KEY_Z])
-		printText(std::to_string(_frames).c_str(), 10, 500, 60);
+	printText(_ui_fps.str().c_str(), 10, 550, 30);
 	glfwSwapBuffers(_window);
 	glfwSetWindowUserPointer(_window, this);
 	glfwPollEvents();
