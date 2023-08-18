@@ -16,8 +16,9 @@
 Texture *p_tex = NULL;
 
 // CTOR inits a lot of things & loads shaders 
-render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path)
+render::render(int aliasing, float openGL_min, float openGL_max, int width, int height, std::string name, std::string obj_path, bool fullscreen)
 {
+	_fullscreen = fullscreen;
 	size_t	find = obj_path.find_last_of('/');
 	_model_name = "default";
 	if (find != std::string::npos && obj_path.length() != 1)
@@ -286,7 +287,7 @@ void	render::loop()
 	// ***************
 	// * RENDER LOOP *
 	// ***************
-	initText("objects/mono2.dds");
+	initText("fonts/mono2.dds");
 	float	last_time = glfwGetTime();
 	_ui_fps << "fps: loading..." << std::endl;
 	while (!glfwWindowShouldClose(_window))
@@ -367,7 +368,10 @@ void	render::set_callback()
 
 int		render::create_window(std::string name)
 {
-	_window = glfwCreateWindow(_width, _height, name.c_str(), NULL , NULL);
+	if (_fullscreen)
+		_window = glfwCreateWindow(_width, _height, name.c_str(), glfwGetPrimaryMonitor(), NULL);
+	else
+		_window = glfwCreateWindow(_width, _height, name.c_str(), NULL , NULL);
 	if (!_window)
 	{
 		std::cout << "GLFW window creation failed :(" << std::endl;

@@ -71,6 +71,7 @@ class render
 		bool						_t_mode;
 		int							_s_mod;
 		int							_frames = 0;
+		bool						_fullscreen = false;
 
 		// UI
 		std::stringstream			_ui_fps;
@@ -120,7 +121,7 @@ class render
 	public :
 		void			clear();
 		GLuint			_pixels;
-		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::string obj_path);
+		render(int aliasing, float openGl_min, float openGl_max, int width, int height, std::string name, std::string obj_path, bool fullscreen);
 		~render();
 		void	loop();
 };
