@@ -239,6 +239,7 @@ void	render::loop()
 	// ************
 
 	// // CREATING VERTEX BUFFER
+	toggle_fullscreen("scop");
 	glEnableVertexAttribArray(0);
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -366,12 +367,39 @@ void	render::set_callback()
 	glfwSetWindowSizeCallback(_window, resize_callback);
 }
 
+void	render::toggle_fullscreen(std::string name)
+{
+
+	(void)name;
+	if (!_is_fullscreen)
+	{
+		glfwGetWindowPos(_window, &_win_pos[0], &_win_pos[1]);
+		glfwGetWindowSize(_window, &_win_dim[0], &_win_dim[1]);
+		const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		glfwSetWindowMonitor(_window, glfwGetPrimaryMonitor(), 0, 0, mode->width, mode->height, 0);
+		glViewport(0, 0, mode->width, mode->height);
+		_is_fullscreen = true;
+	}
+	else
+	{
+		glfwSetWindowMonitor(_window, NULL, _win_pos[0], _win_pos[1], _win_dim[0], _win_dim[1], 0);
+		glViewport(0, 0, _width, _height);
+		_is_fullscreen = false;
+	}
+}
+
 int		render::create_window(std::string name)
 {
 	if (_fullscreen)
+	{
 		_window = glfwCreateWindow(_width, _height, name.c_str(), glfwGetPrimaryMonitor(), NULL);
+		_is_fullscreen = true;
+	}
 	else
+	{
 		_window = glfwCreateWindow(_width, _height, name.c_str(), NULL , NULL);
+		_is_fullscreen = false;
+	}
 	if (!_window)
 	{
 		std::cout << "GLFW window creation failed :(" << std::endl;
@@ -495,9 +523,9 @@ void	render::key_callback(GLFWwindow *window, int key, int scancode, int action,
 			}
 		}
 		if (key == GLFW_KEY_F3)
-		{
 			w->_debug_mode = !w->_debug_mode;
-		}
+		if (key == GLFW_KEY_F5)
+			w->toggle_fullscreen("scop");
 		if (key == GLFW_KEY_R)
 			w->_factor = Vec4(0, 0, 0, 0);
 		else if (key == GLFW_KEY_0)

@@ -72,6 +72,9 @@ class render
 		int							_s_mod;
 		int							_frames = 0;
 		bool						_fullscreen = false;
+		bool						_is_fullscreen = false;
+		int							_win_pos[2];
+		int							_win_dim[2];
 
 		// UI
 		std::stringstream			_ui_fps;
@@ -117,6 +120,7 @@ class render
 		
 		//Uniforms location pointers
 		GLuint			_color;
+		void			toggle_fullscreen(std::string name);
 
 	public :
 		void			clear();
