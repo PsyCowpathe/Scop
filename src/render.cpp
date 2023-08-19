@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/19 17:33:22 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/19 17:41:16 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -280,7 +280,7 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-		p_tex = new Texture(GL_TEXTURE_2D, "objects/textures/moon_color.bmp", this);
+		p_tex = new Texture(GL_TEXTURE_2D, "objects/textures/redstone.bmp", this);
 		p_tex->load_tex();
 
 		GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
