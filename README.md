@@ -41,13 +41,15 @@ make
 
 ### Controls
 ```
-Arrow key   : Change rotation axis
+Arrow keys  : Change rotation axis
 0 (!numpad) : Stop rotation
-WASD        : Moov the camera on X and Z axis
-Space/Shift : Moov the camera on Y axis
+WASD        : Move the camera on X and Z axis
+CTRL        : Accelerate movement speed
+Space/Shift : Move the camera on Y axis
 L    : Enable/Disable texture
 M    : Enable/Disable wireframe mod
 R    : Reset camera
+H    : Randomize object position
 F5   : Switch from small to large screen size
 F3   : Minecraft style debug informations
 Echap : Quit
