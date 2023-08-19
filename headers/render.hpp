@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:25:18 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/17 19:24:52 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/19 15:43:15 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,9 @@ class render
 		bool						_is_fullscreen = false;
 		int							_win_pos[2];
 		int							_win_dim[2];
+		bool						_changed = 0;
+		char						_random_axis = 'y';
+		float						_accelerate = 0;
 
 		// UI
 		std::stringstream			_ui_fps;
@@ -102,7 +105,7 @@ class render
 
 		//Texture
 		void			switch_texture();
-		void			update();
+		void			update(float *transformed_vertices);
 		void			draw();
 		void			get_fps(float &last_time);
 

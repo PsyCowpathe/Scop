@@ -21,7 +21,7 @@ float random (vec2 st) {
 
 void main()
 {
-	gl_Position = proj * view *  model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
+	gl_Position = proj * view * model * (trans + (rot * vec4(vertexPosition_modelspace, 1.0f)));
 	if (mod == 	1)
 		TexCoord0 = TexCoord;
 	else
