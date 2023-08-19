@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/17 19:25:29 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/19 15:59:56 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,7 +178,7 @@ void	render::create_vertex_array()
 void	render::update()
 {
 	Matrix4		proj;
-	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 100.0f);
+	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 1000.0f);
 
 	Matrix4		view;
 	view = view.look_at(Vec4(0, 0, -5, 0), Vec4(0, 0, 0, 0), Vec4(0, 1, 0, 0));
@@ -254,7 +254,7 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-		p_tex = new Texture(GL_TEXTURE_2D, "objects/bricks.bmp", this);
+		p_tex = new Texture(GL_TEXTURE_2D, "objects/standard.bmp", this);
 		p_tex->load_tex();
 
 		GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
