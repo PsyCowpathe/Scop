@@ -385,6 +385,7 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 				type = 2;
 			}
 		}
+		// TODO: check for "o", empty lines (try every 42res obj)
 		else if (line[0] == 's' && line[1] == ' ')
 			get_shading_group(line, ln, shading_group);
 		else if (line.size() > 6 && line.substr(0, 6).compare("mtllib") == 0 && line[6] == ' ')
