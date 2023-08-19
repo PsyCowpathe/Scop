@@ -40,7 +40,7 @@ make
 ```
 
 ### Controls
-
+```
 Arrow key : Change rotation axis
 0 (!numpad) : Stop rotation
 WASD : Moov the camera on X and Z axis
@@ -51,6 +51,7 @@ R : Reset camera
 F5 : Switch from small to large screen size
 F3 : Minecraft style debug informations
 Echap : Quit
+```
 
 ## Help for use on Windows/wsl
 Works on Win10, WSL2, GeForce GTX 950.
