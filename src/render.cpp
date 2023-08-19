@@ -6,9 +6,10 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/19 15:59:56 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/19 17:04:17 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "render.hpp"
 #include <string>
@@ -159,11 +160,11 @@ Vec4	render::check_moov(Vec4 old)
 	float	z = old[2];
 
 	if (_moov_x != 0)
-		x += _moov_x / 10;
+		x += _moov_x / 10 * _accelerate;
 	if (_moov_y != 0)
 		y += _moov_y / 10;
 	if (_moov_z != 0)
-		z += _moov_z / 10;
+		z += _moov_z / 10 * _accelerate;
 	Vec4	factor(x, y, z, 1);
 	return (factor);
 }
@@ -175,8 +176,36 @@ void	render::create_vertex_array()
 	glBindVertexArray(_vertexArrayID);
 }
 
-void	render::update()
+void	render::update(float *transformed_vertices)
 {
+
+
+	if (_changed == 1)
+	{
+		Matrix4	rotate;
+		Vec4		tmp;
+		Vec4		to_rotate;
+		size_t		i = 0;
+
+		rotate = rotate.rotation(_random_axis, _angle);
+		while (i < _vert_indices.size())
+		{
+			to_rotate[0] = transformed_vertices[i * 3];
+			to_rotate[1] = transformed_vertices[i * 3 + 1];
+			to_rotate[2] = transformed_vertices[i * 3 + 2];
+			tmp = rotate * to_rotate;
+			transformed_vertices[i * 3] = tmp[0];
+			transformed_vertices[i * 3 + 1] = tmp[1];
+			transformed_vertices[i * 3 + 2] = tmp[2];
+			i++;
+		}
+		glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (_vert_indices.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
+
+		_changed = 0;
+	}
+
+
 	Matrix4		proj;
 	proj = proj.perspective(angle_to_rad(45.0f), (float)(_width) / (float)(_height), 0.1f, 1000.0f);
 
@@ -232,7 +261,6 @@ void	render::loop()
 	std::vector<float>		vertex(4);
 	float					*transformed_vertices = make_mega_float(_vertices, _vert_indices);
 	float					*transformed_uv = make_tex_mega_float(_uv, _uv_indices);
-
 	
 	// ************
 	// * VERTICES *
@@ -244,7 +272,6 @@ void	render::loop()
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(*transformed_vertices) * (_vert_indices.size() * 3), transformed_vertices, GL_STATIC_DRAW); 
-	delete[] transformed_vertices;
 	
 	// Colored BG : Used in change_color() & switch_texture()
 	this->_color = glGetUniformLocation(_programID, "u_color");
@@ -296,9 +323,10 @@ void	render::loop()
 		glUseProgram(_programID);
 		get_fps(last_time);
 		handle_inputs();
-		update();
+		update(transformed_vertices);
 		draw();
 	}
+	delete[] transformed_vertices;
 }
 
 void	render::draw()
@@ -449,6 +477,7 @@ void	render::handle_inputs()
 	_moov_x = 0;
 	_moov_y = 0;
 	_moov_z = 0;
+	_accelerate = 0;
 	if (_keys[GLFW_KEY_W])
 		_moov_z = -1;
 	if (_keys[GLFW_KEY_S])
@@ -458,9 +487,19 @@ void	render::handle_inputs()
 	if (_keys[GLFW_KEY_D])
 		_moov_x = 1;
 	if (_keys[GLFW_KEY_SPACE])
-		_moov_y = -1;
+		_moov_y = -1.5;
 	if (_keys[GLFW_KEY_LEFT_SHIFT])
-		_moov_y = 1;
+		_moov_y = 1.5;
+	if (_keys[GLFW_KEY_LEFT_CONTROL])
+		_accelerate = 5;
+	if (_keys[GLFW_KEY_H] && _frames % 8 == 0)
+	{
+		_changed = 1;
+		_random_axis = _rotate_axis + 1;
+		if (_random_axis == 'z' + 1)
+			_random_axis = 'y';
+		_rotate_axis = _random_axis;
+	}
 	if (_keys[GLFW_KEY_RIGHT])
 		_rotate_axis = 'x';
 	else if (_keys[GLFW_KEY_UP])
