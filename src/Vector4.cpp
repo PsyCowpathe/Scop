@@ -1,9 +1,7 @@
 #include "Vector4.hpp"
 
+//====================  CONSTRUCTORS  ====================
 
-/*	VEC4
-//	constructors/destructors
-*/
 Vec4::Vec4()
 {
 	_v[0] = 0;
@@ -33,10 +31,9 @@ Vec4::~Vec4()
 
 }
 
-void	Vec4::print()
-{
-	std::cout << "<" << _v[0] << ", " << _v[1] << ", " << _v[2] << ", " << _v[3] << ">" << std::endl;
-}
+
+//====================  GETTER SETTER  ====================
+
 
 void	Vec4::setX(float x)
 {
@@ -57,6 +54,43 @@ void	Vec4::setW(float w)
 {
 	_v[3] = w;
 }
+
+
+//====================  ALGEBRA  ====================
+
+float	Vec4::dot(Vec4 v)
+{
+	// TODO: check if w needs to be handled
+	return (_v[0] * v._v[0] + _v[1] * v._v[1] + _v[2] * v._v[2]);
+}
+
+Vec4	Vec4::cross(Vec4 v)
+{
+	return Vec4(_v[1] * v._v[2] - _v[2] * v._v[1], _v[2] * v._v[0] - _v[0] * v._v[2], _v[0] * v._v[1] - _v[1] * v._v[0], _v[3]);
+}
+
+float Vec4::getNorm2()
+{
+	return _v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2];
+}
+
+void	Vec4::normalize()
+{
+	float	norm = sqrtf(getNorm2());
+	_v[0] /= norm;
+	_v[1] /= norm;
+	_v[2] /= norm;
+}
+
+Vec4	Vec4::getNormalized()
+{
+	Vec4	res(*this);
+	res.normalize();
+	return (res);
+}
+
+
+//====================  OPERATORS  ====================
 
 Vec4	Vec4::operator-(const Vec4 &other)
 {
@@ -112,33 +146,11 @@ Vec4	Vec4::operator=(const Vec4 &other)
 	return (*this);
 }
 
-float	Vec4::dot(Vec4 v)
+
+//====================  UTILITY  ====================
+
+void	Vec4::print()
 {
-	// TODO: check if w needs to be handled
-	return (_v[0] * v._v[0] + _v[1] * v._v[1] + _v[2] * v._v[2]);
+	std::cout << "<" << _v[0] << ", " << _v[1] << ", " << _v[2] << ", " << _v[3] << ">" << std::endl;
 }
 
-Vec4	Vec4::cross(Vec4 v)
-{
-	return Vec4(_v[1] * v._v[2] - _v[2] * v._v[1], _v[2] * v._v[0] - _v[0] * v._v[2], _v[0] * v._v[1] - _v[1] * v._v[0], _v[3]);
-}
-
-float Vec4::getNorm2()
-{
-	return _v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2];
-}
-
-void	Vec4::normalize()
-{
-	float	norm = sqrtf(getNorm2());
-	_v[0] /= norm;
-	_v[1] /= norm;
-	_v[2] /= norm;
-}
-
-Vec4	Vec4::getNormalized()
-{
-	Vec4	res(*this);
-	res.normalize();
-	return (res);
-}

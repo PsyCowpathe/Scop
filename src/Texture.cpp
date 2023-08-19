@@ -3,6 +3,8 @@
 #include "bmp.hpp"
 
 
+//====================  CONSTRUCTORS  ====================
+
 Texture::Texture(GLenum texture_target, const std::string &file_name, render *render)
 {
 	_texture_target = texture_target; // GL_TEXTURE
@@ -11,10 +13,12 @@ Texture::Texture(GLenum texture_target, const std::string &file_name, render *re
 
 }
 
+
+//====================  PARSING  ====================
+
 void    Texture::check_file()
 {
     uint8_t * datBuff[2] = {nullptr, nullptr}; // Header buffers
-    
 	uint8_t* pixels = nullptr; // Pixels
 	uint8_t* verif = nullptr; // Pixels
 
@@ -57,6 +61,7 @@ void    Texture::check_file()
 	file.seekg(bmpHeader->bfOffBits);
 	file.read((char*)verif, bmpInfo->biSizeImage);
 
+    // Verify that the BMP file is formated correctly for our program
 	if (*verif != *pixels)
 	{
 		std::cout << "BMP format error" << std::endl;
@@ -73,7 +78,6 @@ void    Texture::check_file()
 		pixels[i]     = pixels[i + 2];
 		pixels[i + 2] = tmpRGB;
 	}
-
 
 	// Set width and height to the values loaded from the file
 	this->_w = bmpInfo->biWidth;
@@ -130,6 +134,9 @@ void Texture::gen_tex()
 	// Delete remaining buffer.
 	delete[] _pixels;
 }
+
+
+//====================  UTILITY  ====================
 
 void Texture::bind_tex(GLenum texture_unit)
 {

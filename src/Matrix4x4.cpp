@@ -4,11 +4,26 @@
 //	Constuctors and destructors
 */
 
+//====================  CONSTRUCTORS  ====================
+
 Matrix4::Matrix4()
 {
-	// Note: this should be faster than anything else
 	memset(_m, 0, 16 * sizeof(float));
 }
+
+
+Matrix4::Matrix4(float list[16])
+{
+	memcpy(_m, list, 16 * sizeof(float));
+}
+
+Matrix4::~Matrix4()
+{
+
+}
+
+
+//====================  MATRICES  ====================
 
 Matrix4	Matrix4::identity()
 {
@@ -20,14 +35,40 @@ Matrix4	Matrix4::identity()
 	return (*this);
 }
 
-Matrix4::Matrix4(float list[16])
+Matrix4		Matrix4::translate(Vec4 to_add)
 {
-	memcpy(_m, list, 16 * sizeof(float));
+	Matrix4 res;
+	float	trans[16] = {1, 0, 0, to_add[0],
+						0, 1, 0, to_add[1],
+						0, 0, 1, to_add[2],
+						0, 0, 0, 1};
+	res = trans;
+	return (res);
 }
 
-Matrix4::~Matrix4()
+Matrix4		Matrix4::rotation(char rotate, float angle)
 {
+	Matrix4 res;
+	float	rot_x[16] = {1, 0, 0, 0,
+						0, cosf(angle), (sinf(angle) * -1), 0,
+						0, sinf(angle), cosf(angle), 0,
+						0, 0, 0, 1};
+	float	rot_y[16] = {cosf(angle), 0, sinf(angle), 0,
+						0, 1, 0, 0,
+						sinf(angle) * -1, 0, cosf(angle), 0,
+						0, 0, 0, 1};
+	float	rot_z[16] = {cosf(angle), sinf(angle) * -1, 0, 0,
+						sinf(angle), cosf(angle), 0, 0,
+						0, 0, 1, 0,
+						0, 0, 0, 1};
 
+	if (rotate == 'x')
+		res = rot_x;
+	else if (rotate == 'y')
+		res = rot_y;
+	else if (rotate == 'z')
+		res = rot_z;
+	return (res);
 }
 
 Matrix4	Matrix4::perspective(float fov, float ratio, float z_near, float z_far)
@@ -68,46 +109,8 @@ Matrix4	Matrix4::look_at(Vec4 eye, Vec4 center, Vec4 up)
 	return (res);
 }
 
-Matrix4		Matrix4::rotation(char rotate, float angle)
-{
-	Matrix4 res;
-	float	rot_x[16] = {1, 0, 0, 0,
-						0, cosf(angle), (sinf(angle) * -1), 0,
-						0, sinf(angle), cosf(angle), 0,
-						0, 0, 0, 1};
-	float	rot_y[16] = {cosf(angle), 0, sinf(angle), 0,
-						0, 1, 0, 0,
-						sinf(angle) * -1, 0, cosf(angle), 0,
-						0, 0, 0, 1};
-	float	rot_z[16] = {cosf(angle), sinf(angle) * -1, 0, 0,
-						sinf(angle), cosf(angle), 0, 0,
-						0, 0, 1, 0,
-						0, 0, 0, 1};
 
-	if (rotate == 'x')
-		res = rot_x;
-	else if (rotate == 'y')
-		res = rot_y;
-	else if (rotate == 'z')
-		res = rot_z;
-	return (res);
-}
-
-Matrix4		Matrix4::translate(Vec4 to_add)
-{
-	Matrix4 res;
-	float	trans[16] = {1, 0, 0, to_add[0],
-						0, 1, 0, to_add[1],
-						0, 0, 1, to_add[2],
-						0, 0, 0, 1};
-	res = trans;
-	return (res);
-}
-
-
-/*	MATRIX
-//	Utils
-*/
+//====================  UTILITY  ====================
 
 void	Matrix4::print()
 {
@@ -117,9 +120,13 @@ void	Matrix4::print()
 	<< "| " << _m[12] << ", " << _m[13] << ", " << _m[14] << ", " << _m[15] << " |" << std::endl;
 }
 
-/*	MATRIX
-//	Operator overloading
-*/
+float	angle_to_rad(float angle)
+{
+	return (angle * (M_PI / 180));
+}
+
+
+//====================  OPERATORS  ====================
 
 float	&Matrix4::operator[](size_t index)
 {
@@ -138,7 +145,6 @@ Vec4	Matrix4::operator*(const Vec4 &other)
 	float	z = other.getZ();
 	float	w = other.getW();
 
-	// TODO: check for perf impact
 	Vec4	res(
 		(_m[0] * x + _m[1] * y + _m[2] * z + _m[3] * w),
 		(_m[4] * x + _m[5] * y + _m[6] * z + _m[7] * w),
@@ -150,7 +156,6 @@ Vec4	Matrix4::operator*(const Vec4 &other)
 
 Matrix4	Matrix4::operator*(const Matrix4 &other)
 {
-	// TODO: improve and measure perf on this
 	Matrix4	res;
 	for (int row = 0; row < 4; row++)
 	{
@@ -177,7 +182,4 @@ Matrix4	Matrix4::operator=(const float *other)
 	return (*this);
 }
 
-float	angle_to_rad(float angle)
-{
-	return (angle * (M_PI / 180));
-}
+

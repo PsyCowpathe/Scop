@@ -9,7 +9,6 @@
 #include <GLFW/glfw3.h>
 #include <GL/gl.h>
 
-
 // for Linux platform, plz make sure the size of data type is correct for BMP spec.
 // if you use this on Windows or other platforms, plz pay attention to this.
 typedef int LONG;
