@@ -442,7 +442,7 @@ void	render::handle_inputs()
 	_moov_x = 0;
 	_moov_y = 0;
 	_moov_z = 0;
-	_accelerate = 0;
+	_accelerate = 1;
 	if (_keys[GLFW_KEY_W])
 		_moov_z = -1;
 	if (_keys[GLFW_KEY_S])
