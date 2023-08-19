@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/19 17:04:17 by ckurt            ###   ########lyon.fr   */
+/*   Updated: 2023/08/19 17:33:22 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -267,7 +267,6 @@ void	render::loop()
 	// ************
 
 	// // CREATING VERTEX BUFFER
-	toggle_fullscreen("scop");
 	glEnableVertexAttribArray(0);
 	glGenBuffers(1, &_vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
@@ -281,7 +280,7 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-		p_tex = new Texture(GL_TEXTURE_2D, "objects/standard.bmp", this);
+		p_tex = new Texture(GL_TEXTURE_2D, "objects/textures/moon_color.bmp", this);
 		p_tex->load_tex();
 
 		GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
@@ -418,16 +417,8 @@ void	render::toggle_fullscreen(std::string name)
 
 int		render::create_window(std::string name)
 {
-	if (_fullscreen)
-	{
-		_window = glfwCreateWindow(_width, _height, name.c_str(), glfwGetPrimaryMonitor(), NULL);
-		_is_fullscreen = true;
-	}
-	else
-	{
-		_window = glfwCreateWindow(_width, _height, name.c_str(), NULL , NULL);
-		_is_fullscreen = false;
-	}
+	_window = glfwCreateWindow(_width, _height, name.c_str(), NULL , NULL);
+	_is_fullscreen = false;
 	if (!_window)
 	{
 		std::cout << "GLFW window creation failed :(" << std::endl;
