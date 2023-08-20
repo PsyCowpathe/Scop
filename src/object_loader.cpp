@@ -6,7 +6,7 @@
 /*   By: agirona <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/19 17:39:29 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/19 17:44:37 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/20 13:34:38 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,6 +230,19 @@ void	get_groups(std::string line, size_t ln, std::vector<std::vector<std::string
 	groups.push_back(list);
 }
 
+void	get_names(std::string line, size_t ln, std::vector<std::string> &names)
+{
+	std::string		sub;
+	size_t			find;
+
+	find = line.find_first_of(' ', 2);
+	sub = line.substr(2, line.find_first_of(' ', find) - 2);
+	if (sub.size() == 0 || line.find_first_not_of(" ", 2 + sub.size()) != std::string::npos)
+		parsing_error(line, ln);
+	std::cout << "sub = " << sub << std::endl;
+	names.push_back(sub);
+}
+
 
 //====================  FACES HANDLING  ====================
 
@@ -336,6 +349,7 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 {
 	std::vector<std::vector<std::string>>	mtllibs;
 	std::vector<std::vector<std::string>>	groups;
+	std::vector<std::string>				names;
 	std::vector<int>						shading_group;
 	std::vector<std::string>				mtl_names;
 	std::vector<unsigned int>				normal_indices;
@@ -394,6 +408,8 @@ int	load_object(const char *path, std::vector<float> &vertices, std::vector<floa
 			get_usemtl(line, ln, mtl_names);
 		else if (line[0] == 'g' && line[1] == ' ')
 			get_groups(line, ln, groups);
+		else if (line[0] == 'o' && line[1] == ' ')
+			get_names(line, ln, names);
 		else if ((line[0] != '#' && line[0]) && (count_char(line, ' ') != line.size()))
 			parsing_error(line, ln);
 	}
