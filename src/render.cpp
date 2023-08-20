@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/20 15:42:55 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/20 15:53:10 by ckurt            ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,7 +169,7 @@ void	render::loop()
 	// * TEXTURES *
 	// ************
 
-		_p_tex = new Texture(GL_TEXTURE_2D, "objects/textures/standard.bmp", this);
+		_p_tex = new Texture(GL_TEXTURE_2D, "objects/textures/dragon.bmp", this);
 		_p_tex->load_tex();
 
 		GLuint gSamplerLocation = glGetUniformLocation(_programID, "gSampler");
