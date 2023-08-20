@@ -6,7 +6,7 @@
 /*   By: ckurt <ckurt@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/19 16:26:34 by agirona           #+#    #+#             */
-/*   Updated: 2023/08/20 13:37:48 by agirona          ###   ########.fr       */
+/*   Updated: 2023/08/20 15:42:55 by agirona          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ render::~render()
 	glDeleteBuffers(1, &_vertexBuffer);
 	glDeleteBuffers(1, &_texBuffer);
 	glfwDestroyWindow(_window);
+	delete _p_tex;
 	glfwTerminate();
 }
 
