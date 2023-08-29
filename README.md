@@ -1,11 +1,29 @@
-# Project Title
+# Scop
 
-Scop : a C++ program which can open & visualize 3D .obj files.
+A C++ program which can open & visualize 3D .obj files.
 
-## Description
+### Executing program
 
-This version is a merge attempt between master and my still very basic, no matrices, thus no transfomations. No .obj support. version !
-(No they don't really "work together" for now but at least conflicts are resolved)
+```
+./scop <obj_path> [-f (fullscreen)]
+```
+
+### Controls
+```
+Arrow keys  : Change rotation axis
+0 (!numpad) : Stop rotation
+WASD        : Move the camera on X and Z axis
+CTRL        : Accelerate movement speed
+Space/Shift : Move the camera on Y axis
+L    : Enable/Disable texture
+M    : Enable/Disable wireframe mod
+R    : Reset camera
+H    : Randomize object position
+F5   : Switch from small to large screen size
+F3   : Minecraft style debug informations
+Echap : Quit
+```
+
 
 ## Getting Started
 
@@ -33,27 +51,10 @@ make
 ```
 
 
-### Executing program
-
-```
-./scop
-```
-
-### Controls
-```
-Arrow keys  : Change rotation axis
-0 (!numpad) : Stop rotation
-WASD        : Move the camera on X and Z axis
-CTRL        : Accelerate movement speed
-Space/Shift : Move the camera on Y axis
-L    : Enable/Disable texture
-M    : Enable/Disable wireframe mod
-R    : Reset camera
-H    : Randomize object position
-F5   : Switch from small to large screen size
-F3   : Minecraft style debug informations
-Echap : Quit
-```
+# Additionnal help for install/use on Windows/wsl
+<details><summary>
+Click here</summary>
+<p>
 
 ## Help for use on Windows/wsl
 Works on Win10, WSL2, GeForce GTX 950.
@@ -84,4 +85,5 @@ sudo apt upgrade
 sudo apt full-upgrade
 ```
 
-=> Any other advise for common problems or issues ?
+</p>
+</details>
