@@ -1,29 +1,22 @@
-# Scop
+# Project Title
 
-A C++ program which can open & visualize 3D .obj files.
+Scop : a C++ program which can open & visualize 3D .obj files.
 
-### Executing program
+## Description
 
-```
-./scop <obj_path> [-f (fullscreen)]
-```
+This programs aims at being an object loader and viewer in OpenGL. This is done without any external libraries to load objects or shaders etc.
 
-### Controls
-```
-Arrow keys  : Change rotation axis
-0 (!numpad) : Stop rotation
-WASD        : Move the camera on X and Z axis
-CTRL        : Accelerate movement speed
-Space/Shift : Move the camera on Y axis
-L    : Enable/Disable texture
-M    : Enable/Disable wireframe mod
-R    : Reset camera
-H    : Randomize object position
-F5   : Switch from small to large screen size
-F3   : Minecraft style debug informations
-Echap : Quit
-```
+Everything is done by hand, matrixes, loading, text display.
 
+# Examples
+
+Here are some example of the program being used:
+
+![Cube preview](./preview/preview_cube.gif)
+
+![Dragon preview](./preview/preview_dragon.gif)
+
+![Moon preview](./preview/preview_moon.gif)
 
 ## Getting Started
 
@@ -51,10 +44,27 @@ make
 ```
 
 
-# Additionnal help for install/use on Windows/wsl
-<details><summary>
-Click here</summary>
-<p>
+### Executing program
+
+```
+./scop <path/to/obj/file> [-f](for fullscreen)
+```
+
+### Controls
+```
+Arrow keys  : Change rotation axis
+0 (!numpad) : Stop rotation
+WASD        : Move the camera on X and Z axis
+CTRL        : Accelerate movement speed
+Space/Shift : Move the camera on Y axis
+L           : Enable/Disable texture
+M           : Enable/Disable wireframe mod
+R           : Reset camera
+H           : Randomize object rotation
+F5          : Switch from small to large screen size
+F3          : Minecraft style debug informations
+Echap       : Quit
+```
 
 ## Help for use on Windows/wsl
 Works on Win10, WSL2, GeForce GTX 950.
@@ -85,5 +95,18 @@ sudo apt upgrade
 sudo apt full-upgrade
 ```
 
-</p>
-</details>
+=> Any other advise for common problems or issues ?
+
+## Known limitations
+
+- VSync doesn't seem to work properly on WSL.
+- WSL and GPU drivers render shaders differently sometimes, as diamonds instead of triangles for colors (even though the polygons are still created properly).
+- Issues with obj file handling on WSL (no idea as to how or why or what or where...).
+
+## Credits
+
+We've been working on this project as a team of 3, you can find us here:
+
+- [PsyCowpathe](https://github.com/PsyCowpathe)
+- [Paulicorne](https://github.com/Paulicorne)
+- [Neryss](https://github.com/Neryss)
